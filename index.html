@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Шпион 🕵️</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Inter:wght@300;400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #080810;
+    --surface: rgba(255,255,255,0.04);
+    --surface2: rgba(255,255,255,0.08);
+    --border: rgba(255,255,255,0.1);
+    --border2: rgba(255,255,255,0.18);
+    --cyan: #00f5d4;
+    --violet: #b97cff;
+    --pink: #ff4daa;
+    --red: #ff3a5c;
+    --text: #f0f0f8;
+    --muted: rgba(240,240,248,0.45);
+    --card-w: min(390px, 94vw);
+  }
+
+  html, body {
+    min-height: 100%; background: var(--bg); color: var(--text);
+    font-family: 'Inter', 'SF Pro Display', 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased; overflow-x: hidden;
+  }
+
+  body::before {
+    content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  }
+
+  .orb { position: fixed; border-radius: 50%; filter: blur(90px); opacity: 0.16; pointer-events: none; z-index: 0; animation: drift 18s ease-in-out infinite alternate; }
+  .orb1 { width: 500px; height: 500px; background: var(--violet); top: -150px; left: -100px; }
+  .orb2 { width: 400px; height: 400px; background: var(--cyan); bottom: -100px; right: -80px; animation-delay: -6s; animation-duration: 22s; }
+  .orb3 { width: 300px; height: 300px; background: var(--pink); top: 40%; left: 50%; animation-delay: -12s; }
+  @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(40px,30px) scale(1.1); } }
+
+  /* SCREENS */
+  .screen {
+    position: fixed; inset: 0; z-index: 10;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+    padding: 20px 16px 32px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    transform: translateY(18px);
+    overflow-y: auto;
+  }
+  .screen.active { opacity: 1; pointer-events: all; transform: translateY(0); }
+  .screen-center { justify-content: center; }
+
+  /* GLASS */
+  .glass {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 24px;
+    backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);
+    box-shadow: 0 8px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+
+  /* LOGO */
+  .logo {
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(2.2rem, 9vw, 3.5rem); font-weight: 900; letter-spacing: -1px;
+    background: linear-gradient(135deg, var(--cyan) 0%, var(--violet) 60%, var(--pink) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    text-align: center; line-height: 1.1; filter: drop-shadow(0 0 30px rgba(185,124,255,0.4));
+  }
+  .logo-sub { color: var(--muted); font-size: 0.75rem; letter-spacing: 4px; text-transform: uppercase; text-align: center; margin-top: 5px; }
+
+  /* SETUP */
+  .setup-card { width: var(--card-w); padding: 32px 24px; margin-top: 16px; }
+
+  .section-label { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: var(--cyan); margin-bottom: 10px; font-weight: 600; }
+
+  .stepper { display: flex; align-items: center; background: var(--surface2); border: 1px solid var(--border2); border-radius: 14px; overflow: hidden; width: 100%; }
+  .stepper button { background: none; border: none; color: var(--text); font-size: 1.8rem; width: 56px; height: 54px; cursor: pointer; transition: background 0.15s; flex-shrink: 0; line-height: 1; }
+  .stepper button:hover { background: rgba(185,124,255,0.15); }
+  .stepper button:active { background: rgba(185,124,255,0.3); }
+  .stepper .val { flex: 1; text-align: center; font-family: 'Unbounded', sans-serif; font-size: 1.7rem; font-weight: 700; }
+
+  .spy-hint { text-align: center; color: var(--muted); font-size: 0.78rem; margin-top: 8px; }
+  .spy-hint strong { color: var(--violet); }
+
+  .cats { display: flex; flex-direction: column; gap: 9px; }
+  .cat-toggle {
+    display: flex; align-items: center; gap: 12px; padding: 13px 16px;
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 13px;
+    cursor: pointer; transition: border-color 0.2s, background 0.2s, box-shadow 0.2s; user-select: none;
+  }
+  .cat-toggle.active { border-color: var(--cyan); background: rgba(0,245,212,0.06); box-shadow: 0 0 16px rgba(0,245,212,0.1); }
+  .cat-toggle .icon { font-size: 1.4rem; width: 30px; text-align: center; flex-shrink: 0; }
+  .cat-toggle .info { flex: 1; }
+  .cat-toggle .name { font-size: 0.88rem; font-weight: 500; }
+  .cat-toggle .count { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+  .cat-toggle .check { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; transition: all 0.2s; flex-shrink: 0; }
+  .cat-toggle.active .check { background: var(--cyan); border-color: var(--cyan); color: #000; }
+
+  .select-all { background: none; border: 1px solid var(--border2); border-radius: 9px; color: var(--muted); font-size: 0.75rem; padding: 7px 13px; cursor: pointer; transition: color 0.2s, border-color 0.2s; }
+  .select-all:hover { color: var(--text); border-color: var(--violet); }
+
+  /* BUTTONS */
+  .btn-primary {
+    width: 100%; padding: 17px;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    border: none; border-radius: 14px; color: #09090f;
+    font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: 0.92rem; letter-spacing: 0.5px;
+    cursor: pointer; box-shadow: 0 4px 28px rgba(185,124,255,0.35);
+    transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 36px rgba(185,124,255,0.5); filter: brightness(1.08); }
+  .btn-primary:active { transform: translateY(0); filter: brightness(0.9); }
+  .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+  .btn-ghost { background: var(--surface2); border: 1px solid var(--border2); border-radius: 13px; color: var(--text); font-size: 0.88rem; padding: 14px 24px; cursor: pointer; transition: background 0.2s, border-color 0.2s; width: 100%; }
+  .btn-ghost:hover { background: rgba(255,255,255,0.1); border-color: var(--violet); }
+  .btn-ghost:active { background: rgba(185,124,255,0.15); }
+
+  /* ── DEAL SCREEN ── */
+  .deal-wrap { width: var(--card-w); display: flex; flex-direction: column; align-items: center; gap: 16px; }
+
+  .prompt-box { width: 100%; padding: 32px 24px; text-align: center; }
+  .player-badge {
+    font-family: 'Unbounded', sans-serif; font-size: clamp(1.8rem, 7vw, 2.6rem); font-weight: 900;
+    background: linear-gradient(135deg, var(--violet), var(--pink));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px;
+  }
+  .prompt-text { color: var(--muted); font-size: 0.92rem; line-height: 1.6; margin-bottom: 24px; }
+
+  /* ── FLIP CARD ── */
+  .flip-scene { width: var(--card-w); height: 420px; perspective: 1200px; }
+  .flip-card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.7s cubic-bezier(0.4,0,0.2,1); }
+  .flip-card.flipped { transform: rotateY(180deg); }
+
+  .flip-face {
+    position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    border-radius: 22px; overflow: hidden;
+  }
+
+  /* FRONT */
+  .flip-front {
+    background: linear-gradient(145deg, rgba(30,20,60,0.9), rgba(10,10,30,0.95));
+    border: 1px solid rgba(185,124,255,0.25);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 16px; cursor: pointer;
+    box-shadow: 0 4px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06);
+  }
+  .front-pattern {
+    position: absolute; inset: 0; opacity: 0.06;
+    background-image: repeating-linear-gradient(45deg, var(--violet) 0, var(--violet) 1px, transparent 0, transparent 50%);
+    background-size: 20px 20px;
+  }
+  .front-icon { font-size: 4rem; filter: drop-shadow(0 0 20px rgba(185,124,255,0.6)); position: relative; z-index: 1; }
+  .front-label { color: var(--muted); font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; position: relative; z-index: 1; }
+  .front-glow { position: absolute; width: 160px; height: 160px; background: radial-gradient(circle, rgba(185,124,255,0.25) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%,-50%); border-radius: 50%; }
+
+  /* BACK - CHARACTER */
+  .flip-back {
+    transform: rotateY(180deg);
+    display: flex; flex-direction: column;
+    box-shadow: 0 8px 60px rgba(0,0,0,0.7);
+  }
+
+  /* Character card back */
+  .back-char {
+    background: linear-gradient(170deg, #0e0a1e 0%, #080812 100%);
+    border: 1px solid rgba(0,245,212,0.25);
+  }
+  .back-spy {
+    background: linear-gradient(170deg, #1a0510 0%, #0d020a 100%);
+    border: 1px solid rgba(255,60,92,0.3);
+  }
+
+  .card-img-wrap {
+    width: 100%; flex: 1; position: relative; overflow: hidden; min-height: 0;
+  }
+  .card-img {
+    width: 100%; height: 100%; object-fit: cover; object-position: top center;
+    display: block;
+    transition: opacity 0.4s;
+  }
+  .card-img.loading { opacity: 0; }
+  .card-img-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 40%, rgba(8,8,18,0.95) 100%);
+  }
+  .card-img-placeholder {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 5rem; background: rgba(0,0,0,0.3);
+  }
+
+  .card-info {
+    padding: 18px 20px 20px; flex-shrink: 0;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .card-top-label { font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
+  .card-name {
+    font-family: 'Unbounded', sans-serif; font-size: clamp(1.05rem, 4vw, 1.35rem);
+    font-weight: 800; line-height: 1.25;
+    background: linear-gradient(135deg, var(--cyan), #a8ffea);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .card-bot-label { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(0,245,212,0.45); margin-top: 2px; }
+
+  /* SPY card content */
+  .spy-content {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 14px; padding: 24px;
+    background: radial-gradient(ellipse at center, rgba(255,60,92,0.12) 0%, transparent 70%);
+  }
+  .spy-emoji { font-size: 5rem; filter: drop-shadow(0 0 24px rgba(255,60,92,0.6)); animation: spyPulse 2s ease-in-out infinite; }
+  @keyframes spyPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+  .spy-title {
+    font-family: 'Unbounded', sans-serif; font-size: clamp(1.4rem, 6vw, 1.9rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--red), var(--pink), var(--violet));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    text-align: center; line-height: 1.2;
+    filter: drop-shadow(0 0 12px rgba(255,60,92,0.4));
+  }
+  .spy-sub { color: rgba(255,100,140,0.6); font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; text-align: center; }
+
+  .spy-card-info { padding: 18px 20px 20px; flex-shrink: 0; }
+  .spy-badge { display: flex; align-items: center; gap: 8px; }
+  .spy-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); box-shadow: 0 0 8px var(--red); animation: blink 1.2s ease-in-out infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .spy-badge-text { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,80,110,0.7); }
+
+  /* DEAL ACTIONS */
+  .deal-actions { width: var(--card-w); display: flex; flex-direction: column; gap: 10px; }
+
+  /* FINAL */
+  .final-card { width: var(--card-w); padding: 40px 28px; text-align: center; }
+  .final-icon { font-size: 4rem; display: block; margin-bottom: 16px; animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.07)} }
+  .final-title {
+    font-family: 'Unbounded', sans-serif; font-size: clamp(1.3rem, 5vw, 1.8rem);
+    font-weight: 900; line-height: 1.2; margin-bottom: 14px;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .final-sub { color: var(--muted); font-size: 0.88rem; line-height: 1.7; margin-bottom: 28px; }
+  .final-stats { display: flex; gap: 12px; justify-content: center; margin-bottom: 28px; }
+  .stat-chip { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px; font-size: 0.8rem; color: var(--muted); }
+  .stat-chip strong { color: var(--text); display: block; font-family: 'Unbounded', sans-serif; font-size: 1.1rem; }
+
+  /* LOADING INDICATOR */
+  .img-loader {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.4);
+  }
+  .spinner { width: 28px; height: 28px; border: 2px solid rgba(255,255,255,0.1); border-top-color: var(--cyan); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: rgba(255,60,100,0.12); border: 1px solid rgba(255,60,100,0.35);
+    backdrop-filter: blur(20px); color: #ff7fa0; border-radius: 12px;
+    padding: 12px 24px; font-size: 0.85rem; opacity: 0;
+    transition: opacity 0.3s, transform 0.3s; z-index: 100; pointer-events: none; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* UTILS */
+  .mt8{margin-top:8px} .mt16{margin-top:16px} .mt20{margin-top:20px} .mt24{margin-top:24px}
+  ::-webkit-scrollbar{width:4px} ::-webkit-scrollbar-track{background:transparent} ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+</style>
+</head>
+<body>
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<!-- ══ SETUP ══ -->
+<div id="screen-setup" class="screen active">
+  <div style="padding-top:24px; width:var(--card-w);">
+    <div class="logo">ШПИОН</div>
+    <div class="logo-sub">Передай телефон</div>
+  </div>
+
+  <div class="glass setup-card">
+
+    <div class="section-label">Количество игроков</div>
+    <div class="stepper">
+      <button onclick="changeCount(-1)">−</button>
+      <div class="val" id="player-count">4</div>
+      <button onclick="changeCount(1)">+</button>
+    </div>
+    <div class="spy-hint mt8">Шпионов: <strong id="spy-count-hint">1</strong> (1 на каждые 3 игрока)</div>
+
+    <div class="mt24">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div class="section-label" style="margin-bottom:0;">Категории</div>
+        <button class="select-all" onclick="toggleAll()">Выбрать все</button>
+      </div>
+      <div class="cats" id="cats-container"></div>
+    </div>
+
+    <div class="mt24">
+      <button class="btn-primary" onclick="startGame()">Начать раздачу ролей</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DEAL ══ -->
+<div id="screen-deal" class="screen screen-center">
+  <div class="deal-wrap">
+
+    <!-- Prompt before opening -->
+    <div class="glass prompt-box" id="deal-prompt">
+      <div class="player-badge" id="deal-player-name">Игрок 1</div>
+      <div class="prompt-text" id="deal-prompt-text">Возьми устройство, остальные отвернитесь</div>
+      <button class="btn-primary" onclick="openCard()">Открыть карту</button>
+    </div>
+
+    <!-- Flip card -->
+    <div class="flip-scene" id="flip-scene" style="display:none;">
+      <div class="flip-card" id="flip-card">
+
+        <!-- FRONT -->
+        <div class="flip-face flip-front" onclick="openCard()">
+          <div class="front-pattern"></div>
+          <div class="front-glow"></div>
+          <div class="front-icon">🃏</div>
+          <div class="front-label">Нажми чтобы открыть</div>
+        </div>
+
+        <!-- BACK -->
+        <div class="flip-face flip-back" id="flip-back">
+          <!-- filled by JS -->
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Actions after open -->
+    <div class="deal-actions" id="deal-actions" style="display:none;">
+      <button class="btn-ghost" onclick="closeCard()">Закрыть карту</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ FINAL ══ -->
+<div id="screen-final" class="screen screen-center">
+  <div class="glass final-card">
+    <span class="final-icon">🎭</span>
+    <div class="final-title">Все роли розданы.<br>Игра началась!</div>
+    <div class="final-stats">
+      <div class="stat-chip"><strong id="final-players">4</strong>Игроков</div>
+      <div class="stat-chip"><strong id="final-spies">1</strong>Шпионов</div>
+    </div>
+    <div class="final-sub">Обсуждайте, задавайте вопросы<br>и найдите шпиона среди вас.</div>
+    <button class="btn-primary" onclick="resetGame()">Новая игра / Следующий раунд</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  DATABASE  — имя + emoji-аватар + Wikipedia-slug
+// ═══════════════════════════════════════════════
+const CATEGORIES = [
+  {
+    id: 'movies', icon: '🎬', name: 'Кино и Сериалы',
+    chars: [
+      { name: 'Железный Человек',    wiki: 'Iron_Man',                   emoji: '🦾' },
+      { name: 'Гарри Поттер',        wiki: 'Harry_Potter_(character)',    emoji: '🧙' },
+      { name: 'Джек Воробей',        wiki: 'Jack_Sparrow',               emoji: '☠️' },
+      { name: 'Терминатор',          wiki: 'The_Terminator',             emoji: '🤖' },
+      { name: 'Джокер',              wiki: 'Joker_(DC_Comics)',          emoji: '🃏' },
+      { name: 'Дарт Вейдер',         wiki: 'Darth_Vader',                emoji: '⚔️' },
+      { name: 'Шерлок Холмс',        wiki: 'Sherlock_Holmes',            emoji: '🔍' },
+      { name: 'Джеймс Бонд',         wiki: 'James_Bond',                 emoji: '🕴️' },
+      { name: 'Бэтмен',              wiki: 'Batman',                     emoji: '🦇' },
+      { name: 'Человек-паук',        wiki: 'Spider-Man',                 emoji: '🕷️' },
+      { name: 'Фродо Бэггинс',       wiki: 'Frodo_Baggins',              emoji: '💍' },
+      { name: 'Уолтер Уайт',         wiki: 'Walter_White',               emoji: '🧪' },
+      { name: 'Ганнибал Лектер',     wiki: 'Hannibal_Lecter',            emoji: '🎭' },
+      { name: 'Форрест Гамп',        wiki: 'Forrest_Gump',               emoji: '🏃' },
+      { name: 'Тони Монтана',        wiki: 'Tony_Montana',               emoji: '💰' },
+      { name: 'Индиана Джонс',       wiki: 'Indiana_Jones',              emoji: '🎩' },
+      { name: 'Волан-де-Морт',       wiki: 'Voldemort',                  emoji: '💀' },
+      { name: 'Гэндальф',            wiki: 'Gandalf',                    emoji: '🧙‍♂️' },
+      { name: 'Шрек',                wiki: 'Shrek_(character)',           emoji: '🟢' },
+      { name: 'Леон Профессионал',   wiki: 'Léon:_The_Professional',     emoji: '🌱' },
+      { name: 'Нео',                 wiki: 'Neo_(The_Matrix)',            emoji: '💊' },
+      { name: 'Кевин Маккаллистер', wiki: 'Home_Alone',                  emoji: '🏠' },
+      { name: 'Эрмиона Грейнджер',  wiki: 'Hermione_Granger',           emoji: '📚' },
+      { name: 'Капитан Америка',     wiki: 'Captain_America',            emoji: '🛡️' },
+      { name: 'Тор',                 wiki: 'Thor_(Marvel_Comics)',       emoji: '⚡' },
+    ]
+  },
+  {
+    id: 'music', icon: '🎤', name: 'Музыка и Шоу-бизнес',
+    chars: [
+      { name: 'Майкл Джексон',    wiki: 'Michael_Jackson',    emoji: '🕺' },
+      { name: 'Алла Пугачева',    wiki: 'Alla_Pugacheva',     emoji: '🌹' },
+      { name: 'Эминем',           wiki: 'Eminem',             emoji: '🎤' },
+      { name: 'Мадонна',          wiki: 'Madonna',            emoji: '💃' },
+      { name: 'Рианна',           wiki: 'Rihanna',            emoji: '🌂' },
+      { name: 'Леди Гага',        wiki: 'Lady_Gaga',          emoji: '🎭' },
+      { name: 'Бейонсе',          wiki: 'Beyoncé',            emoji: '👑' },
+      { name: 'Фредди Меркьюри',  wiki: 'Freddie_Mercury',    emoji: '🎸' },
+      { name: 'Элвис Пресли',     wiki: 'Elvis_Presley',      emoji: '🎸' },
+      { name: 'Дрейк',            wiki: 'Drake_(musician)',   emoji: '🦉' },
+      { name: 'Тейлор Свифт',     wiki: 'Taylor_Swift',       emoji: '🐍' },
+      { name: 'Канье Уэст',       wiki: 'Kanye_West',         emoji: '🎹' },
+      { name: 'Билли Айлиш',      wiki: 'Billie_Eilish',      emoji: '🖤' },
+      { name: 'Ариана Гранде',    wiki: 'Ariana_Grande',      emoji: '🌙' },
+      { name: 'Виктор Цой',       wiki: 'Viktor_Tsoi',        emoji: '🎵' },
+      { name: 'Моргенштерн',      wiki: 'Morgenshtern_(rapper)', emoji: '⭐' },
+      { name: 'Тимати',           wiki: 'Timati',             emoji: '🐯' },
+      { name: 'Земфира',          wiki: 'Zemfira',            emoji: '🎶' },
+      { name: 'Дима Билан',       wiki: 'Dima_Bilan',         emoji: '🌟' },
+      { name: 'Эд Ширан',         wiki: 'Ed_Sheeran',         emoji: '🎸' },
+      { name: 'Бруно Марс',       wiki: 'Bruno_Mars',         emoji: '🪐' },
+      { name: 'The Weeknd',       wiki: 'The_Weeknd',         emoji: '🌃' },
+      { name: 'Post Malone',      wiki: 'Post_Malone',        emoji: '🏆' },
+      { name: 'Нicki Minaj',      wiki: 'Nicki_Minaj',        emoji: '💅' },
+      { name: 'Кристина Агилера', wiki: 'Christina_Aguilera', emoji: '🎼' },
+    ]
+  },
+  {
+    id: 'politics', icon: '🏛️', name: 'Политики и История',
+    chars: [
+      { name: 'Илон Маск',             wiki: 'Elon_Musk',              emoji: '🚀' },
+      { name: 'Наполеон',              wiki: 'Napoleon',               emoji: '👑' },
+      { name: 'Альберт Эйнштейн',      wiki: 'Albert_Einstein',        emoji: '💡' },
+      { name: 'Юлий Цезарь',          wiki: 'Julius_Caesar',          emoji: '⚔️' },
+      { name: 'Леонардо да Винчи',     wiki: 'Leonardo_da_Vinci',      emoji: '🎨' },
+      { name: 'Чингисхан',             wiki: 'Genghis_Khan',           emoji: '🏹' },
+      { name: 'Авраам Линкольн',       wiki: 'Abraham_Lincoln',        emoji: '🎩' },
+      { name: 'Уинстон Черчилль',      wiki: 'Winston_Churchill',      emoji: '🚬' },
+      { name: 'Стив Джобс',            wiki: 'Steve_Jobs',             emoji: '🍎' },
+      { name: 'Клеопатра',             wiki: 'Cleopatra',              emoji: '🐍' },
+      { name: 'Александр Македонский', wiki: 'Alexander_the_Great',    emoji: '🗡️' },
+      { name: 'Билл Гейтс',            wiki: 'Bill_Gates',             emoji: '💻' },
+      { name: 'Марк Цукерберг',        wiki: 'Mark_Zuckerberg',        emoji: '📱' },
+      { name: 'Дональд Трамп',         wiki: 'Donald_Trump',           emoji: '🇺🇸' },
+      { name: 'Барак Обама',           wiki: 'Barack_Obama',           emoji: '🌐' },
+      { name: 'Нельсон Мандела',       wiki: 'Nelson_Mandela',         emoji: '✊' },
+      { name: 'Мартин Лютер Кинг',     wiki: 'Martin_Luther_King_Jr.', emoji: '🕊️' },
+      { name: 'Никола Тесла',          wiki: 'Nikola_Tesla',           emoji: '⚡' },
+      { name: 'Зигмунд Фрейд',         wiki: 'Sigmund_Freud',          emoji: '🧠' },
+      { name: 'Махатма Ганди',         wiki: 'Mahatma_Gandhi',         emoji: '🕊️' },
+      { name: 'Карл Маркс',            wiki: 'Karl_Marx',              emoji: '📖' },
+      { name: 'Маргарет Тэтчер',       wiki: 'Margaret_Thatcher',      emoji: '👜' },
+      { name: 'Далай-лама',            wiki: 'Dalai_Lama',             emoji: '☮️' },
+      { name: 'Папа Римский',          wiki: 'Pope_Francis',           emoji: '✝️' },
+      { name: 'Владимир Путин',        wiki: 'Vladimir_Putin',         emoji: '🐻' },
+    ]
+  },
+  {
+    id: 'sport', icon: '⚽', name: 'Спорт и Блогеры',
+    chars: [
+      { name: 'Криштиану Роналду',   wiki: 'Cristiano_Ronaldo',      emoji: '⚽' },
+      { name: 'Лионель Месси',       wiki: 'Lionel_Messi',           emoji: '🐐' },
+      { name: 'Майк Тайсон',         wiki: 'Mike_Tyson',             emoji: '🥊' },
+      { name: 'MrBeast',             wiki: 'MrBeast',                emoji: '💸' },
+      { name: 'Усейн Болт',          wiki: 'Usain_Bolt',             emoji: '⚡' },
+      { name: 'Майкл Джордан',       wiki: 'Michael_Jordan',         emoji: '🏀' },
+      { name: 'Мухаммед Али',        wiki: 'Muhammad_Ali',           emoji: '🥊' },
+      { name: 'Тайгер Вудс',         wiki: 'Tiger_Woods',            emoji: '⛳' },
+      { name: 'Роджер Федерер',      wiki: 'Roger_Federer',          emoji: '🎾' },
+      { name: 'Серена Уильямс',      wiki: 'Serena_Williams',        emoji: '🎾' },
+      { name: 'Льюис Хэмилтон',      wiki: 'Lewis_Hamilton',         emoji: '🏎️' },
+      { name: 'Конор Макгрегор',     wiki: 'Conor_McGregor',         emoji: '🥊' },
+      { name: 'Флойд Мейвезер',      wiki: 'Floyd_Mayweather_Jr.',   emoji: '💰' },
+      { name: 'Кайлиан Мбаппе',      wiki: 'Kylian_Mbappé',          emoji: '🇫🇷' },
+      { name: 'Неймар',              wiki: 'Neymar',                 emoji: '💛' },
+      { name: 'PewDiePie',           wiki: 'PewDiePie',              emoji: '🎮' },
+      { name: 'Хабиб Нурмагомедов',  wiki: 'Khabib_Nurmagomedov',    emoji: '🦅' },
+      { name: 'Александр Усик',      wiki: 'Oleksandr_Usyk',         emoji: '🥊' },
+      { name: 'LeBron James',        wiki: 'LeBron_James',           emoji: '👑' },
+      { name: 'Юрий Дудь',           wiki: 'Yuri_Dud',               emoji: '🎙️' },
+      { name: 'KSI',                 wiki: 'KSI_(entertainer)',      emoji: '🎬' },
+      { name: 'Logan Paul',          wiki: 'Logan_Paul',             emoji: '🎥' },
+      { name: 'Симона Байлз',        wiki: 'Simone_Biles',           emoji: '🤸' },
+      { name: 'Майкл Фелпс',         wiki: 'Michael_Phelps',         emoji: '🏊' },
+      { name: 'Влад А4',             wiki: 'Vlad_A4',                emoji: '📹' },
+    ]
+  }
+];
+
+// ═══════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════
+let state = {
+  playerCount: 4,
+  selectedCats: new Set(['movies','music','politics','sport']),
+  currentPlayer: 0,
+  spySet: new Set(),
+  chosenChar: null,   // {name, wiki, emoji}
+  cardOpen: false,
+};
+
+// ═══════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════
+function spyCountFor(n) { return Math.floor(n / 3); }
+function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+
+// ═══════════════════════════════════════════════
+//  IMAGE FETCHING via Wikipedia REST API (CORS-friendly)
+// ═══════════════════════════════════════════════
+const imgCache = {};
+
+async function fetchWikiImage(slug) {
+  if (imgCache[slug] !== undefined) return imgCache[slug];
+  try {
+    const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(slug)}`;
+    const r = await fetch(url, { signal: AbortSignal.timeout(4000) });
+    if (!r.ok) throw new Error('not ok');
+    const data = await r.json();
+    const img = data?.thumbnail?.source || data?.originalimage?.source || null;
+    imgCache[slug] = img;
+    return img;
+  } catch {
+    imgCache[slug] = null;
+    return null;
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  BUILD SETUP UI
+// ═══════════════════════════════════════════════
+function buildCats() {
+  const container = document.getElementById('cats-container');
+  container.innerHTML = '';
+  CATEGORIES.forEach(cat => {
+    const active = state.selectedCats.has(cat.id);
+    const el = document.createElement('div');
+    el.className = 'cat-toggle' + (active ? ' active' : '');
+    el.dataset.id = cat.id;
+    el.innerHTML = `
+      <div class="icon">${cat.icon}</div>
+      <div class="info">
+        <div class="name">${cat.name}</div>
+        <div class="count">${cat.chars.length} персонажей</div>
+      </div>
+      <div class="check">${active ? '✓' : ''}</div>
+    `;
+    el.addEventListener('click', () => toggleCat(cat.id));
+    container.appendChild(el);
+  });
+}
+
+function toggleCat(id) {
+  if (state.selectedCats.has(id)) {
+    if (state.selectedCats.size === 1) { showToast('Выбери хотя бы одну категорию'); return; }
+    state.selectedCats.delete(id);
+  } else {
+    state.selectedCats.add(id);
+  }
+  buildCats();
+}
+
+function toggleAll() {
+  state.selectedCats = state.selectedCats.size === CATEGORIES.length
+    ? new Set([CATEGORIES[0].id])
+    : new Set(CATEGORIES.map(c => c.id));
+  buildCats();
+}
+
+function changeCount(delta) {
+  const next = state.playerCount + delta;
+  if (next < 3 || next > 12) return;
+  state.playerCount = next;
+  document.getElementById('player-count').textContent = next;
+  document.getElementById('spy-count-hint').textContent = spyCountFor(next);
+}
+
+// ═══════════════════════════════════════════════
+//  GAME LOGIC
+// ═══════════════════════════════════════════════
+function startGame() {
+  const pool = [];
+  CATEGORIES.forEach(cat => { if (state.selectedCats.has(cat.id)) pool.push(...cat.chars); });
+  if (pool.length === 0) { showToast('Выбери хотя бы одну категорию'); return; }
+
+  state.chosenChar = pickRandom(pool);
+
+  // Assign spies: 1 per every 3 players
+  const spyCount = spyCountFor(state.playerCount);
+  const indices = shuffle([...Array(state.playerCount).keys()]);
+  state.spySet = new Set(indices.slice(0, spyCount));
+
+  state.currentPlayer = 0;
+  state.cardOpen = false;
+
+  document.getElementById('final-players').textContent = state.playerCount;
+  document.getElementById('final-spies').textContent = spyCount;
+
+  showDealPrompt(true);
+  switchScreen('screen-deal');
+}
+
+function showDealPrompt(first = false) {
+  const idx = state.currentPlayer;
+  document.getElementById('deal-player-name').textContent = `Игрок ${idx + 1}`;
+  document.getElementById('deal-prompt-text').textContent = first
+    ? 'Возьми устройство, остальные отвернитесь'
+    : 'Передай устройство следующему игроку';
+
+  document.getElementById('deal-prompt').style.display = '';
+  document.getElementById('flip-scene').style.display = 'none';
+  document.getElementById('deal-actions').style.display = 'none';
+
+  const fc = document.getElementById('flip-card');
+  fc.classList.remove('flipped');
+}
+
+async function openCard() {
+  if (state.cardOpen) return;
+  state.cardOpen = true;
+
+  const isSpy = state.spySet.has(state.currentPlayer);
+  const char  = state.chosenChar;
+
+  // Build back face HTML
+  const back = document.getElementById('flip-back');
+  back.className = 'flip-face flip-back ' + (isSpy ? 'back-spy' : 'back-char');
+
+  if (isSpy) {
+    back.innerHTML = `
+      <div class="spy-content">
+        <div class="spy-emoji">🕵️‍♂️</div>
+        <div class="spy-title">Ты Шпион!</div>
+        <div class="spy-sub">Угадай персонажа по подсказкам</div>
+      </div>
+      <div class="spy-card-info">
+        <div class="spy-badge">
+          <div class="spy-dot"></div>
+          <div class="spy-badge-text">Секретный агент</div>
+        </div>
+      </div>
+    `;
+  } else {
+    back.innerHTML = `
+      <div class="card-img-wrap">
+        <div class="card-img-placeholder" id="card-placeholder">${char.emoji}</div>
+        <div class="img-loader" id="img-loader"><div class="spinner"></div></div>
+        <img class="card-img loading" id="card-photo" alt="${char.name}" />
+        <div class="card-img-overlay"></div>
+      </div>
+      <div class="card-info">
+        <div class="card-top-label">Твой персонаж</div>
+        <div class="card-name">${char.name}</div>
+        <div class="card-bot-label">Не говори имя вслух</div>
+      </div>
+    `;
+    // Load image async
+    loadCharImage(char);
+  }
+
+  document.getElementById('deal-prompt').style.display = 'none';
+  document.getElementById('flip-scene').style.display = '';
+  document.getElementById('deal-actions').style.display = 'none';
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.getElementById('flip-card').classList.add('flipped');
+    setTimeout(() => { document.getElementById('deal-actions').style.display = ''; }, 700);
+  }));
+}
+
+async function loadCharImage(char) {
+  const imgEl = document.getElementById('card-photo');
+  const loaderEl = document.getElementById('img-loader');
+  const placeholder = document.getElementById('card-placeholder');
+  if (!imgEl) return;
+
+  const url = await fetchWikiImage(char.wiki);
+  if (!imgEl) return; // card may have been closed
+
+  if (url) {
+    imgEl.onload = () => {
+      imgEl.classList.remove('loading');
+      if (loaderEl) loaderEl.style.display = 'none';
+      if (placeholder) placeholder.style.display = 'none';
+    };
+    imgEl.onerror = () => {
+      if (loaderEl) loaderEl.style.display = 'none';
+    };
+    imgEl.src = url;
+  } else {
+    if (loaderEl) loaderEl.style.display = 'none';
+  }
+}
+
+function closeCard() {
+  document.getElementById('flip-card').classList.remove('flipped');
+  document.getElementById('deal-actions').style.display = 'none';
+  state.cardOpen = false;
+
+  setTimeout(() => {
+    document.getElementById('flip-scene').style.display = 'none';
+    state.currentPlayer++;
+    if (state.currentPlayer >= state.playerCount) {
+      switchScreen('screen-final');
+    } else {
+      showDealPrompt(false);
+    }
+  }, 700);
+}
+
+function resetGame() {
+  state.currentPlayer = 0;
+  state.cardOpen = false;
+  switchScreen('screen-setup');
+}
+
+// ═══════════════════════════════════════════════
+//  UI HELPERS
+// ═══════════════════════════════════════════════
+function switchScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ═══════════════════════════════════════════════
+//  BOOT
+// ═══════════════════════════════════════════════
+buildCats();
+</script>
+</body>
+</html>
