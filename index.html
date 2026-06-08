@@ -8,28 +8,118 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
-*,*::before,*::after{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
+/* ══════════════════════════════════════════════════════════════════
+   PARTYBOX · ТАЄМНИЦЯ — UNIFIED DESIGN SYSTEM v2.0
+   ══════════════════════════════════════════════════════════════════ */
 
-:root{
-  --bg:#07070e;
-  --surface:rgba(255,255,255,0.03);
-  --surface2:rgba(255,255,255,0.07);
-  --border:rgba(255,255,255,0.08);
-  --border2:rgba(255,255,255,0.15);
-  --cyan:#00f5d4;
-  --violet:#b97cff;
-  --pink:#ff4daa;
-  --red:#ff3a5c;
-  --text:#f0f0f8;
-  --muted:rgba(240,240,248,0.45);
-  --card-w:min(390px,92vw);
-  --card-h:min(460px,calc(100dvh - 250px));
-  --screen-pt:max(calc(env(safe-area-inset-top,0px) + 66px),100px);
-  --screen-pb:max(env(safe-area-inset-bottom,0px),24px);
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* — Кольорова палітра — */
+  --bg:              #07070e;
+  --surface-1:       rgba(255, 255, 255, 0.03);   /* базовий glass */
+  --surface-2:       rgba(255, 255, 255, 0.07);   /* inputs, stepper, toggle */
+  --surface-deep:    rgba(10, 10, 22, 0.96);      /* сайдбар, result-card */
+
+  /* — Границі — */
+  --border-1:        rgba(255, 255, 255, 0.08);   /* тонка/стандартна */
+  --border-2:        rgba(255, 255, 255, 0.16);   /* підсилена */
+  --border-active:   rgba(0,  245, 212, 0.55);    /* cyan selected */
+  --border-danger:   rgba(255,  60,  92, 0.55);   /* red accuse */
+
+  /* — Акцентні кольори — */
+  --cyan:            #00f5d4;
+  --violet:          #b97cff;
+  --pink:            #ff4daa;
+  --red:             #ff3a5c;
+  --green:           #00e07a;
+
+  /* — Glow-тіні — */
+  --glow-cyan:       rgba(  0, 245, 212, 0.25);
+  --glow-violet:     rgba(185, 124, 255, 0.25);
+  --glow-pink:       rgba(255,  77, 170, 0.25);
+  --glow-red:        rgba(255,  58,  92, 0.25);
+  --glow-green:      rgba(  0, 224, 122, 0.25);
+
+  /* — Текст — */
+  --text:            #f0f0f8;
+  --text-muted:      rgba(240, 240, 248, 0.45);
+  --text-subtle:     rgba(240, 240, 248, 0.25);
+
+  /* — Градієнти — */
+  --grad-brand:      linear-gradient(135deg, var(--cyan), var(--violet));
+  --grad-danger:     linear-gradient(135deg, var(--red),  var(--pink));
+  --grad-char:       linear-gradient(135deg, var(--cyan), #a8ffea);
+
+  /* — Шкала відступів — */
+  --sp-2:  2px;   --sp-4:  4px;   --sp-6:  6px;  --sp-8:  8px;
+  --sp-10: 10px;  --sp-12: 12px;  --sp-14: 14px; --sp-16: 16px;
+  --sp-20: 20px;  --sp-24: 24px;  --sp-28: 28px; --sp-32: 32px;
+  --sp-40: 40px;
+
+  /* — Шкала border-radius — */
+  --r-xs:   8px;    /* мікро-елементи, статус-чіпи        */
+  --r-sm:   12px;   /* маленькі кнопки, хедер-кнопки      */
+  --r-md:   16px;   /* кнопки, inputs, stepper, checks     */
+  --r-lg:   20px;   /* cat-toggle, orientation-tip         */
+  --r-xl:   28px;   /* glass-картки, sidebar, char-картки  */
+  --r-2xl:  32px;   /* layout containers, result-card      */
+  --r-full: 9999px; /* dots, pills, аватари                */
+
+  /* — Тіні — */
+  --shadow-sm:       0  4px  16px rgba(0, 0, 0, 0.40);
+  --shadow-md:       0 12px  40px rgba(0, 0, 0, 0.50);
+  --shadow-lg:       0 24px  80px rgba(0, 0, 0, 0.55);
+  --shadow-glass:    0 12px  40px rgba(0, 0, 0, 0.60),
+                     inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --shadow-brand:    0  6px  30px var(--glow-violet);
+  --shadow-brand-h:  0 10px  36px rgba(185, 124, 255, 0.38);
+  --shadow-danger:   0  6px  30px var(--glow-red);
+  --shadow-danger-h: 0 10px  36px rgba(255,  60,  92, 0.38);
+  --shadow-cyan:     0  0    12px rgba(  0, 245, 212, 0.38);
+  --shadow-red:      0  0    18px rgba(255,  60,  92, 0.55);
+
+  /* — Шрифти — */
+  --ff-display: 'Unbounded', sans-serif;
+  --ff-body:    'Plus Jakarta Sans', 'Inter', sans-serif;
+
+  /* — Шкала розмірів тексту — */
+  --ts-xs:   0.68rem;  /* мікро-лейбли: WARNING, sub-notes   */
+  --ts-sm:   0.75rem;  /* section-label, дрібні кнопки       */
+  --ts-base: 0.88rem;  /* body, кнопки, descriptions          */
+  --ts-md:   1rem;     /* descriptions, card names            */
+  --ts-lg:   1.2rem;   /* code input                          */
+  --ts-xl:   1.5rem;   /* mystery-card-name                   */
+
+  /* — Letter-spacing — */
+  --ls-wide:    1.5px;
+  --ls-wider:   2.5px;
+  --ls-widest:  3.5px;
+
+  /* — Кнопки — */
+  --btn-h:     52px;   /* висота всіх основних action-кнопок */
+  --btn-h-sm:  36px;   /* маленькі кнопки (header, back)     */
+
+  /* — Розкладка — */
+  --card-w:    min(390px, 92vw);
+  --card-h:    min(460px, calc(100dvh - 250px));
+  --screen-pt: max(calc(env(safe-area-inset-top, 0px) + 66px), 100px);
+  --screen-pb: max(env(safe-area-inset-bottom, 0px), 24px);
+
+  /* — Glass — */
+  --glass-blur: blur(30px) saturate(190%);
+
+  /* — Переходи — */
+  --ease:        cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --t-fast: 0.15s;
+  --t-med:  0.25s;
+  --t-slow: 0.65s;
+
+  /* ── Backward-compat aliases (видалити після оновлення HTML) ── */
+  --muted:    var(--text-muted);
+  --surface2: var(--surface-2);
+  --border2:  var(--border-2);
 }
 
 html,body{
@@ -112,7 +202,11 @@ header {
 }
 .screen.active{opacity:1;pointer-events:all;transform:translateY(0);}
 #screen-setup, #screen-secret-result {overflow-y:hidden;}
-#screen-secret-game { overflow-y: auto; } /* Дозволяємо скрол у випад1ку підказки на мобільних */
+#screen-secret-game { 
+  overflow-y: auto; 
+  padding: 0 !important;
+  padding-top: max(env(safe-area-inset-top, 16px), 16px) !important;
+}
 .screen-center{justify-content:center;}
 
 /* RESULT SCREEN */
@@ -154,6 +248,12 @@ header {
   #screen-secret-result { padding: calc(env(safe-area-inset-top, 16px) + 10px) 12px calc(env(safe-area-inset-bottom, 16px) + 10px); }
   #screen-secret-result .result-card { padding: 20px 16px; }
   #screen-secret-result .result-message { font-size: 0.95rem; }
+  :root { --card-w: 94vw; }
+  .mystery-layout { gap: 8px; padding: 8px; }
+  .mystery-grid-wrap { grid-auto-rows: 75px; gap: 6px; padding: 8px; max-height: 35vh; }
+  .mystery-sidebar { padding: 10px; max-height: 35vh; }
+  .mystery-actions { gap: 6px; }
+  .mystery-actions button { font-size: 0.7rem; padding: 8px 6px; }
 }
 
 /* GLASS */
@@ -368,20 +468,21 @@ header {
   border: 1px solid rgba(0, 245, 212, 0.3);
   box-shadow: 0 8px 32px rgba(0, 245, 212, 0.15);
   color: #f0f0f8;
-  padding: 12px 18px;
-  border-radius: 20px;
+  padding: 10px 14px;
+  border-radius: 16px;
   align-items: center;
-  gap: 14px;
-  font-size: 0.85rem;
+  gap: 12px;
+  font-size: 0.80rem;
   font-weight: 600;
-  width: calc(100% - 32px);
-  max-width: 500px;
-  margin: 12px auto;
+  width: calc(100% - 20px);
+  max-width: 480px;
+  margin: 8px auto 0;
   z-index: 1001;
   position: relative;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   animation: slideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  flex-shrink: 0;
 }
 .orientation-tip.dismissed {
   display: none !important;
@@ -401,33 +502,35 @@ header {
 .input-code:focus { outline: none; border-color: var(--cyan); box-shadow: 0 0 12px rgba(0, 245, 212, 0.15); }
 
 /* HORIZONTAL PREMIUM LAYOUT FOR MYSTERY GAME */
+#screen-secret-game {
+  display: flex; flex-direction: column; height: 100dvh;
+  padding-top: env(safe-area-inset-top, 16px);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
 .mystery-layout {
   display: flex; flex-direction: row; align-items: stretch; justify-content: center;
-  width: min(100%, 1040px); max-width: 100%; margin: 0 auto; gap: 18px; padding: 20px;
-  min-height: calc(100vh - var(--screen-pt) - var(--screen-pb) - 20px);
-  background: rgba(10, 10, 20, 0.95);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 32px;
-  box-shadow: 0 40px 100px rgba(0,0,0,0.30);
+  flex: 1; width: 100%; gap: 12px; padding: 12px; min-height: 0;
+  background: rgba(10, 10, 20, 0.50);
+  overflow: hidden;
 }
 .mystery-grid-wrap {
-  flex: 1 1 0; min-width: 0; max-width: calc(100% - 360px);
-  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 100px; gap: 12px;
-  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 14px;
-  max-height: calc(100vh - 180px); overflow-y: auto; overscroll-behavior: contain;
+  flex: 1 1 0; min-width: 0;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 85px; gap: 8px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 10px;
+  max-height: 100%; overflow-y: auto; overscroll-behavior: contain;
   scrollbar-width: thin; scrollbar-color: rgba(0,245,212,0.35) transparent;
 }
-.mystery-grid-wrap::-webkit-scrollbar { width: 8px; }
+.mystery-grid-wrap::-webkit-scrollbar { width: 4px; }
 .mystery-grid-wrap::-webkit-scrollbar-thumb { background: rgba(0,245,212,0.35); border-radius: 999px; }
 .mystery-grid-wrap::-webkit-scrollbar-track { background: transparent; }
 .mystery-sidebar {
-  flex: 0 0 340px; min-width: 280px; max-width: 340px; display: flex; flex-direction: column; gap: 16px;
-  background: rgba(12, 11, 24, 0.96); border-radius: 28px; padding: 20px; border: 1px solid rgba(255,255,255,0.10);
-  box-shadow: 0 30px 70px rgba(0,0,0,0.28);
-  max-height: calc(100vh - 160px); overflow: hidden;
+  flex: 0 0 300px; min-width: 0; display: flex; flex-direction: column; gap: 10px;
+  background: rgba(12, 11, 24, 0.96); border-radius: 18px; padding: 12px; border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.28);
+  overflow: hidden;
 }
 .mystery-sidebar-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
-.mystery-sidebar-body::-webkit-scrollbar { width: 6px; }
+.mystery-sidebar-body::-webkit-scrollbar { width: 4px; }
 .mystery-sidebar-body::-webkit-scrollbar-thumb { background: rgba(185,124,255,0.25); border-radius: 999px; }
 .mystery-actions { display: flex; flex-direction: column; gap: 12px; margin-top: auto; }
 .mystery-actions .btn-primary,
@@ -446,8 +549,8 @@ header {
 .mystery-card-note { font-size: 0.72rem; letter-spacing: 1.6px; }
 
 .card-cell {
-  position: relative; cursor: pointer; background: var(--surface2); border: 1px solid var(--border); border-radius: 18px;
-  display: grid; grid-template-rows: 1fr auto; min-height: 84px; padding: 0; text-align: center;
+  position: relative; cursor: pointer; background: var(--surface2); border: 1px solid var(--border); border-radius: 16px;
+  display: grid; grid-template-rows: 1fr auto; min-height: 82px; padding: 0; text-align: center;
   transition: all 0.2s; user-select: none; -webkit-tap-highlight-color: transparent;
   overflow: hidden;
 }
@@ -455,12 +558,12 @@ header {
 .card-cell.selected { border-color: var(--cyan); background: rgba(0, 245, 212, 0.12); box-shadow: 0 0 10px rgba(0, 245, 212, 0.2), inset 0 0 6px rgba(0, 245, 212, 0.08); }
 .card-cell.eliminated { opacity: 0.25; filter: grayscale(100%); cursor: not-allowed; }
 .card-cell.locked { cursor: not-allowed; opacity: 0.6; pointer-events: none;}
-.card-cell .card-img-wrap { width: 100%; height: 100%; position: relative; overflow: hidden; border-radius: 18px 18px 0 0; }
-.card-cell .card-img-placeholder { font-size: 2rem; }
-.card-cell .secret-card-info { width: 100%; padding: 5px 7px 7px; display: flex; flex-direction: column; gap: 1px; align-items: flex-start; }
-.card-cell .secret-card-info .card-top-label { color: rgba(255,255,255,0.92); font-size: 0.70rem; font-weight: 700; }
-.card-cell .secret-card-info .card-bot-label { color: rgba(255,255,255,0.65); font-size: 0.62rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
-.card-cell .info-trigger-btn { position: absolute; bottom: 8px; right: 8px; width: 28px; height: 28px; border-radius: 50%; background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.18); backdrop-filter: blur(4px); color: var(--cyan); font-size: 0.78rem; display: flex; align-items: center; justify-content: center; }
+.card-cell .card-img-wrap { width: 100%; height: 100%; position: relative; overflow: hidden; border-radius: 14px 14px 0 0; }
+.card-cell .card-img-placeholder { font-size: min(5vw, 1.8rem); }
+.card-cell .secret-card-info { width: 100%; padding: 4px 6px 6px; display: flex; flex-direction: column; gap: 0px; align-items: flex-start; }
+.card-cell .secret-card-info .card-top-label { color: rgba(255,255,255,0.92); font-size: 0.68rem; font-weight: 700; }
+.card-cell .secret-card-info .card-bot-label { display: none; }
+.card-cell .info-trigger-btn { position: absolute; bottom: 6px; right: 6px; width: 26px; height: 26px; border-radius: 50%; background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.18); backdrop-filter: blur(4px); color: var(--cyan); font-size: 0.75rem; display: flex; align-items: center; justify-content: center; }
 .card-cell .info-trigger-btn:hover { transform: translateY(-1px); }
 .card-cell.accuse-target { border-color: var(--red); background: rgba(255, 60, 92, 0.2); box-shadow: 0 0 15px rgba(255, 60, 92, 0.4); animation: pulseRed 1s infinite alternate; }
 
@@ -474,16 +577,19 @@ header {
 .turn-indicator.blink { animation: blink-turn 1.5s ease-in-out infinite; }
 @keyframes blink-turn { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-.my-target-wrap { display: flex; justify-content: center; }
-.my-target-label { color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.my-target-wrap { display: flex; justify-content: center; flex: 0 0 auto; }
+.my-target-label { color: var(--muted); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; font-weight: 600; }
+.my-target-wrap .mystery-card { width: 100%; max-width: 140px; padding: 8px; gap: 6px; }
+.my-target-wrap .mystery-card-img-wrap { min-height: 100px; }
+.my-target-wrap .mystery-card-name { font-size: 0.8rem; }
 
 .mystery-card {
   width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.16);
-  border-radius: 28px; padding: 18px; display: flex; flex-direction: column; gap: 16px;
+  border-radius: 24px; padding: 14px; display: flex; flex-direction: column; gap: 12px;
   box-shadow: 0 18px 60px rgba(0,0,0,0.2);
 }
 .mystery-card-img-wrap {
-  width: 100%; min-height: 220px; border-radius: 24px; overflow: hidden;
+  width: 100%; min-height: 180px; border-radius: 20px; overflow: hidden;
   position: relative; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12);
 }
 .mystery-card-img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -493,7 +599,7 @@ header {
 .mystery-card-name { font-family: 'Unbounded', sans-serif; font-size: 1.5rem; font-weight: 900; line-height: 1.1;
   background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
 }
-.mystery-card-note { font-size: 0.78rem; letter-spacing: 1.8px; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.mystery-card-note { display: none; }
 .mystery-info-btn {
   position: absolute; top: 12px; right: 12px; width: 36px; height: 36px;
   border-radius: 14px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.08);
@@ -543,19 +649,56 @@ header {
 }
 
 @media (max-width: 760px) {
-  .mystery-layout { flex-direction: column; align-items: stretch; }
-  .mystery-grid-wrap { grid-template-columns: 1fr; max-width: 100%; max-height: calc(55vh); }
-  .mystery-sidebar { width: 100%; min-width: 0; flex: none; }
-  .mystery-actions { margin-top: 14px; }
+  .mystery-layout { flex-direction: column; gap: 10px; padding: 10px; }
+  .mystery-grid-wrap { grid-template-columns: 1fr 1fr; grid-auto-rows: 90px; max-width: 100%; max-height: 45vh; gap: 8px; }
+  .mystery-sidebar { width: 100%; min-width: 0; flex: 0 0 auto; max-height: 35vh; padding: 12px; }
+  .my-target-wrap { margin: 0 auto; }
+  .my-target-wrap .mystery-card { max-width: 130px; padding: 8px; }
+  .mystery-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .mystery-actions button { flex: 1 1 calc(50% - 4px); min-width: 0; font-size: 0.75rem; padding: 10px; }
 }
 
 @media (max-width: 640px) {
-  .mystery-grid-wrap { grid-template-columns: 1fr; max-height: calc(50vh); overflow-y: auto; }
-  .card-cell { border-radius: 18px; }
-  .card-cell .info-trigger-btn { bottom: 10px; right: 10px; width: 30px; height: 30px; }
-  .mystery-sidebar { padding: 14px; }
-  .mystery-card-img-wrap { min-height: 180px; }
-  .mystery-actions { gap: 10px; }
+  .mystery-layout { flex-direction: column; gap: 8px; padding: 8px; }
+  .mystery-grid-wrap { grid-template-columns: 1fr 1fr; grid-auto-rows: 80px; gap: 6px; padding: 8px; max-height: 40vh; overflow-y: auto; }
+  .card-cell { border-radius: 12px; }
+  .card-cell .info-trigger-btn { bottom: 6px; right: 6px; width: 22px; height: 22px; font-size: 10px; }
+  .mystery-sidebar { padding: 10px; max-height: 36vh; flex: 0 0 auto; gap: 10px; }
+  .mystery-card { gap: 6px; padding: 8px; }
+  .mystery-card-img-wrap { min-height: 110px; }
+  .mystery-card-name { font-size: 0.9rem; }
+  .mystery-card-emoji { font-size: 2.8rem; }
+  .my-target-wrap { margin: 0 auto; }
+  .my-target-wrap .mystery-card { max-width: 120px; padding: 6px; gap: 4px; }
+  .my-target-wrap .mystery-card-img-wrap { min-height: 90px; }
+  .my-target-wrap .mystery-card-name { font-size: 0.75rem; }
+  .mystery-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .mystery-actions button { flex: 1 1 calc(50% - 3px); min-width: 0; font-size: 0.68rem; padding: 7px; }
+}
+
+@media (orientation: landscape) and (max-height: 600px) {
+  #screen-secret-game { padding-top: env(safe-area-inset-top, 4px) !important; }
+  .orientation-tip { display: none !important; }
+  .mystery-layout { gap: 8px; padding: 8px; }
+  .mystery-grid-wrap { grid-template-columns: repeat(4, 1fr); grid-auto-rows: 85px; gap: 6px; padding: 8px; max-height: 100%; overflow-y: auto; }
+  .card-cell { border-radius: 12px; }
+  .card-cell .card-img-wrap { border-radius: 10px; }
+  .card-cell .secret-card-info { padding: 4px 5px 5px; }
+  .card-cell .secret-card-info .card-top-label { font-size: 0.6rem; }
+  .card-cell .info-trigger-btn { bottom: 4px; right: 4px; width: 20px; height: 20px; font-size: 9px; }
+  .mystery-sidebar { max-height: 100%; padding: 8px; flex: 0 0 220px; gap: 8px; }
+  .mystery-card { gap: 4px; padding: 6px; }
+  .mystery-card-img-wrap { min-height: 90px; }
+  .mystery-card-name { font-size: 0.8rem; }
+  .mystery-card-emoji { font-size: 2.5rem; }
+  .turn-indicator { font-size: 0.65rem; padding: 3px 6px; }
+  .my-target-wrap { margin: 0 auto; }
+  .my-target-wrap .mystery-card { max-width: 110px; padding: 5px; gap: 3px; }
+  .my-target-wrap .mystery-card-img-wrap { min-height: 80px; }
+  .my-target-wrap .mystery-card-name { font-size: 0.7rem; }
+  .mystery-sidebar-body { font-size: 0.6rem; padding: 4px 0; }
+  .mystery-actions { gap: 4px; }
+  .mystery-actions button { font-size: 0.6rem; padding: 5px 6px; }
 }
 </style>
 </head>
@@ -886,7 +1029,24 @@ const TRANSLATIONS = {
     turnWait: "ОЧІКУВАННЯ...", turnMine: "ТВІЙ ХІД", turnEnemy: "ХІД СУПРОТИВНИКА",
     resWinTitle: "ВИ ПЕРЕМОГЛИ!", resLoseTitle: "ВИ ПРОГРАЛИ!", resWinMsg: "Чудова здогадка!", resLoseMsg: "Супротивник виявився розумнішим.",
     resMyChoice: "Ваш вибір", resOppChoice: "Вибір ворога",
-    rulesContent: `<h4>🎯 Мета</h4><ul><li><b>Мирним:</b> вирахувати шпигуна.</li><li><b>Шпигуну:</b> вгадати персонажа.</li></ul><h4>🔄 Хід</h4><ul><li>Називайте один факт по колу.</li></ul>`
+    spyrulesContent: `
+      <h4>🎯 Мета</h4>
+      <ul>
+        <li><b>Мирним:</b> вирахувати шпигуна.</li>
+        <li><b>Шпигуну:</b> не виказати себе та вгадати персонажа.</li>
+      </ul>
+      <h4>🔄 Хід гри</h4>
+      <ul>
+        <li>Гравці по черзі називають <b>один факт</b> про персонажа, не розкриваючи імені.</li>
+        <li><b>Мирні:</b> формулюйте думки розмито, щоб шпигун не здогадався, хто це.</li>
+        <li><b>Шпигун:</b> вдавайте 'свого', підлаштовуючись під відповіді інших.</li>
+      </ul>
+      <h4>🏁 Фінал</h4>
+      <ul>
+        <li><b>Голосування:</b> будь-який гравець може почати обговорення. Якщо більшість проголосує за вигнання шпигуна — мирні перемогли.</li>
+        <li><b>Здогадка:</b> шпигун може в будь-який момент зупинити гру та назвати персонажа. Вгадав — переміг, помилився — програв. Від 6-ти учасників, тільки голосування</li>
+      </ul>
+    `
   }
 };
 
@@ -1054,7 +1214,7 @@ function updateStaticTexts() {
 
   document.getElementById('btn-rules').textContent = t.rulesBtn;
   document.getElementById('modal-rules-title').textContent = t.rulesModalTitle;
-  document.getElementById('modal-rules-body').innerHTML = t.rulesContent;
+  document.getElementById('modal-rules-body').innerHTML = t.spyrulesContent;
   
   document.getElementById('menu-subtitle').textContent = t.menuSubtitle;
   document.getElementById('menu-spy-title').textContent = t.menuSpyTitle;
