@@ -2,11 +2,9 @@
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-<title>Шпигун та Таємниця 🕵️</title>
-<!-- Підключення PeerJS для мережевої гри -->
-<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>PartyBox: Шпигун & Таємниця 🕵️</title>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
@@ -26,7 +24,6 @@
   --violet:#b97cff;
   --pink:#ff4daa;
   --red:#ff3a5c;
-  --green:#00e676;
   --text:#f0f0f8;
   --muted:rgba(240,240,248,0.45);
   --card-w:min(390px,92vw);
@@ -43,7 +40,6 @@ html,body{
   font-family:'Plus Jakarta Sans','Inter',sans-serif;
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
-  overscroll-behavior: none;
 }
 
 /* ORBS */
@@ -67,7 +63,7 @@ header {
   padding: max(env(safe-area-inset-top, 10px), 16px) 16px 12px 16px;
   z-index: 100;
   background: transparent;
-  transition: opacity 0.3s;
+  border-bottom: none;
 }
 .header-logo {
   font-family: 'Unbounded', sans-serif;
@@ -78,200 +74,489 @@ header {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  cursor: pointer;
 }
-.header-actions { display: flex; gap: 10px; }
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
 .header-btn {
-  background: var(--surface2); border: 1px solid var(--border); color: var(--text);
-  padding: 8px 14px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer;
-  transition: all 0.2s; -webkit-tap-highlight-color: transparent;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
 }
 .header-btn:hover { background: rgba(255,255,255,0.15); border-color: var(--border2); }
 
 /* SCREENS */
 .screen{
-  position:fixed; inset:0; z-index:10; display:flex; flex-direction:column; align-items:center;
-  justify-content:flex-start; padding: var(--screen-pt) 16px var(--screen-pb) 16px;
-  opacity:0; pointer-events:none; transition:opacity 0.15s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
-  transform:translateY(20px); overflow-y:auto; -webkit-overflow-scrolling:touch;
+  position:fixed;
+  inset:0;
+  z-index:10;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  padding: var(--screen-pt) 16px var(--screen-pb) 16px;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.15s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  transform:translateY(20px);
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
 }
-.screen.active{opacity:1; pointer-events:all; transform:translateY(0);}
+.screen.active{opacity:1;pointer-events:all;transform:translateY(0);}
+#screen-setup, #screen-secret-result {overflow-y:hidden;}
+#screen-secret-game { overflow-y: auto; } /* Дозволяємо скрол у випадку підказки на мобільних */
 .screen-center{justify-content:center;}
 
-/* GLASS & CONTAINERS */
+/* RESULT SCREEN */
+#screen-secret-result .result-card {
+  width: min(100%, 760px);
+  max-width: 760px;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  border-radius: 32px;
+  background: rgba(12, 11, 24, 0.95);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 24px 80px rgba(0,0,0,0.45);
+  max-height: calc(100dvh - 40px);
+  overflow: hidden;
+}
+#screen-secret-result .result-header { display:flex; flex-direction:column; gap: 16px; align-items:center; }
+#screen-secret-result .result-icon { font-size: 4.8rem; }
+#screen-secret-result .result-title { font-family: 'Unbounded', sans-serif; font-size: clamp(2rem, 4vw, 2.6rem); font-weight: 900; line-height:1.05; text-align:center; background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+#screen-secret-result .result-message { color: var(--text); font-size: 1rem; line-height:1.6; text-align:center; max-width: 88%; }
+#screen-secret-result .result-grid { display: flex; gap: 18px; justify-content: center; align-items: stretch; flex-wrap: wrap; }
+#screen-secret-result .result-panel { flex: 1 1 220px; min-width: 220px; max-width: 280px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 18px; display:flex; flex-direction:column; gap: 14px; align-items:center; }
+#screen-secret-result .result-panel-label { color: var(--muted); font-size: 0.72rem; letter-spacing: 1.6px; text-transform: uppercase; font-weight: 700; }
+#screen-secret-result .result-panel-img { width: 120px; height: 120px; border-radius: 26px; overflow:hidden; background: rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:center; }
+#screen-secret-result .result-panel-img img { width: 100%; height: 100%; object-fit: cover; display:block; }
+#screen-secret-result .result-panel-emoji { font-size: 3rem; }
+#screen-secret-result .result-panel-name { color: var(--text); font-size: 1rem; font-weight: 800; text-align:center; line-height:1.3; }
+#screen-secret-result .result-button { width: 100%; max-width: 320px; margin: 0 auto; }
+#screen-secret-result .result-card { margin: 0 auto; }
+@media (max-width: 760px) {
+  #screen-secret-result .result-card { padding: 26px 20px; gap: 20px; }
+  #screen-secret-result .result-grid { flex-direction: column; gap: 16px; }
+  #screen-secret-result .result-panel { max-width: 100%; }
+  #screen-secret-result .result-panel-img { width: 110px; height: 110px; }
+  #screen-secret-result .result-title { font-size: clamp(1.8rem, 7vw, 2.4rem); }
+}
+@media (max-width: 520px) {
+  #screen-secret-result { padding: calc(env(safe-area-inset-top, 16px) + 10px) 12px calc(env(safe-area-inset-bottom, 16px) + 10px); }
+  #screen-secret-result .result-card { padding: 20px 16px; }
+  #screen-secret-result .result-message { font-size: 0.95rem; }
+}
+
+/* GLASS */
 .glass{
-  background:var(--surface); border:1px solid var(--border); border-radius:28px;
-  backdrop-filter:blur(30px) saturate(190%); -webkit-backdrop-filter:blur(30px) saturate(190%);
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:28px;
+  backdrop-filter:blur(30px) saturate(190%);
+  -webkit-backdrop-filter:blur(30px) saturate(190%);
   box-shadow:0 12px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
 }
+
+/* CARDS & CONTAINERS */
 .setup-card{
-  width:var(--card-w); padding:20px 22px; margin-top: 10px; margin-bottom: 20px;
-  display:flex; flex-direction:column; height:calc(100dvh - var(--screen-pt) - var(--screen-pb) - 34px); overflow:hidden;
+  width:var(--card-w);
+  padding:20px 22px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  display:flex;
+  flex-direction:column;
+  height:calc(100dvh - var(--screen-pt) - var(--screen-pb) - 34px);
+  overflow:hidden;
 }
-.auto-height-card { height: auto; max-height: calc(100dvh - var(--screen-pt) - var(--screen-pb)); }
-.section-label{ font-size:0.75rem; letter-spacing:2.5px; text-transform:uppercase; color:var(--cyan); margin-bottom:8px; font-weight:700; }
+.auto-height-card { height: auto !important; }
+.section-label{
+  font-size:0.75rem;
+  letter-spacing:2.5px;
+  text-transform:uppercase;
+  color:var(--cyan);
+  margin-bottom:8px;
+  font-weight:700;
+}
+
+/* STEPPER */
+.stepper{
+  display:flex;
+  align-items:center;
+  background:var(--surface2);
+  border:1px solid var(--border2);
+  border-radius:18px;
+  overflow:hidden;
+  width:100%;
+}
+.stepper button{
+  background:none;
+  border:none;
+  color:var(--text);
+  font-size:1.8rem;
+  width:64px;
+  height:52px;
+  cursor:pointer;
+  transition:background 0.2s;
+  flex-shrink:0;
+  line-height:1;
+}
+.stepper button:hover, .stepper button:active{ background:rgba(255,255,255,0.08); }
+.stepper .val{ flex:1; text-align:center; font-family:'Unbounded',sans-serif; font-size:1.8rem; font-weight:700; }
+.spy-hint{ text-align:center; color:var(--muted); font-size:0.8rem; margin-top:10px; }
+.spy-hint strong{ color:var(--violet); }
+
+/* VERTICAL CATEGORY SELECTOR */
+.cats-wrapper { width: 100%; margin-top: 8px; flex:1; min-height:0; overflow:hidden; }
+#cats-section, #secret-cats-section{ display:flex; flex-direction:column; flex:1; min-height:0; overflow:hidden; }
+.cats{ display:flex; flex-direction: column; gap: 6px; height:100%; overflow-y: auto; padding-right: 4px; }
+.cat-toggle{
+  display:flex; flex-direction: row; align-items: center; gap:16px; padding:0 18px;
+  flex:1; min-height:44px; max-height:80px; background:var(--surface2);
+  border:1px solid var(--border); border-radius:18px; cursor:pointer;
+  transition:all 0.25s cubic-bezier(0.16, 1, 0.3, 1); user-select:none;
+}
+.cat-toggle.active{ border-color:var(--cyan); background:rgba(0,245,212,0.06); box-shadow:0 0 20px rgba(0,245,212,0.12); }
+.cat-toggle .ct-icon{ font-size:1.8rem; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); }
+.cat-toggle .ct-check{
+  width:24px; height:24px; border-radius:8px; border:2px solid var(--border2);
+  display:flex; align-items:center; justify-content:center; font-size:0.8rem; transition:all 0.25s; flex-shrink: 0;
+}
+.cat-toggle.active .ct-check{ background:var(--cyan); border-color:var(--cyan); color:#07070e; font-weight: bold; }
+.cat-toggle .ct-name{ font-size:0.95rem; font-weight:700; line-height: 1.3; }
+.cat-toggle .ct-count{ font-size:0.72rem; color:var(--muted); margin-top:3px; }
 
 /* BUTTONS */
 .btn-primary{
   width:100%; padding:18px; background:linear-gradient(135deg,var(--cyan),var(--violet));
-  border:none; border-radius:18px; color:#07070e; font-family:'Unbounded',sans-serif; font-weight:700;
-  font-size:0.9rem; letter-spacing:0.5px; cursor:pointer; box-shadow:0 6px 30px rgba(185,124,255,0.25);
-  transition:transform 0.15s, box-shadow 0.15s, filter 0.15s; -webkit-tap-highlight-color:transparent;
+  border:none; border-radius:18px; color:#07070e; font-family:'Unbounded',sans-serif;
+  font-weight:700; font-size:0.9rem; letter-spacing:0.5px; cursor:pointer;
+  box-shadow:0 6px 30px rgba(185,124,255,0.25); transition:transform 0.15s, box-shadow 0.15s, filter 0.15s;
 }
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 36px rgba(185,124,255,0.35);filter:brightness(1.08);}
-.btn-primary:active{transform:translateY(0);filter:brightness(0.9);}
-.btn-primary:disabled{opacity: 0.5; pointer-events: none; filter: grayscale(1);}
-.btn-danger{ background:linear-gradient(135deg,var(--red),var(--pink)); color: #fff; box-shadow:0 6px 30px rgba(255, 60, 92, 0.25); }
+.btn-primary:hover{ transform:translateY(-2px); box-shadow:0 10px 36px rgba(185,124,255,0.35); filter:brightness(1.08); }
+.btn-primary:active{ transform:translateY(0); filter:brightness(0.9); }
+.btn-primary:disabled{ opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 .btn-ghost{
-  background:var(--surface2); border:1px solid var(--border2); border-radius:16px; color:var(--text);
-  font-size:0.9rem; padding:16px 24px; cursor:pointer; transition:all 0.2s; width:100%; font-weight: 600;
-  display: flex; align-items: center; justify-content: center; gap: 10px;
+  background:var(--surface2); border:1px solid var(--border2); border-radius:16px;
+  color:var(--text); font-size:0.9rem; padding:16px 24px; cursor:pointer;
+  transition:all 0.2s; width:100%; font-weight: 600;
 }
-.btn-ghost:hover, .btn-ghost:active{background:rgba(185,124,255,0.12);border-color:var(--violet);}
+.btn-ghost:hover{ background:rgba(185,124,255,0.12); border-color:var(--violet); }
+.btn-danger {
+  background: linear-gradient(135deg, var(--red), var(--pink)); color: #fff;
+  box-shadow: 0 6px 30px rgba(255,60,92,0.25);
+}
+.btn-danger:hover { box-shadow: 0 10px 36px rgba(255,60,92,0.35); }
 
-.huge-code { font-family: 'Unbounded', sans-serif; font-size: 3rem; letter-spacing: 5px; text-align: center; color: var(--cyan); margin: 20px 0; text-shadow: 0 0 20px rgba(0, 245, 212, 0.4); }
-.input-code { width: 100%; background: rgba(0,0,0,0.2); border: 2px solid var(--border2); border-radius: 16px; color: var(--cyan); font-family: 'Unbounded', sans-serif; font-size: 2rem; text-align: center; padding: 16px; text-transform: uppercase; outline: none; transition: border-color 0.3s; }
-.input-code:focus { border-color: var(--cyan); }
+/* DEAL SCREEN SPY */
+.deal-wrap{ width:var(--card-w); display:flex; flex-direction:column; align-items:center; gap:20px; }
+.prompt-box{ width:100%; padding:36px 24px; text-align:center; }
+.player-badge{
+  font-family:'Unbounded',sans-serif; font-size:clamp(1.8rem, 8vw, 2.6rem); font-weight:900;
+  background:linear-gradient(135deg,var(--violet),var(--pink)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:12px;
+}
+.prompt-text{ color:var(--muted); font-size:0.95rem; line-height:1.6; margin-bottom:28px; }
 
-/* STEPPER & CATS */
-.stepper{display:flex;align-items:center;background:var(--surface2);border:1px solid var(--border2);border-radius:18px;overflow:hidden;width:100%;}
-.stepper button{background:none;border:none;color:var(--text);font-size:1.8rem;width:64px;height:52px;cursor:pointer;transition:background 0.2s;flex-shrink:0;line-height:1;}
-.stepper button:hover{background:rgba(255,255,255,0.08);}
-.stepper .val{flex:1;text-align:center;font-family:'Unbounded',sans-serif;font-size:1.8rem;font-weight:700;}
-.spy-hint{text-align:center;color:var(--muted);font-size:0.8rem;margin-top:10px;}
-.spy-hint strong{color:var(--violet);}
-.cats-wrapper {width: 100%; margin-top: 8px; flex:1; min-height:0; overflow:hidden;}
-.cats{display:flex; flex-direction: column; gap: 6px; height:100%; overflow-y:auto; padding-right: 5px;}
-.cats::-webkit-scrollbar { width: 4px; }
-.cats::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
-.cat-toggle{display:flex; flex-direction: row; align-items: center; gap:16px; padding:0 18px; flex:1; min-height:44px; max-height:80px; background:var(--surface2); border:1px solid var(--border); border-radius:18px; cursor:pointer; transition:all 0.25s;}
-.cat-toggle.active{border-color:var(--cyan);background:rgba(0,245,212,0.06);box-shadow:0 0 20px rgba(0,245,212,0.12);}
-.cat-toggle .ct-icon{font-size:1.8rem; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));}
-.cat-toggle .ct-check{width:24px;height:24px;border-radius:8px;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink: 0;}
-.cat-toggle.active .ct-check{background:var(--cyan);border-color:var(--cyan);color:#07070e;font-weight: bold;}
-.cat-toggle .ct-name{font-size:0.95rem;font-weight:700;line-height: 1.3;}
-.cat-toggle .ct-count{font-size:0.72rem;color:var(--muted);margin-top:3px;}
+/* 3D FLIP CARD */
+.flip-scene{ width:var(--card-w); height:var(--card-h); perspective:2200px; }
+.flip-card{ width:100%; height:100%; position:relative; transform-style:preserve-3d; transition:transform 1.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.flip-card.flipped{ transform:rotateY(180deg); }
+.flip-face{ position:absolute; inset:0; width: 100%; height: 100%; border-radius:28px; overflow:hidden; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
+.flip-front{
+  background:linear-gradient(145deg,rgba(25,18,50,0.96),rgba(10,10,25,0.98)); border:1px solid rgba(185,124,255,0.25);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; cursor:pointer;
+  box-shadow:0 8px 48px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.05); z-index: 2; opacity: 1; transition: opacity 0.15s ease;
+}
+.front-pattern{ position:absolute; inset:0; opacity:0.04; background-image:repeating-linear-gradient(45deg,var(--violet) 0,var(--violet) 1px,transparent 0,transparent 50%); background-size:24px 24px; }
+.front-glow{ position:absolute; width:220px; height:220px; background:radial-gradient(circle,rgba(255,255,255,.04) 0%,transparent 55%); filter:blur(40px); top:50%; left:50%; transform:translate(-50%,-50%); border-radius:50%; }
+.front-icon{ font-size:4.5rem; filter:drop-shadow(0 0 25px rgba(185,124,255,0.5)); position:relative; z-index:1; }
+.front-label{ color:var(--muted); font-size:0.8rem; letter-spacing:3px; text-transform:uppercase; position:relative; z-index:1; font-weight: 600; }
+.flip-back{ transform:rotateY(180deg); display:flex; flex-direction:column; box-shadow:0 10px 50px rgba(0,0,0,0.7); z-index: 1; opacity: 0; pointer-events: none; transition: opacity 0.15s ease; }
+.flip-card.flipped .flip-front { opacity: 0; pointer-events: none; }
+.flip-card.flipped .flip-back { opacity: 1; pointer-events: auto; }
+.back-char{ background:linear-gradient(170deg,#0f0a22 0%,#06060c 100%); border:1px solid rgba(0,245,212,0.25); }
+.back-spy{ background:linear-gradient(170deg,#1c0613 0%,#090207 100%); border:1px solid rgba(255,60,92,0.3); }
 
-/* DEAL & FLIP CARD */
-.deal-wrap{width:var(--card-w);display:flex;flex-direction:column;align-items:center;gap:20px;}
-.prompt-box{width:100%;padding:36px 24px;text-align:center;}
-.player-badge{font-family:'Unbounded',sans-serif;font-size:clamp(1.8rem, 8vw, 2.6rem);font-weight:900;background:linear-gradient(135deg,var(--violet),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px;}
-.flip-scene{width:var(--card-w);height:var(--card-h);perspective:2200px;}
-.flip-card{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 1.25s cubic-bezier(0.34, 1.56, 0.64, 1);}
-.flip-card.flipped{transform:rotateY(180deg);}
-.flip-face{position:absolute;inset:0;width: 100%;height: 100%;border-radius:28px;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;}
-.flip-front{background:linear-gradient(145deg,rgba(25,18,50,0.96),rgba(10,10,25,0.98));border:1px solid rgba(185,124,255,0.25);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;z-index: 2; box-shadow:0 8px 48px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.05);}
-.front-pattern{position:absolute;inset:0;opacity:0.04;background-image:repeating-linear-gradient(45deg,var(--violet) 0,var(--violet) 1px,transparent 0,transparent 50%);background-size:24px 24px;}
-.front-glow{position:absolute;width:220px;height:220px;background:radial-gradient(circle,rgba(255,255,255,.04) 0%,transparent 55%);filter:blur(40px);top:50%;left:50%;transform:translate(-50%,-50%);border-radius:50%;}
-.front-label{color:var(--muted);font-size:0.8rem;letter-spacing:3px;text-transform:uppercase;position:relative;z-index:1;font-weight: 600;}
-.flip-back{transform:rotateY(180deg);display:flex;flex-direction:column;z-index: 1;}
-.flip-card.flipped .flip-front {opacity: 0; pointer-events: none;}
-.back-char{background:linear-gradient(170deg,#0f0a22 0%,#06060c 100%);border:1px solid rgba(0,245,212,0.25);}
-.back-spy{background:linear-gradient(170deg,#1c0613 0%,#090207 100%);border:1px solid rgba(255,60,92,0.3);}
+/* CARD INNER ELEMENTS */
+.card-img-wrap{ width:100%; flex:1; position:relative; overflow:hidden; min-height:0; background: rgba(0,0,0,0.2); }
+.card-img{ width:100%; height:100%; object-fit:contain; display:block; transition:opacity 0.7s; padding: 12px; }
+.card-img.loading{ opacity:0; }
+.card-img-overlay{ position:absolute; inset:0; background:linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(15,10,34,0.95) 100%); pointer-events: none; }
+.card-img-placeholder{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:6rem; background:rgba(255,255,255,0.01); }
+.img-loader{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(7,7,14,0.4); }
+.spinner{ width:32px; height:32px; border:3px solid rgba(255,255,255,0.1); border-top-color:var(--cyan); border-radius:50%; animation:spin 0.8s linear infinite; }
+@keyframes spin{to{transform:rotate(360deg)}}
+.card-info{ padding:20px 65px 24px 24px; flex-shrink:0; display:flex; flex-direction:column; gap:6px; position: relative; }
+.card-top-label{ font-size:0.68rem; letter-spacing:3px; text-transform:uppercase; color:var(--muted); font-weight: 700; }
+.card-name{ font-family:'Unbounded',sans-serif; font-size:clamp(1.1rem, 4.5vw, 1.45rem); font-weight:800; line-height:1.25; background:linear-gradient(135deg,var(--cyan),#a8ffea); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.card-bot-label{ font-size:0.65rem; letter-spacing:2px; text-transform:uppercase; color:rgba(0,245,212,0.55); margin-top:2px; font-weight: 600; }
+.info-trigger-btn { position: absolute; bottom: 24px; right: 24px; width: 36px; height: 36px; background: rgba(255,255,255,0.08); border: 1px solid var(--border2); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--cyan); font-size: 1rem; font-weight: bold; transition: all 0.2s; z-index: 20; }
+.info-trigger-btn:hover { background: var(--cyan); color: #07070e; box-shadow: 0 0 12px rgba(0,245,212,0.4); }
 
-/* SPY CARD INTERIOR */
-.spy-content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;background:radial-gradient(circle,rgba(255,60,92,0.12) 0%,transparent 70%);}
-.spy-emoji{font-size:5.5rem;filter:drop-shadow(0 0 30px rgba(255,60,92,0.55));animation:spyPulse 2.5s ease-in-out infinite;}
+/* SPY CONTENT */
+.spy-content{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:24px; background:radial-gradient(circle,rgba(255,60,92,0.12) 0%,transparent 70%); }
+.spy-emoji{ font-size:5.5rem; filter:drop-shadow(0 0 30px rgba(255,60,92,0.55)); animation:spyPulse 2.5s ease-in-out infinite; }
 @keyframes spyPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
-.spy-title{font-family:'Unbounded',sans-serif;font-size:clamp(1.5rem, 6.5vw, 2.1rem);font-weight:900;background:linear-gradient(135deg,var(--red),var(--pink),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;line-height:1.2;}
-.char-emoji{font-size: 5rem; margin-bottom: 10px;}
-.char-title{font-family:'Unbounded',sans-serif;font-size:1.6rem;font-weight:800;color:var(--text);text-align:center;}
+.spy-title{ font-family:'Unbounded',sans-serif; font-size:clamp(1.5rem, 6.5vw, 2.1rem); font-weight:900; background:linear-gradient(135deg,var(--red),var(--pink),var(--violet)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; text-align:center; line-height:1.2; filter:drop-shadow(0 0 15px rgba(255,60,92,0.3)); }
+.spy-sub{ color:rgba(255,100,140,0.6); font-size:0.78rem; letter-spacing:2.5px; text-transform:uppercase; text-align:center; line-height: 1.5; font-weight: 600; }
+.spy-card-info{ padding:22px 24px 24px; flex-shrink:0; }
+.spy-badge{ display:flex; align-items:center; gap:10px; }
+.spy-dot{ width:10px; height:10px; border-radius:50%; background:var(--red); box-shadow:0 0 10px var(--red); animation:blink 1.4s ease-in-out infinite; }
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.spy-badge-text{ font-size:0.7rem; letter-spacing:3px; text-transform:uppercase; color:rgba(255,80,110,0.7); font-weight: 700; }
+.deal-actions{ width:var(--card-w); display:flex; flex-direction:column; gap:12px; }
 
-/* ════════════════════════════════════════════
-   MYSTERY GAME (ТАЄМНИЦЯ) STYLES
-   ════════════════════════════════════════════ */
-#portrait-lock {
-  position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; text-align: center; padding: 20px; opacity: 0;
-  pointer-events: none; transition: opacity 0.3s;
-}
-#portrait-lock.active { opacity: 1; pointer-events: all; }
-.rotate-icon { font-size: 5rem; margin-bottom: 20px; animation: rotatePhone 2s infinite ease-in-out; }
-@keyframes rotatePhone { 0% { transform: rotate(0deg); } 50% { transform: rotate(-90deg); } 100% { transform: rotate(-90deg); } }
-
-#screen-mystery-game { padding: 0; justify-content: center; align-items: center; background: #07070e; }
-.mystery-layout {
-  display: flex; flex-direction: row; width: 100%; max-width: 1400px; height: 100dvh; padding: 15px; gap: 20px;
-}
-
-/* DYNAMIC GRID - Allows all cards to be big and scrollable */
-.mystery-grid-wrap {
-  flex: 1; height: calc(100vh - 30px);
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* BIG CARDS */
-  grid-auto-rows: minmax(180px, auto);
-  gap: 12px;
-  overflow-y: auto;
-  align-content: start;
-  padding-right: 10px;
-}
-.mystery-grid-wrap::-webkit-scrollbar { width: 8px; }
-.mystery-grid-wrap::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 10px; }
-
-.m-card {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
-  overflow: hidden; position: relative; cursor: pointer; transition: all 0.2s ease;
-  display: flex; flex-direction: column; aspect-ratio: 3/4; /* Nice proportion */
-}
-.m-card:hover { border-color: var(--border2); transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
-.m-card-img-wrap { flex: 1; width: 100%; min-height: 0; position: relative; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; }
-.m-card-img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s; }
-.m-card-ph { font-size: 4rem; position: absolute; }
-.m-card-name {
-  min-height: 40px; background: rgba(10, 10, 25, 0.95); color: var(--text);
-  font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; justify-content: center;
-  text-align: center; padding: 6px; border-top: 1px solid var(--border); line-height: 1.2;
-}
-
-/* CARD STATES */
-.m-card.selected { border: 3px solid var(--green); box-shadow: 0 0 20px rgba(0, 230, 118, 0.4); transform: scale(1.03); z-index: 2; }
-.m-card.selected .m-card-name { color: var(--green); }
-.m-card.eliminated { opacity: 0.25; filter: grayscale(100%) brightness(0.5); pointer-events: none; }
-.m-card.eliminated .m-card-name { text-decoration: line-through; color: var(--red); }
-
-/* SIDEBAR CONTROLS */
-.mystery-sidebar {
-  width: 280px; flex-shrink: 0; height: calc(100vh - 30px); display: flex; flex-direction: column;
-  background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 20px;
-  backdrop-filter: blur(20px);
-}
-.turn-indicator { font-family: 'Unbounded', sans-serif; font-size: 1.1rem; font-weight: 900; text-align: center; padding: 12px; border-radius: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.2); transition: all 0.3s; }
-.turn-mine { color: var(--cyan); border: 1px solid var(--cyan); box-shadow: 0 0 15px rgba(0, 245, 212, 0.2); }
-.turn-opponent { color: var(--red); border: 1px solid var(--red); }
-.my-target-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-.my-target-label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
-.my-target-img { width: 120px; height: 120px; object-fit: cover; margin-bottom: 10px; border-radius: 16px; background: rgba(0,0,0,0.3); border: 2px solid var(--border2); }
-.sidebar-actions { display: flex; flex-direction: column; gap: 12px; margin-top: auto; }
-
-.accuse-mode-active { animation: pulseAccuse 1.5s infinite; }
-@keyframes pulseAccuse { 0% { box-shadow: 0 0 0 0 rgba(255, 60, 92, 0.5); } 70% { box-shadow: 0 0 0 15px rgba(255, 60, 92, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 60, 92, 0); } }
+/* FINAL SCREEN */
+.final-card{ width:var(--card-w); padding:40px 28px; text-align:center; }
+.final-icon{ font-size:4.5rem; display:block; margin-bottom:20px; animation:pulse 2.5s ease-in-out infinite; }
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.final-title{ font-family:'Unbounded',sans-serif; font-size:clamp(1.4rem, 6vw, 1.9rem); font-weight:900; line-height:1.25; margin-bottom:16px; background:linear-gradient(135deg,var(--cyan),var(--violet)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.final-sub{ color:var(--muted); font-size:0.92rem; line-height:1.7; margin-bottom:28px; }
+.final-stats{ display:flex; gap:12px; justify-content:center; margin-bottom:28px; }
+.stat-chip{ background:var(--surface2); border:1px solid var(--border); border-radius:14px; padding:12px 20px; font-size:0.8rem; color:var(--muted); flex: 1; }
+.stat-chip strong{ color:var(--text); display:block; font-family:'Unbounded',sans-serif; font-size:1.3rem; margin-bottom: 4px; }
 
 /* MODALS */
-.modal-overlay {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(4, 4, 8, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-  display: flex; justify-content: center; align-items: center; z-index: 1000;
-  opacity: 0; pointer-events: none; transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(4, 4, 8, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
 .modal-overlay.active { opacity: 1; pointer-events: auto; }
-.modal-content {
-  width: 90%; max-width: 450px; background: var(--surface); border: 1px solid var(--border); border-radius: 28px;
-  padding: 30px 24px; position: relative; transform: scale(0.92); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.8);
-}
+.modal-content { width: 90%; max-width: 420px; padding: 30px 24px; position: relative; transform: scale(0.92); transition: transform 1.25s cubic-bezier(0.16, 1, 0.3, 1); max-height: 85vh; overflow-y: auto; }
 .modal-overlay.active .modal-content { transform: scale(1); }
 .close-modal-btn { position: absolute; top: 18px; right: 18px; font-size: 1.8rem; color: var(--muted); background: none; border: none; cursor: pointer; transition: color 0.2s; line-height: 1; }
 .close-modal-btn:hover { color: var(--text); }
-.modal-title { font-family: 'Unbounded', sans-serif; font-size: 1.4rem; font-weight: 800; margin-bottom: 20px; text-align: center; background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.modal-title { font-family: 'Unbounded', sans-serif; font-size: 1.2rem; font-weight: 800; margin-bottom: 20px; text-align: center; background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 .rules-scroll { font-size: 0.95rem; line-height: 1.6; color: rgba(240, 240, 248, 0.85); }
-.rules-scroll h4 { color: var(--violet); margin-top: 24px; margin-bottom: 8px; font-family: 'Unbounded', sans-serif; font-size: 1rem; letter-spacing: 1px; display: flex; align-items: center; gap: 8px;}
-.rules-scroll ul, .rules-scroll ol { padding-left: 20px; margin-bottom: 12px; }
-.rules-scroll li { margin-bottom: 8px; }
+.rules-scroll h4 { color: var(--cyan); margin-top: 18px; margin-bottom: 8px; font-family: 'Unbounded', sans-serif; font-size: 0.85rem; letter-spacing: 1px; }
+.rules-scroll ul { padding-left: 20px; margin-bottom: 12px; }
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(185, 124, 255, 0.25); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(185, 124, 255, 0.45); }
 
 /* TOAST */
-.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(255,60,100,0.12);border:1px solid rgba(255,60,100,0.35);backdrop-filter:blur(20px);color:#ff7fa0;border-radius:14px;padding:14px 28px;font-size:0.88rem;font-weight:600;opacity:0;transition:opacity 0.3s, transform 0.3s;z-index:1200;pointer-events:none;white-space:nowrap;}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-.mt8{margin-top:8px}.mt16{margin-top:16px}.mt24{margin-top:24px}
+.toast{ position:fixed; bottom:32px; left:50%; transform:translateX(-50%) translateY(20px); background:rgba(255,60,100,0.12); border:1px solid rgba(255,60,100,0.35); backdrop-filter:blur(20px); color:#ff7fa0; border-radius:14px; padding:14px 28px; font-size:0.88rem; font-weight: 600; opacity:0; transition:opacity 0.3s, transform 0.3s; z-index:1200; pointer-events:none; white-space:nowrap; }
+.toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+.mt8{margin-top:8px} .mt16{margin-top:16px} .mt20{margin-top:20px} .mt22{margin-top:22px} .mt24{margin-top:24px}
+
+/* MAIN MENU */
+.main-menu-container { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; width: 100%; max-width: var(--card-w); }
+.game-mode-card { width: 100%; padding: 32px 24px; cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); border-radius: 28px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.game-mode-card.spy-mode { background: linear-gradient(135deg, rgba(185, 124, 255, 0.15), rgba(185, 124, 255, 0.08)); border: 1.5px solid rgba(185, 124, 255, 0.35); }
+.game-mode-card.secret-mode { background: linear-gradient(135deg, rgba(0, 245, 212, 0.15), rgba(0, 245, 212, 0.08)); border: 1.5px solid rgba(0, 245, 212, 0.35); }
+.game-mode-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4); border-color: var(--cyan); }
+.game-mode-icon { font-size: 3.5rem; }
+.game-mode-title { font-family: 'Unbounded', sans-serif; font-size: 1.4rem; font-weight: 800; text-align: center; }
+.game-mode-desc { font-size: 0.85rem; color: var(--muted); text-align: center; line-height: 1.5; }
+
+/* ════════════════════════════════════════════ */
+/* SECRET (ТАЄМНИЦЯ) GAME STYLES              */
+/* ════════════════════════════════════════════ */
+
+/* ORIENTATION TIP BAR */
+.orientation-tip {
+  display: none;
+  background: rgba(15, 10, 34, 0.95);
+  border: 1px solid rgba(0, 245, 212, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 245, 212, 0.15);
+  color: #f0f0f8;
+  padding: 12px 18px;
+  border-radius: 20px;
+  align-items: center;
+  gap: 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  width: calc(100% - 32px);
+  max-width: 500px;
+  margin: 12px auto;
+  z-index: 1001;
+  position: relative;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: slideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.orientation-tip.dismissed {
+  display: none !important;
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (orientation: portrait) {
+  #screen-secret-game.active .orientation-tip:not(.dismissed) {
+    display: flex;
+  }
+}
+
+.huge-code { font-family: 'Unbounded', sans-serif; font-size: clamp(2.1rem, 8vw, 3.5rem); letter-spacing: 0.35em; text-align: center; color: var(--cyan); }
+.input-code { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 16px; padding: 16px 18px; color: var(--text); font-size: 1.2rem; font-family: 'Unbounded', sans-serif; text-transform: uppercase; letter-spacing: 0.25em; text-align:center; }
+.input-code:focus { outline: none; border-color: var(--cyan); box-shadow: 0 0 12px rgba(0, 245, 212, 0.15); }
+
+/* HORIZONTAL PREMIUM LAYOUT FOR MYSTERY GAME */
+.mystery-layout {
+  display: flex; flex-direction: row; align-items: stretch; justify-content: center;
+  width: min(100%, 1040px); max-width: 100%; margin: 0 auto; gap: 18px; padding: 20px;
+  min-height: calc(100vh - var(--screen-pt) - var(--screen-pb) - 20px);
+  background: rgba(10, 10, 20, 0.95);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 32px;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.30);
+}
+.mystery-grid-wrap {
+  flex: 1 1 0; min-width: 0; max-width: calc(100% - 360px);
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 100px; gap: 12px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 14px;
+  max-height: calc(100vh - 180px); overflow-y: auto; overscroll-behavior: contain;
+  scrollbar-width: thin; scrollbar-color: rgba(0,245,212,0.35) transparent;
+}
+.mystery-grid-wrap::-webkit-scrollbar { width: 8px; }
+.mystery-grid-wrap::-webkit-scrollbar-thumb { background: rgba(0,245,212,0.35); border-radius: 999px; }
+.mystery-grid-wrap::-webkit-scrollbar-track { background: transparent; }
+.mystery-sidebar {
+  flex: 0 0 340px; min-width: 280px; max-width: 340px; display: flex; flex-direction: column; gap: 16px;
+  background: rgba(12, 11, 24, 0.96); border-radius: 28px; padding: 20px; border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 30px 70px rgba(0,0,0,0.28);
+  max-height: calc(100vh - 160px); overflow: hidden;
+}
+.mystery-sidebar-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+.mystery-sidebar-body::-webkit-scrollbar { width: 6px; }
+.mystery-sidebar-body::-webkit-scrollbar-thumb { background: rgba(185,124,255,0.25); border-radius: 999px; }
+.mystery-actions { display: flex; flex-direction: column; gap: 12px; margin-top: auto; }
+.mystery-actions .btn-primary,
+.mystery-actions .btn-ghost,
+.mystery-actions .btn-danger { width: 100%; }
+.mystery-card {
+  width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 28px; padding: 16px; display: flex; flex-direction: column; gap: 14px;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.20);
+}
+.mystery-card-img-wrap {
+  width: 100%; min-height: 190px; border-radius: 22px; overflow: hidden;
+  position: relative; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12);
+}
+.mystery-card-name { font-family: 'Unbounded', sans-serif; font-size: 1.25rem; line-height: 1.05; }
+.mystery-card-note { font-size: 0.72rem; letter-spacing: 1.6px; }
+
+.card-cell {
+  position: relative; cursor: pointer; background: var(--surface2); border: 1px solid var(--border); border-radius: 18px;
+  display: grid; grid-template-rows: 1fr auto; min-height: 84px; padding: 0; text-align: center;
+  transition: all 0.2s; user-select: none; -webkit-tap-highlight-color: transparent;
+  overflow: hidden;
+}
+.card-cell:active { transform: scale(0.98); }
+.card-cell.selected { border-color: var(--cyan); background: rgba(0, 245, 212, 0.12); box-shadow: 0 0 10px rgba(0, 245, 212, 0.2), inset 0 0 6px rgba(0, 245, 212, 0.08); }
+.card-cell.eliminated { opacity: 0.25; filter: grayscale(100%); cursor: not-allowed; }
+.card-cell.locked { cursor: not-allowed; opacity: 0.6; pointer-events: none;}
+.card-cell .card-img-wrap { width: 100%; height: 100%; position: relative; overflow: hidden; border-radius: 18px 18px 0 0; }
+.card-cell .card-img-placeholder { font-size: 2rem; }
+.card-cell .secret-card-info { width: 100%; padding: 5px 7px 7px; display: flex; flex-direction: column; gap: 1px; align-items: flex-start; }
+.card-cell .secret-card-info .card-top-label { color: rgba(255,255,255,0.92); font-size: 0.70rem; font-weight: 700; }
+.card-cell .secret-card-info .card-bot-label { color: rgba(255,255,255,0.65); font-size: 0.62rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+.card-cell .info-trigger-btn { position: absolute; bottom: 8px; right: 8px; width: 28px; height: 28px; border-radius: 50%; background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.18); backdrop-filter: blur(4px); color: var(--cyan); font-size: 0.78rem; display: flex; align-items: center; justify-content: center; }
+.card-cell .info-trigger-btn:hover { transform: translateY(-1px); }
+.card-cell.accuse-target { border-color: var(--red); background: rgba(255, 60, 92, 0.2); box-shadow: 0 0 15px rgba(255, 60, 92, 0.4); animation: pulseRed 1s infinite alternate; }
+
+@keyframes pulseRed { from { box-shadow: 0 0 5px rgba(255,60,92,0.4); } to { box-shadow: 0 0 20px rgba(255,60,92,0.8); } }
+
+.cell-emoji { font-size: min(6vh, 2.8rem); line-height: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); }
+.cell-name { font-size: min(2vh, 0.75rem); line-height: 1.1; margin-top: 6px; font-weight: 600; color: rgba(255,255,255,0.85); text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+
+.turn-indicator { font-size: 0.85rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--cyan); text-align: center; background: rgba(0,245,212,0.1); padding: 8px; border-radius: 10px; }
+.turn-indicator.enemy { color: var(--red); background: rgba(255,60,92,0.1); }
+.turn-indicator.blink { animation: blink-turn 1.5s ease-in-out infinite; }
+@keyframes blink-turn { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+.my-target-wrap { display: flex; justify-content: center; }
+.my-target-label { color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+
+.mystery-card {
+  width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 28px; padding: 18px; display: flex; flex-direction: column; gap: 16px;
+  box-shadow: 0 18px 60px rgba(0,0,0,0.2);
+}
+.mystery-card-img-wrap {
+  width: 100%; min-height: 220px; border-radius: 24px; overflow: hidden;
+  position: relative; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12);
+}
+.mystery-card-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.mystery-card-image-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.4) 100%); }
+.mystery-card-emoji { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 4.5rem; color: rgba(255,255,255,0.9); text-shadow: 0 6px 20px rgba(0,0,0,0.35); }
+.mystery-card-info { width: 100%; text-align: center; display: flex; flex-direction: column; gap: 6px; }
+.mystery-card-name { font-family: 'Unbounded', sans-serif; font-size: 1.5rem; font-weight: 900; line-height: 1.1;
+  background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.mystery-card-note { font-size: 0.78rem; letter-spacing: 1.8px; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.mystery-info-btn {
+  position: absolute; top: 12px; right: 12px; width: 36px; height: 36px;
+  border-radius: 14px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.08);
+  color: var(--cyan); font-size: 1rem; font-weight: 700; cursor: pointer;
+}
+
+/* Зображення в сайдбарі та на екрані результатів Таємниці */
+.sidebar-img-circle {
+  width: 70px; height: 70px; border-radius: 50%; object-fit: cover;
+  background: rgba(255,255,255,0.05); border: 2px solid var(--cyan);
+  box-shadow: 0 0 15px rgba(0,245,212,0.3); display: none; margin: 4px 0;
+}
+.res-img {
+  width: 100%; height: 100%; border-radius: 0; object-fit: cover;
+  background: rgba(255,255,255,0.05); border: none; display: none;
+}
+
+.status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--cyan); animation: pulse-dot 1.5s ease-in-out infinite; }
+@keyframes pulse-dot { 0%, 100% { opacity: 0.3; transform:scale(0.8);} 50% { opacity: 1; transform:scale(1.2);} }
+
+@media (max-width: 980px) {
+  .mystery-layout {
+    flex-direction: row;
+    gap: 14px;
+    padding: 14px;
+    min-height: calc(100vh - var(--screen-pt) - var(--screen-pb) - 20px);
+  }
+  .mystery-grid-wrap {
+    max-width: calc(100% - 300px);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    padding: 12px;
+    max-height: calc(100vh - 150px);
+  }
+  .mystery-sidebar {
+    flex: 0 0 300px;
+    min-width: 260px;
+    max-width: 300px;
+    padding: 16px;
+  }
+  #mystery-instruction-wrap { margin-bottom: 10px; }
+  .mystery-sidebar-body { flex: 1 1 auto; min-height: 0; }
+  .card-cell .card-img-wrap { aspect-ratio: 1 / 1; }
+  .card-cell .secret-card-info { padding: 10px 8px 10px; }
+  .cell-emoji { font-size: min(4.5vh, 2rem); }
+  .cell-name { font-size: min(2.2vh, 0.72rem); }
+}
+
+@media (max-width: 760px) {
+  .mystery-layout { flex-direction: column; align-items: stretch; }
+  .mystery-grid-wrap { grid-template-columns: 1fr; max-width: 100%; max-height: calc(55vh); }
+  .mystery-sidebar { width: 100%; min-width: 0; flex: none; }
+  .mystery-actions { margin-top: 14px; }
+}
+
+@media (max-width: 640px) {
+  .mystery-grid-wrap { grid-template-columns: 1fr; max-height: calc(50vh); overflow-y: auto; }
+  .card-cell { border-radius: 18px; }
+  .card-cell .info-trigger-btn { bottom: 10px; right: 10px; width: 30px; height: 30px; }
+  .mystery-sidebar { padding: 14px; }
+  .mystery-card-img-wrap { min-height: 180px; }
+  .mystery-actions { gap: 10px; }
+}
 </style>
 </head>
 <body>
@@ -280,262 +565,287 @@ header {
 <div class="orb orb2"></div>
 <div class="orb orb3"></div>
 
-<!-- HEADER (FIXED) -->
-<header id="main-header">
-  <div class="header-logo" onclick="resetToMenu()">🕵️‍♂️ ІГРИ</div>
+<!-- MAIN MENU -->
+<div id="screen-main-menu" class="screen active">
+  <div class="main-menu-container">
+    <div style="text-align: center; margin-bottom: 20px;">
+      <div style="font-family: 'Unbounded', sans-serif; font-size: 2.2rem; font-weight: 900; background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px;">🕵️‍♂️ PartyBox</div>
+      <div style="font-size: 0.85rem; color: var(--muted); letter-spacing: 1px;" id="menu-subtitle">Оберіть гру</div>
+    </div>
+    
+    <div class="game-mode-card spy-mode" onclick="selectGame('spy')">
+      <div class="game-mode-icon">🕵️‍♂️</div>
+      <div class="game-mode-title" id="menu-spy-title">Шпигун</div>
+      <div class="game-mode-desc" id="menu-spy-desc">Локальна гра для компанії на одному пристрої</div>
+    </div>
+    
+    <div class="game-mode-card secret-mode" onclick="selectGame('secret')">
+      <div class="game-mode-icon">🎭</div>
+      <div class="game-mode-title" id="menu-secret-title">Таємниця</div>
+      <div class="game-mode-desc" id="menu-secret-desc">Мережева гра 1 на 1. Відгадай персонажа супротивника</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECRET ROLE SELECTION -->
+<div id="screen-secret-role-choice" class="screen">
+  <div class="main-menu-container">
+    <div style="text-align: center; margin-bottom: 18px;">
+      <div style="font-family: 'Unbounded', sans-serif; font-size: 1.9rem; font-weight: 900; background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px;" id="role-title">Оберіть роль</div>
+      <div style="font-size: 0.85rem; color: var(--muted); letter-spacing: 1px;" id="role-subtitle">Створіть кімнату або підключіться</div>
+    </div>
+    <div class="game-mode-card spy-mode" onclick="chooseSecretHost()">
+      <div class="game-mode-icon">🏠</div>
+      <div class="game-mode-title" id="role-host-title">Створити гру (Хост)</div>
+    </div>
+    <div class="game-mode-card secret-mode" onclick="chooseSecretGuest()">
+      <div class="game-mode-icon">👤</div>
+      <div class="game-mode-title" id="role-guest-title">Підключитися (Гість)</div>
+    </div>
+  </div>
+</div>
+
+<header>
+  <div class="header-logo" style="flex: 1;"><span id="header-title">🕵️‍♂️ SPY</span></div>
   <div class="header-actions">
-    <button class="header-btn" onclick="openModal('rulesModal')">Правила</button>
+    <button class="header-btn" id="btn-back-menu" style="display: none;" onclick="backToMenu()">← Меню</button>
+    <button class="header-btn" onclick="openModal('rulesModal')" id="btn-rules" style="display: none;">Правила</button>
   </div>
 </header>
 
-<!-- ══ ГОЛОВНЕ МЕНЮ ══ -->
-<div id="screen-main" class="screen active screen-center">
-  <div class="glass setup-card auto-height-card" style="padding: 40px 24px; text-align: center;">
-    <div class="player-badge" style="margin-bottom: 30px; font-size: 2rem;">Оберіть гру</div>
-    
-    <div style="display: flex; flex-direction: column; gap: 20px;">
-      <button class="btn-primary" style="padding: 24px; font-size: 1.1rem;" onclick="switchScreen('screen-setup')">
-        🕵️ Шпигун<br>
-        <span style="font-size: 0.75rem; font-weight: normal; font-family: 'Plus Jakarta Sans', sans-serif; display: block; margin-top: 8px; color: rgba(0,0,0,0.6)">Локальна гра для компанії</span>
-      </button>
-      
-      <button class="btn-primary" style="padding: 24px; font-size: 1.1rem; background: linear-gradient(135deg, var(--pink), var(--violet));" onclick="switchScreen('screen-mystery-menu')">
-        🤔 Таємниця<br>
-        <span style="font-size: 0.75rem; font-weight: normal; font-family: 'Plus Jakarta Sans', sans-serif; display: block; margin-top: 8px; color: rgba(0,0,0,0.6)">Мережева дуель 1 на 1</span>
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- ========================================== -->
-<!-- ══ ЕКРАНИ ГРИ "ШПИГУН" ══ -->
-<!-- ========================================== -->
-
+<!-- SPY SETUP -->
 <div id="screen-setup" class="screen">
   <div class="glass setup-card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-      <button class="header-btn" onclick="switchScreen('screen-main')" style="padding: 4px 10px; border: none; background: rgba(255,255,255,0.1)">← Назад</button>
-      <div class="section-label" style="margin: 0;">Шпигун</div>
-    </div>
-
-    <div class="section-label">Кількість гравців</div>
+    <div class="section-label" id="setup-label-players">Кількість гравців</div>
     <div class="stepper">
-      <button onclick="changeSpyCount(-1)">−</button>
+      <button onclick="changeCount(-1)">−</button>
       <div class="val" id="player-count">5</div>
-      <button onclick="changeSpyCount(1)">+</button>
+      <button onclick="changeCount(1)">+</button>
     </div>
     <div class="spy-hint mt8" id="setup-spy-hint">Шпигунів: <strong id="spy-count-hint">1</strong> &nbsp;(1 на кожні 3 гравці)</div>
     
-    <div class="mt24" style="display:flex;flex-direction:column;flex:1;min-height:0;">
+    <div class="mt24" id="cats-section">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-shrink:0;">
-        <div class="section-label" style="margin-bottom:0">Категорії</div>
-        <button class="btn-ghost" style="padding:6px 14px; font-size:0.75rem; width: auto; height: auto;" onclick="toggleAllSpyCats()">Обрати всі</button>
+        <div class="section-label" id="setup-label-categories" style="margin-bottom:0">Категорії</div>
+        <button class="btn-ghost" id="btn-select-all" style="padding:6px 14px; font-size:0.75rem; width:auto; border-radius:10px;" onclick="toggleAll()">Обрати всі</button>
       </div>
       <div class="cats-wrapper">
-        <div class="cats" id="spy-cats-container"></div>
+        <div class="cats" id="cats-container"></div>
       </div>
     </div>
     
-    <div class="mt24" style="flex-shrink: 0;">
-      <button class="btn-primary" onclick="startSpyGame()">Почати роздачу</button>
+    <div class="mt24" style="flex-shrink:0">
+      <button class="btn-primary" id="btn-start-deal" onclick="startGame()">Почати роздачу ролей</button>
     </div>
   </div>
 </div>
 
+<!-- SPY DEAL -->
 <div id="screen-deal" class="screen screen-center">
   <div class="deal-wrap">
     <div class="glass prompt-box" id="deal-prompt">
       <div class="player-badge" id="deal-player-name">Гравець 1</div>
-      <div class="prompt-text" id="deal-prompt-text" style="color:var(--muted); margin-bottom: 20px;">Візьми пристрій, інші відверніться</div>
-      <button class="btn-primary" onclick="openSpyCard()">Відкрити карту</button>
+      <div class="prompt-text" id="deal-prompt-text">Візьми пристрій, інші відверніться</div>
+      <button class="btn-primary" id="btn-open-card-init" onclick="openCard()">Відкрити карту</button>
     </div>
     
     <div class="flip-scene" id="flip-scene" style="display:none">
       <div class="flip-card" id="flip-card">
-        <div class="flip-face flip-front" onclick="openSpyCard()">
+        <div class="flip-face flip-front" onclick="openCard()">
           <div class="front-pattern"></div>
           <div class="front-glow"></div>
-          <div class="front-label">НАЖМІТЬ, ЩОБ ВІДКРИТИ</div>
+          <div class="front-icon"></div>
+          <div class="front-label" id="text-tap-open">Натисніть щоб відкрити</div>
         </div>
-        <div class="flip-face flip-back" id="flip-back">
-          <!-- Заповнюється через JS -->
-        </div>
+        <div class="flip-face flip-back" id="flip-back"></div>
       </div>
     </div>
     
-    <div class="deal-actions" id="deal-actions" style="display:none; width: var(--card-w); margin-top: 20px;">
-      <button class="btn-ghost" id="btn-close-card" onclick="closeSpyCard()">Закрити карту</button>
-      <button class="btn-ghost mt8" onclick="resetToMenu()" style="border-color: transparent; background: transparent; color: var(--muted);">Перервати гру</button>
+    <div class="deal-actions" id="deal-actions" style="display:none">
+      <button class="btn-ghost" id="btn-close-card" onclick="closeCard()">Закрити карту</button>
+      <button class="btn-primary" style="background:rgba(255,255,255,0.06);color:var(--muted);border:1px solid var(--border2);box-shadow:none;" onclick="confirmAbort()" id="btn-restart-action">Почати заново</button>
     </div>
   </div>
 </div>
 
+<!-- SPY FINAL -->
 <div id="screen-final" class="screen screen-center">
-  <div class="glass setup-card auto-height-card" style="padding: 40px 24px; text-align: center;">
-    <span style="font-size:4.5rem; display:block; margin-bottom:20px; animation: pulse 2s infinite;">🎭</span>
-    <div class="player-badge" style="font-size: 1.8rem;">Гру розпочато!</div>
-    <div style="color:var(--muted); margin: 20px 0; line-height: 1.6;">Всі ролі роздані. Обговорюйте, ставте запитання по колу та знайдіть шпигуна серед вас.</div>
-    <button class="btn-primary" onclick="switchScreen('screen-setup')">Нова гра</button>
-    <button class="btn-ghost mt8" onclick="resetToMenu()">В головне меню</button>
+  <div class="glass final-card">
+    <span class="final-icon">🎭</span>
+    <div class="final-title" id="final-title">Всі ролі роздано.<br>Гру розпочато!</div>
+    <div class="final-stats">
+      <div class="stat-chip"><strong id="final-players">5</strong><span id="label-stat-players">Гравців</span></div>
+      <div class="stat-chip"><strong id="final-spies">1</strong><span id="label-stat-spies">Шпигунів</span></div>
+    </div>
+    <div class="final-sub" id="final-description">Обговорюйте та знайдіть шпигуна.</div>
+    <button class="btn-primary" id="btn-new-game-restart" onclick="resetGame()">Нова гра</button>
   </div>
 </div>
 
-<!-- ========================================== -->
-<!-- ══ ЕКРАНИ ГРИ "ТАЄМНИЦЯ" (Мережева) ══ -->
-<!-- ========================================== -->
-
-<!-- МЕНЮ ТАЄМНИЦІ -->
-<div id="screen-mystery-menu" class="screen screen-center">
-  <div class="glass setup-card auto-height-card" style="padding: 30px 24px; text-align: center;">
-    <div style="display: flex; justify-content: flex-start; margin-bottom: 20px;">
-      <button class="header-btn" onclick="switchScreen('screen-main')" style="border: none; background: rgba(255,255,255,0.1)">← Назад</button>
-    </div>
-    <div class="player-badge" style="font-size: 2rem;">Таємниця</div>
-    <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 30px; line-height: 1.5;">Мережева дуель.<br>Вгадайте персонажа суперника швидше, ніж він вгадає вашого!</p>
-    
-    <div style="display: flex; flex-direction: column; gap: 15px;">
-      <button class="btn-primary" onclick="switchScreen('screen-mystery-host')">Створити гру (Хост)</button>
-      <button class="btn-ghost" onclick="switchScreen('screen-mystery-join')">Підключитися (Гість)</button>
+<!-- MODALS -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-content glass" style="text-align: center;">
+    <div class="modal-title" id="confirm-title">Почати заново?</div>
+    <div style="color: var(--muted); margin-bottom: 28px; font-size: 0.95rem;" id="confirm-desc">Всі ролі будуть скинуті.</div>
+    <div style="display: flex; gap: 12px;">
+      <button class="btn-ghost" style="padding: 14px;" onclick="closeModal('confirmModal')" id="btn-cancel">Скасувати</button>
+      <button class="btn-primary btn-danger" style="padding: 14px;" onclick="executeRestart()" id="btn-confirm">Так</button>
     </div>
   </div>
 </div>
 
-<!-- ХОСТ: НАЛАШТУВАННЯ ТА ЛОБІ -->
-<div id="screen-mystery-host" class="screen">
+<div class="modal-overlay" id="rulesModal">
+  <div class="modal-content glass">
+    <button class="close-modal-btn" onclick="closeModal('rulesModal')">×</button>
+    <div class="modal-title" id="modal-rules-title">Правила гри</div>
+    <div class="rules-scroll" id="modal-rules-body"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="infoModal">
+  <div class="modal-content glass">
+    <button class="close-modal-btn" onclick="closeModal('infoModal')">×</button>
+    <div class="modal-title" id="modal-info-title">Опис персонажа</div>
+    <div class="rules-scroll" style="text-align:center;" id="modal-info-body"></div>
+  </div>
+</div>
+
+<!-- SECRET LOBBY HOST -->
+<div id="screen-secret-lobby-host" class="screen">
   <div class="glass setup-card" id="host-setup-view">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-      <button class="header-btn" onclick="switchScreen('screen-mystery-menu')" style="padding: 4px 10px; border: none; background: rgba(255,255,255,0.1)">← Назад</button>
-      <div class="section-label" style="margin: 0;">Створити гру</div>
+      <button class="header-btn" onclick="switchScreen('screen-secret-role-choice')" style="padding: 4px 10px; border: none; background: rgba(255,255,255,0.1)">← Назад</button>
+      <div class="section-label" style="margin: 0;" id="label-host-setup">Створити гру</div>
     </div>
+    <p id="host-instruction" style="color: var(--muted); font-size: 0.8rem; margin-bottom: 10px; text-align: center;">Оберіть категорії (У грі буде 16 карток)</p>
     
-    <p style="color: var(--muted); font-size: 0.8rem; margin-bottom: 10px; text-align: center;">Оберіть категорії персонажів (Усі обрані картки будуть на дошці)</p>
-    
-    <div style="display:flex;flex-direction:column;flex:1;min-height:0;">
+    <div id="secret-cats-section">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-shrink:0;">
-        <div class="section-label" style="margin-bottom:0">Категорії</div>
-        <button class="btn-ghost" style="padding:6px 14px; font-size:0.75rem; width: auto; height: auto;" onclick="toggleAllMysteryCats()">Обрати всі</button>
+        <div class="section-label" style="margin-bottom:0" id="label-host-cats">Категорії</div>
+        <button class="btn-ghost" style="padding:6px 14px; font-size:0.75rem; width: auto; border-radius:10px;" onclick="toggleAllMysteryCats()" id="btn-host-all">Обрати всі</button>
       </div>
       <div class="cats-wrapper">
-        <div class="cats" id="mystery-cats-container"></div>
+        <div class="cats" id="secret-cats-container"></div>
       </div>
     </div>
     
     <div class="mt24" style="flex-shrink: 0;">
-      <button class="btn-primary" onclick="initMysteryHost()" id="btn-create-room">Згенерувати кімнату</button>
+      <button class="btn-primary" onclick="generateSecretRoomCode()" id="btn-generate-room">Згенерувати кімнату</button>
     </div>
   </div>
 
   <div class="glass setup-card auto-height-card screen-center" id="host-lobby-view" style="display: none; padding: 40px 24px;">
-    <div class="section-label" style="text-align: center;">Ваш код кімнати:</div>
-    <div class="huge-code" id="host-room-code">------</div>
-    <p style="color: var(--muted); text-align: center; margin-bottom: 30px; line-height: 1.5;">Передайте цей код другому гравцю.<br>Очікування підключення...</p>
-    <div class="spinner" style="margin: 0 auto; border-top-color: var(--pink);"></div>
-    <button class="btn-ghost mt24" onclick="cancelMysteryLobby()">Скасувати</button>
+    <div class="section-label" style="text-align: center;" id="label-host-code">Код кімнати:</div>
+    <div class="huge-code" id="room-code-display">------</div>
+    <p style="color: var(--muted); text-align: center; margin-bottom: 20px; line-height: 1.5;" id="text-host-share">Передайте цей код другому гравцю.</p>
+    
+    <div id="host-wait-group" style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px;">
+      <div class="status-dot"></div>
+      <span id="label-waiting-players">Очікування підключення...</span>
+    </div>
+    <div id="host-connected-group" style="display:none;text-align:center;font-size:0.85rem;color:var(--cyan);font-weight:bold;margin-bottom:20px;">
+      ✓ Гравець підключився!
+    </div>
+    
+    <button class="btn-primary" id="btn-start-secret-game" style="display:none; width:100%;" onclick="startSecretGame()">Почати гру</button>
+    <button class="btn-ghost mt24" onclick="cancelSecretLobby()" id="btn-host-cancel">Скасувати</button>
   </div>
 </div>
 
-<!-- ГІСТЬ: ПІДКЛЮЧЕННЯ -->
-<div id="screen-mystery-join" class="screen screen-center">
+<!-- SECRET LOBBY GUEST -->
+<div id="screen-secret-lobby-guest" class="screen screen-center">
   <div class="glass setup-card auto-height-card" style="padding: 40px 24px;">
     <div style="display: flex; justify-content: flex-start; margin-bottom: 20px;">
-      <button class="header-btn" onclick="switchScreen('screen-mystery-menu')" style="padding: 4px 10px; border: none; background: rgba(255,255,255,0.1)">← Назад</button>
+      <button class="header-btn" onclick="switchScreen('screen-secret-role-choice')" style="padding: 4px 10px; border: none; background: rgba(255,255,255,0.1)">← Назад</button>
     </div>
-    <div class="section-label" style="text-align: center;">Введіть код кімнати</div>
-    <input type="text" class="input-code mt16" id="join-code-input" placeholder="000000" maxlength="6">
-    <button class="btn-primary mt24" onclick="joinMysteryGame()" id="btn-join-room">Підключитися</button>
+    <div class="section-label" style="text-align: center;" id="label-guest-code">Введіть код кімнати</div>
+    <input type="text" class="input-code mt16" id="room-code-input" placeholder="000000" maxlength="6">
+    <button class="btn-primary mt24" onclick="joinGame()" id="btn-join-game">Підключитися</button>
     <div id="join-status" style="color: var(--cyan); text-align: center; margin-top: 15px; font-size: 0.9rem; font-weight: bold;"></div>
   </div>
 </div>
 
-<!-- ІГРОВИЙ ЕКРАН (LANDSCAPE DYNAMIC GRID) -->
-<div id="screen-mystery-game" class="screen">
+<!-- SECRET GAMEPLAY -->
+<div id="screen-secret-game" class="screen" style="padding: env(safe-area-inset-top, 0) 0 0 0;">
+  <!-- ORIENTATION RECOMENDATION BANNER -->
+  <div id="orientation-tip" class="orientation-tip">
+    <span style="font-size: 1.5rem;">📱🔄</span>
+    <div style="flex: 1; text-align: left;">
+      <div style="color: var(--cyan); font-weight: 800; font-family: 'Unbounded', sans-serif; font-size: 0.8rem;">Рекомендовано горизонтально!</div>
+      <div style="font-size: 0.72rem; color: var(--muted); margin-top: 2px;">Поверніть пристрій горизонтально для зручнішого перегляду карток.</div>
+    </div>
+    <button onclick="dismissOrientationTip()" style="background: none; border: none; color: var(--muted); font-size: 1.4rem; cursor: pointer; padding: 0 4px; line-height: 1;">&times;</button>
+  </div>
+
   <div class="mystery-layout">
-    <!-- Сітка (Всі картки) -->
-    <div class="mystery-grid-wrap glass" id="mystery-grid" style="border-radius: 20px; padding: 20px; background: rgba(0,0,0,0.5);">
-      <!-- Картки генеруються через JS -->
+    <div class="mystery-grid-wrap" id="cards-grid">
+      <!-- Generated via JS -->
     </div>
 
-    <!-- Панель керування (Справа) -->
     <div class="mystery-sidebar">
-      <div class="turn-indicator" id="mystery-turn-indicator">ОЧІКУВАННЯ...</div>
+      <div class="turn-indicator blink" id="turn-indicator">ОЧІКУВАННЯ...</div>
       
       <div class="my-target-wrap" id="mystery-my-char-wrap" style="display:none;">
-        <div class="my-target-label">Ви загадали:</div>
-        <img src="" class="my-target-img" id="mystery-my-char-img" alt="?">
-        <div style="font-weight: bold; font-size: 1.1rem; color: var(--green);" id="mystery-my-char-name">Ім'я</div>
+        <div class="mystery-card">
+          <div class="mystery-card-img-wrap">
+            <img src="" id="mystery-my-char-img" class="mystery-card-img" alt="">
+            <div class="mystery-card-image-overlay"></div>
+            <div class="mystery-card-emoji" id="mystery-my-char-emoji">?</div>
+            <button class="mystery-info-btn" id="btn-myst-info" type="button">i</button>
+          </div>
+          <div class="mystery-card-info">
+            <div class="my-target-label" id="label-my-target">Ви загадали:</div>
+            <div class="mystery-card-name" id="mystery-my-char-name">Ім'я</div>
+            <div class="mystery-card-note">НЕ КАЖИ ІМ'Я ВГОЛОС</div>
+          </div>
+        </div>
       </div>
 
-      <div class="my-target-wrap" id="mystery-instruction-wrap">
-        <p style="color: var(--text); font-size: 0.95rem; line-height: 1.5;">Оберіть персонажа на полі, якого будете загадувати.</p>
+      <div class="mystery-sidebar-body">
+        <p style="color: var(--text); font-size: 0.9rem; line-height: 1.4; text-align:center;" id="mystery-instruction-wrap">
+          Оберіть персонажа на полі, якого будете загадувати.
+        </p>
       </div>
 
-      <div class="sidebar-actions">
-        <!-- Кнопки Фази 1 -->
-        <button class="btn-primary" id="btn-myst-ready" style="display:none;" onclick="sendMysteryReady()">Я ГОТОВИЙ</button>
-        
-        <!-- Кнопки Фази 2 -->
-        <button class="btn-ghost" id="btn-myst-end-turn" style="display:none;" onclick="endMysteryTurn()">Завершити хід</button>
-        <button class="btn-danger btn-primary" id="btn-myst-accuse" style="display:none;" onclick="toggleAccuseMode()">ЗВИНУВАТИТИ</button>
-        <button class="btn-ghost" style="padding: 10px; font-size: 0.8rem; margin-top: 10px; border:none; background: transparent;" onclick="abandonMysteryGame()">Здатися</button>
+      <div class="mystery-actions">
+        <button class="btn-primary" id="btn-myst-ready" onclick="sendMysteryReady()">Я ГОТОВИЙ</button>
+        <button class="btn-ghost" id="btn-myst-end-turn" style="display:none;" onclick="endSecretTurn()">Завершити хід</button>
+        <button class="btn-danger btn-primary" id="btn-myst-accuse" style="display:none;" onclick="toggleAccuseMode()">ЗВИНУВАТИ</button>
+        <button class="btn-ghost" style="padding: 8px; font-size: 0.75rem; border:none; background: transparent; color:var(--muted);" onclick="surrenderSecretGame()" id="btn-myst-surrender">Здатися</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Екран результату -->
-<div id="screen-mystery-result" class="screen screen-center">
-  <div class="glass setup-card auto-height-card" style="padding: 40px 24px; text-align: center;">
-    <span id="result-emoji" style="font-size:5rem; display:block; margin-bottom:10px;">🏆</span>
-    <div class="player-badge" id="result-title" style="font-size: 2.2rem;">ВИ ПЕРЕМОГЛИ!</div>
-    <div style="color:var(--muted); margin: 20px 0; font-size: 1.1rem;" id="result-desc">Ви правильно вгадали персонажа!</div>
-    
-    <div style="display: flex; gap: 20px; justify-content: center; margin-bottom: 30px;">
-      <div>
-        <div style="font-size: 0.8rem; color: var(--muted); margin-bottom: 5px;">Ваш персонаж:</div>
-        <img id="res-my-img" style="width:90px; height:90px; border-radius:12px; object-fit:cover; background:rgba(0,0,0,0.3); border: 2px solid var(--border2);">
+<!-- SECRET FINAL RESULT -->
+<div id="screen-secret-result" class="screen screen-center">
+  <div class="glass result-card">
+    <div class="result-header">
+      <span id="result-icon" class="result-icon">🏆</span>
+      <div id="result-title" class="result-title">Перемога</div>
+      <div id="result-message" class="result-message">Ви вгадали правильно персонажа і виграли раунд.</div>
+    </div>
+
+    <div class="result-grid">
+      <div class="result-panel">
+        <div id="res-lbl-mine" class="result-panel-label">Ваш вибір</div>
+        <div class="result-panel-img">
+          <div id="res-my-emoji" class="result-panel-emoji">❓</div>
+          <img src="" id="res-my-img" alt="Ваш вибір">
+        </div>
+        <div id="res-my-name" class="result-panel-name">-</div>
       </div>
-      <div>
-        <div style="font-size: 0.8rem; color: var(--muted); margin-bottom: 5px;">Персонаж ворога:</div>
-        <img id="res-opp-img" style="width:90px; height:90px; border-radius:12px; object-fit:cover; background:rgba(0,0,0,0.3); border: 2px solid var(--border2);">
+      <div class="result-panel">
+        <div id="res-lbl-opp" class="result-panel-label">Вибір ворога</div>
+        <div class="result-panel-img">
+          <div id="res-opp-emoji" class="result-panel-emoji">❓</div>
+          <img src="" id="res-opp-img" alt="Вибір ворога">
+        </div>
+        <div id="res-opp-name" class="result-panel-name">-</div>
       </div>
     </div>
 
-    <button class="btn-primary" onclick="resetToMenu()">В головне меню</button>
-  </div>
-</div>
-
-<!-- Landscape Lock Overlay -->
-<div id="portrait-lock">
-  <div class="rotate-icon">📱</div>
-  <h2 style="font-family: 'Unbounded', sans-serif; color: var(--cyan); margin-bottom: 10px;">Поверніть телефон</h2>
-  <p style="color: var(--muted); max-width: 300px;">Гра "Таємниця" вимагає великого поля для всіх карток. Вона працює лише в горизонтальній орієнтації.</p>
-</div>
-
-<!-- RULES MODAL -->
-<div class="modal-overlay" id="rulesModal" onclick="closeModal(event, 'rulesModal')">
-  <div class="modal-content" onclick="event.stopPropagation()">
-    <button class="close-modal-btn" onclick="closeModalForce('rulesModal')">×</button>
-    <div class="modal-title">Правила Гри</div>
-    <div class="rules-scroll">
-      <h4>🕵️ Шпигун (Для однієї кімнати)</h4>
-      <p>Локальна гра для компанії друзів (3-12 осіб) на одному пристрої.</p>
-      <ul>
-        <li>Оберіть категорії та передавайте телефон один одному.</li>
-        <li>Всі отримують однакового персонажа, крім <strong>Шпигунів</strong> (їм роль невідома).</li>
-        <li>Задавайте один одному питання по колу (наприклад: "Твій персонаж носить зброю?").</li>
-        <li>Мета звичайних гравців — знайти шпигуна. Мета шпигуна — не видати себе та вгадати загаданого персонажа.</li>
-      </ul>
-      
-      <h4>🤔 Таємниця (Мережева гра 1х1)</h4>
-      <p>Дуель для двох гравців на різних пристроях. Гравець-хост створює кімнату та передає код другу.</p>
-      <ul>
-        <li>На великому полі з'являться <strong>ВСІ</strong> персонажі з обраних категорій.</li>
-        <li>Спочатку ви обираєте одного персонажа, якого будете загадувати.</li>
-        <li>У свій хід задавайте питання (голосом або в месенджері), на які можна відповісти лише "Так" або "Ні".</li>
-        <li>Натискайте на картки на дошці, щоб викреслювати тих, хто не підходить.</li>
-        <li>Коли будете впевнені, натисніть <strong>"ЗВИНУВАТИТИ"</strong> і оберіть картку. Якщо вгадаєте — ви перемогли! Якщо помилитесь — перемога дістанеться супернику.</li>
-      </ul>
-    </div>
+    <button class="btn-primary result-button" onclick="backToMenu()" id="btn-res-menu">В головне меню</button>
   </div>
 </div>
 
@@ -543,613 +853,858 @@ header {
 
 <script>
 // ════════════════════════════════════════════
-// БАЗА ДАНИХ ПЕРСОНАЖІВ
+//  LOCALIZATION DICTIONARY & FULL DATABASE
 // ════════════════════════════════════════════
+const TRANSLATIONS = {
+  ua: {
+    rulesBtn: "Правила", menuSubtitle: "Оберіть гру",
+    menuSpyTitle: "Шпигун", menuSpyDesc: "Локальна гра для компанії на одному пристрої",
+    menuSecretTitle: "Таємниця", menuSecretDesc: "Мережева гра 1 на 1. Відгадай персонажа супротивника",
+    roleTitle: "Оберіть роль", roleSubtitle: "Створіть кімнату або підключіться",
+    roleHost: "Створити гру (Хост)", roleGuest: "Підключитися (Гість)",
+    setupPlayers: "Кількість гравців", setupSpyHint: "Шпигунів: <strong>{N}</strong> &nbsp;(1 на кожні 3 гравці)",
+    setupCategories: "Категорії", selectAll: "Обрати всі", deselectAll: "Зняти всі",
+    startBtn: "Почати роздачу ролей", playerBadge: "Гравець {N}",
+    promptTake: "Візьми пристрій, інші відверніться", promptPass: "Передай пристрій наступному",
+    openCardBtn: "Відкрити карту", tapToOpen: "Натисни щоб відкрити", closeCardBtn: "Закрити карту",
+    finishHandoutBtn: "Завершити роздачу", restartBtn: "Почати заново",
+    abortConfirmTitle: "Почати заново?", abortConfirmDesc: "Всі ролі будуть скинуті.", cancelBtn: "Скасувати", confirmBtn: "Так",
+    youAreSpy: "Ти Шпигун!", spyTask: "Відгадай персонажа за підказками", spyBadge: "Таємний агент",
+    finalTitle: "Всі ролі роздані.<br>Гру розпочато!", finalPlayers: "Гравців", finalSpies: "Шпигунів",
+    finalDesc: "Обговорюйте та знайдіть шпигуна серед вас.", newGameBtn: "Нова гра",
+    noCategoryError: "Обери хоча б одну категорію!", rulesModalTitle: "Правила гри", characterYour: "Твій персонаж", characterWarn: "Не кажи ім'я вголос",
+    secretHostSetup: "Створити гру", secretHostCats: "Категорії", secretHostCode: "Код кімнати:", secretHostShare: "Передайте цей код другові.",
+    secretWaitMsg: "Очікування підключення...", secretConnectedMsg: "✓ Гравець підключений!", secretGuestCode: "Введіть код кімнати",
+    secretConnectBtn: "Підключитися", secretGenerateBtn: "Згенерувати кімнату", secretStartBtn: "Почати гру",
+    secretReadyBtn: "Я ГОТОВИЙ", secretEndTurnBtn: "Завершити хід", secretAccuseBtn: "ОБВИНУВАТИ", secretCancelAccuseBtn: "СКАСУВАТИ ОБВИНУВАЧЕННЯ",
+    secretSurrenderBtn: "Здатися", secretBackMenuBtn: "В головне меню",
+    secretInstrPick: "Оберіть персонажа на полі, якого будете загадувати.",
+    secretInstrWaitReady: "Очікуємо готовності супротивника...",
+    secretInstrMyTurn: "Ваш хід. Задайте питання вголос та виключайте персонажів.",
+    secretInstrEnemyTurn: "Хід супротивника. Відповідайте на його питання.",
+    secretInstrAccuseMode: "Режим обвинувачення! Оберіть персонажа, якого загадав супротивник.",
+    turnWait: "ОЧІКУВАННЯ...", turnMine: "ТВІЙ ХІД", turnEnemy: "ХІД СУПРОТИВНИКА",
+    resWinTitle: "ВИ ПЕРЕМОГЛИ!", resLoseTitle: "ВИ ПРОГРАЛИ!", resWinMsg: "Чудова здогадка!", resLoseMsg: "Супротивник виявився розумнішим.",
+    resMyChoice: "Ваш вибір", resOppChoice: "Вибір ворога",
+    rulesContent: `<h4>🎯 Мета</h4><ul><li><b>Мирним:</b> вирахувати шпигуна.</li><li><b>Шпигуну:</b> вгадати персонажа.</li></ul><h4>🔄 Хід</h4><ul><li>Називайте один факт по колу.</li></ul>`
+  }
+};
+
 const CATEGORIES = [
   {
     id: 'movies', icon: '🎬', nameUA: 'Фільми та Серіали',
     chars: [
-      { nameUA: 'Агент Сміт', wiki: 'Agent_Smith', emoji: '🕶️' },
-      { nameUA: 'Аладдін', wiki: 'Aladdin_(Disney_character)', emoji: '🧞‍♂️' },
-      { nameUA: 'Аліса', wiki: 'Alice_(Alice_in_Wonderland)', emoji: '🐇' },
-      { nameUA: 'Ар\'я Старк', wiki: 'Arya_Stark', emoji: '🗡️' },
-      { nameUA: 'Барні Стінсон', wiki: 'Barney_Stinson', emoji: '👔' },
-      { nameUA: 'Барт Сімпсон', wiki: 'Bart_Simpson', emoji: '🛹' },
-      { nameUA: 'Білосніжка', wiki: 'Snow_White_(Disney_character)', emoji: '🍎' },
-      { nameUA: 'Бетмен', wiki: 'Batman', emoji: '🦇' },
-      { nameUA: 'Валл-і', wiki: 'WALL-E_(character)', emoji: '🤖' },
-      { nameUA: 'Венздей Аддамс', wiki: 'Wednesday_Addams', emoji: '🖤' },
-      { nameUA: 'Віто Корлеоне', wiki: 'Vito_Corleone', emoji: '🌹' },
-      { nameUA: 'Волан-де-Морт', wiki: 'Lord_Voldemort', emoji: '🐍' },
-      { nameUA: 'Гендальф', wiki: 'Gandalf', emoji: '🧙‍♂️' },
-      { nameUA: 'Ганнібал Лектер', wiki: 'Hannibal_Lecter', emoji: '🍷' },
-      { nameUA: 'Гаррі Поттер', wiki: 'Harry_Potter_(character)', emoji: '⚡' },
-      { nameUA: 'Герміона Ґрейнджер', wiki: 'Hermione_Granger', emoji: '📚' },
-      { nameUA: 'Гладіатор', wiki: 'Maximus_Decimus_Meridius', emoji: '🛡️' },
-      { nameUA: 'Гомер Сімпсон', wiki: 'Homer_Simpson', emoji: '🍩' },
-      { nameUA: 'Гомес Аддамс', wiki: 'Gomez_Addams', emoji: '🤵' },
-      { nameUA: 'Грінч', wiki: 'Grinch', emoji: '💚' },
-      { nameUA: 'Дамблдор', wiki: 'Albus_Dumbledore', emoji: '🧙' },
-      { nameUA: 'Дарт Вейдер', wiki: 'Darth_Vader', emoji: '⚔️' },
-      { nameUA: 'Дієнеріс Таргарієн', wiki: 'Daenerys_Targaryen', emoji: '🐉' },
-      { nameUA: 'Джеймс Бонд', wiki: 'James_Bond', emoji: '🕴️' },
-      { nameUA: 'Джон Сноу', wiki: 'Jon_Snow_(character)', emoji: '🐺' },
-      { nameUA: 'Джон Вік', wiki: 'John_Wick', emoji: '🔫' },
-      { nameUA: 'Джокер', wiki: 'Joker_(DC_Comics)', emoji: '🃏' },
-      { nameUA: 'Доктор Хаус', wiki: 'Gregory_House', emoji: '🩼' },
-      { nameUA: 'Джессі Пінкман', wiki: 'Jesse_Pinkman', emoji: '💊' },
-      { nameUA: 'Залізна Людина', wiki: 'Iron_Man', emoji: '🦾' }
+      { nameUA: 'Агент Сміт', wiki: 'Agent_Smith', emoji: '🕶️', descUA: 'Головна програма-антагоніст у віртуальному світі Матриці.' },
+      { nameUA: 'Аладдін', wiki: 'Aladdin_(Disney_character)', emoji: '🧞‍♂️', descUA: 'Вуличний злодюжка з Аграби, який знайшов чарівну лампу з Джином.' },
+      { nameUA: 'Аліса', wiki: 'Alice_(Alice_in_Wonderland)', emoji: '🐇', descUA: 'Цікава дівчинка, яка провалилася в кролячу нору в Країну Див.' },
+      { nameUA: 'Ар\'я Старк', wiki: 'Arya_Stark', emoji: '🗡️', descUA: 'Відважна безлика войовниця та молодша донька лорда Еддарда Старка.' },
+      { nameUA: 'Barney Stinson', wiki: 'Barney_Stinson', emoji: '👔', descUA: 'Харизматичний любитель костюмів та лазертагу з "Як я зустрів вашу маму".' },
+      { nameUA: 'Барт Сімпсон', wiki: 'Bart_Simpson', emoji: '🛹', descUA: 'Хуліган та непосида зі скейтбордом, старший син Гомера та Мардж.' },
+      { nameUA: 'Білосніжка', wiki: 'Snow_White_(Disney_character)', emoji: '🍎', descUA: 'Принцеса, яка переховувалася в лісі у семи гномів від злої мачухи.' },
+      { nameUA: 'Бетмен', wiki: 'Batman', emoji: '🦇', descUA: 'Брюс Вейн, мільярдер, що захищає Готем під масою кажана.' },
+      { nameUA: 'Валл-і', wiki: 'WALL-E_(character)', emoji: '🤖', descUA: 'Зворушливий робот-сміттяр, який залишився на занедбаній Землі.' },
+      { nameUA: 'Венздей Аддамс', wiki: 'Wednesday_Addams', emoji: '🖤', descUA: 'Готична та похмура дівчинка з кісками з сімейки Аддамс.' },
+      { nameUA: 'Віто Корлеоне', wiki: 'Vito_Corleone', emoji: '🌹', descUA: 'Дон мафії, Хрещений батько, глава впливового кримінального клану.' },
+      { nameUA: 'Волан-де-Морт', wiki: 'Lord_Voldemort', emoji: '🐍', descUA: 'Темний лорд, чиє ім\'я бояться називати всі чарівники.' },
+      { nameUA: 'Гендальф', wiki: 'Gandalf', emoji: '🧙‍♂️', descUA: 'Могутній старий чарівник та один із захисників Середзем\'я.' },
+      { nameUA: 'Ганнібал Лектер', wiki: 'Hannibal_Lecter', emoji: '🍷', descUA: 'Геніальний судовий психіатр, естет і серійний вбивця-канібал.' },
+      { nameUA: 'Гаррі Поттер', wiki: 'Harry_Potter_(character)', emoji: '⚡', descUA: 'Хлопчик, який вижив, видатний чарівник зі шрамом-блискавкою.' },
+      { nameUA: 'Герміона Ґрейнджер', wiki: 'Hermione_Granger', emoji: '📚', descUA: 'Найрозумніша та найстаранніша учениця Гоґвортсу, подруга Гаррі.' },
+      
     ]
   },
   {
     id: 'music', icon: '🎤', nameUA: 'Музика',
     chars: [
-      { nameUA: '50 Cent', wiki: '50_Cent', emoji: '🪙' },
-      { nameUA: 'Адель', wiki: 'Adele', emoji: '🎶' },
-      { nameUA: 'Бейонсе', wiki: 'Beyonc%C3%A9', emoji: '👑' },
-      { nameUA: 'Біллі Айліш', wiki: 'Billie_Eilish', emoji: '🖤' },
-      { nameUA: 'Джастін Бібер', wiki: 'Justin_Bieber', emoji: '👱‍♂️' },
-      { nameUA: 'Емінем', wiki: 'Eminem', emoji: '🎤' },
-      { nameUA: 'Курт Кобейн', wiki: 'Kurt_Cobain', emoji: '🎸' },
-      { nameUA: 'Леді Гага', wiki: 'Lady_Gaga', emoji: '🎭' },
-      { nameUA: 'Майкл Джексон', wiki: 'Michael_Jackson', emoji: '🕺' },
-      { nameUA: 'Мадонна', wiki: 'Madonna', emoji: '💃' },
-      { nameUA: 'Снуп Догг', wiki: 'Snoop_Dogg', emoji: '💨' },
-      { nameUA: 'Фредді Мерк\'юрі', wiki: 'Freddie_Mercury', emoji: '🎸' }
+      { nameUA: '50 Cent', wiki: '50_Cent', emoji: '🪙', descUA: 'Знаменитий американський репер, який вижив після 9 пострілів.' },
+      { nameUA: 'Адель', wiki: 'Adele', emoji: '🎶', descUA: 'Британська соул-співачка з неймовірним глибоким голосом.' },
+      { nameUA: 'RM (Кім Намджун)', wiki: 'RM_(rapper)', emoji: '🐨', descUA: 'Лідер та головний репер всесвітньо відомої K-pop групи BTS.' },
+      { nameUA: 'Джин (Кім Сокджин)', wiki: 'Jin_(singer)', emoji: '🐹', descUA: 'Старший учасник групи BTS, вокаліст з ангельским голосом.' },
+      { nameUA: 'Шуга (Мін Юнги)', wiki: 'Suga_(rapper)', emoji: '🐱', descUA: 'Репер та талановитий продюсер із корейської групи BTS.' },
+      { nameUA: 'Джей-Хоуп (Чон Хосок)', wiki: 'J-Hope', emoji: '🐿️', descUA: 'Головний танцюрист та репер суперпопулярного бойз-бенду BTS.' },
+      { nameUA: 'Чимін (Пак Чимін)', wiki: 'Jimin', emoji: '🐥', descUA: 'Харизматичний вокаліст та провідний танцюрист групи BTS.' },
+      { nameUA: 'Ві (Кім Техьон)', wiki: 'V_(singer)', emoji: '🐯', descUA: 'Популярний вокаліст BTS з глибоким та оксамитовим баритоном.' },
+      { nameUA: 'Чонгук (Чон Чонгук)', wiki: 'Jungkook', emoji: '🐰', descUA: 'Золотий макне групи BTS, який завоював світові сольні чарти.' },
+      { nameUA: 'Мобі', wiki: 'Moby', emoji: '👽', descUA: 'Культовий американський електронний музикант та мультиінструменталіст.' },
+      { nameUA: 'Alyona Alyona', wiki: 'Alyona_Alyona', emoji: '🎤', descUA: 'Українська реп-виконавиця, яка прославилася щирими текстами.' },
+      { nameUA: 'Алла Пугачова', wiki: 'Alla_Pugacheva', emoji: '🌹', descUA: 'Примадонна естради, легендарна радянська та російська співачка.' },
+      { nameUA: 'Аріана Ґранде', wiki: 'Ariana_Grande', emoji: '🌙', descUA: 'Американська поп-діва з неймовірним діапазоном у 4 октави.' },
+      { nameUA: 'Арета Франклін', wiki: 'Aretha_Franklin', emoji: '👑', descUA: 'Королева соулу, яка стала символом боротьби за громадянські права.' },
+      { nameUA: 'Аксл Роуз', wiki: 'Axl_Rose', emoji: '🎸', descUA: 'Фронтмен рок-гурту Guns N\' Roses з неповторним вокалом.' },
+      { nameUA: 'Бейонсе', wiki: 'Beyonc%C3%A9', emoji: '👑', descUA: 'Суперзірка R&B, рекордсменка за кількістю премій Греммі.' },
+      
     ]
   },
   {
     id: 'history', icon: '🏛️', nameUA: 'Історія',
     chars: [
-      { nameUA: 'Альберт Айнштайн', wiki: 'Albert_Einstein', emoji: '💡' },
-      { nameUA: 'Джордж Вашингтон', wiki: 'George_Washington', emoji: '🏛️' },
-      { nameUA: 'Ісаак Ньютон', wiki: 'Isaac_Newton', emoji: '🍎' },
-      { nameUA: 'Клеопатра', wiki: 'Cleopatra', emoji: '🐍' },
-      { nameUA: 'Леонардо да Вінчі', wiki: 'Leonardo_da_Vinci', emoji: '🎨' },
-      { nameUA: 'Марія Кюрі', wiki: 'Marie_Curie', emoji: '🧪' },
-      { nameUA: 'Наполеон', wiki: 'Napoleon', emoji: '👑' },
-      { nameUA: 'Юлій Цезар', wiki: 'Julius_Caesar', emoji: '⚔️' },
-      { nameUA: 'Вінстон Черчилль', wiki: 'Winston_Churchill', emoji: '🚬' },
-      { nameUA: 'Мартін Лютер Кінг', wiki: 'Martin_Luther_King_Jr.', emoji: '✊' }
+      { nameUA: 'Авраам Лінкольн', wiki: 'Abraham_Lincoln', emoji: '🎩', descUA: '16-й президент США, який знищив рабство в країні.' },
+      { nameUA: 'Олександр Македонський', wiki: 'Alexander_the_Great', emoji: '🗡️', descUA: 'Видатний полководець давнини, який створив світову імперію.' },
+      { nameUA: 'Олександр Невський', wiki: 'Alexander_Nevsky', emoji: '🛡️', descUA: 'Князь, який прославився Льодовим побоїщем.' },
+      { nameUA: 'Альберт Айнштайн', wiki: 'Albert_Einstein', emoji: '💡', descUA: 'Геніальний фізик, автор теорії відносності.' },
+      { nameUA: 'Альфред Нобель', wiki: 'Alfred_Nobel', emoji: '🧨', descUA: 'Винахідник динаміту та засновник Нобелівської премії.' },
+      { nameUA: 'Ангела Меркель', wiki: 'Angela_Merkel', emoji: '🇩🇪', descUA: 'Багаторічний канцлер Німеччини, впливовий світовий лідер.' },
+      { nameUA: 'Антон Чехов', wiki: 'Anton_Chekhov', emoji: '📖', descUA: 'Видатний письменник, класик світової літератури та драматург.' },
+      { nameUA: 'Арістотель', wiki: 'Aristotle', emoji: '📜', descUA: 'Видатний давньогрецький філософ, учень Платона.' },
+      { nameUA: 'Архімед', wiki: 'Archimedes', emoji: '📐', descUA: 'Математик і фізик давнини, який кричав "Еврика!".' },
+      { nameUA: 'Барак Обама', wiki: 'Barack_Obama', emoji: '🇺🇸', descUA: '44-й президент США, лауреат Нобелівської премії миру.' },
+      { nameUA: 'Беньямін Франклін', wiki: 'Benjamin_Franklin', emoji: '💵', descUA: 'Один із батьків-засновників США, зображений на 100 доларах.' },
+      { nameUA: 'Білл Ґейтс', wiki: 'Bill_Gates', emoji: '💻', descUA: 'Засновник корпорації Microsoft та один із найвидатніших філантропів.' },
+      { nameUA: 'Богдан Хмельницький', wiki: 'Bohdan_Khmelnytsky', emoji: '⚔️', descUA: 'Гетьман Запорозького війська, ватажок козацького повстання.' },
+      { nameUA: 'Борис Джонсон', wiki: 'Boris_Johnson', emoji: '🇬🇧', descUA: 'Ексцентричний прем\'єр-міністр Великої Британії, який підтримав Україну.' },
+      { nameUA: 'Борис Єльцин', wiki: 'Boris_Yeltsin', emoji: '🇷🇺', descUA: 'Перший президент Російської Федерації після розпаду СРСР.' },
+      { nameUA: 'Валерій Залужний', wiki: 'Valeriy_Zaluzhnyi', emoji: '🪖', descUA: 'Генерал, колишній головнокомандувач Збройних сил України.' },
+      
     ]
   },
   {
     id: 'sport', icon: '⚽', nameUA: 'Спорт',
     chars: [
-      { nameUA: 'Кріштіану Роналду', wiki: 'Cristiano_Ronaldo', emoji: '🇵🇹' },
-      { nameUA: 'Ліонель Мессі', wiki: 'Lionel_Messi', emoji: '🐐' },
-      { nameUA: 'Майк Тайсон', wiki: 'Mike_Tyson', emoji: '🥊' },
-      { nameUA: 'Мухаммед Алі', wiki: 'Muhammad_Ali', emoji: '🦋' },
-      { nameUA: 'Серена Вільямс', wiki: 'Serena_Williams', emoji: '🎾' },
-      { nameUA: 'Усейн Болт', wiki: 'Usain_Bolt', emoji: '⚡' },
-      { nameUA: 'Майкл Джордан', wiki: 'Michael_Jordan', emoji: '🏀' },
-      { nameUA: 'Леброн Джеймс', wiki: 'LeBron_James', emoji: '👑' }
+      { nameUA: 'Андрій Шевченко', wiki: 'Andriy_Shevchenko', emoji: '⚽', descUA: 'Легенда українського футболу, володар "Золотого м\'яча".' },
+      { nameUA: 'Андреа Пірло', wiki: 'Andrea_Pirlo', emoji: '🇮🇹', descUA: 'Італійський маестро півзахисту, чемпіон світу.' },
+      { nameUA: 'Антуан Грізманн', wiki: 'Antoine_Griezmann', emoji: '🇫🇷', descUA: 'Французький форвард, чемпіон світу 2018 року.' },
+      { nameUA: 'Букайо Сака', wiki: 'Bukayo_Saka', emoji: '🌶️', descUA: 'Зірка Арсеналу та збірної Англії, талановитий вінгер.' },
+      { nameUA: 'Вірджил ван Дейк', wiki: 'Virgil_van_Dijk', emoji: '🇳🇱', descUA: 'Один із найкращих центральних захисників світу, капітан Ліверпуля.' },
+      { nameUA: 'Вінісіус Жуніор', wiki: 'Vin%C3%ADcius_J%C3%BAnior', emoji: '⚡', descUA: 'Бразильський вінгер, лідер атак мадридського Реала.' },
+      { nameUA: 'Гаві', wiki: 'Gavi_(footballer)', emoji: '🇪🇸', descUA: 'Молодий та агресивний півзахисник Барселони та збірної Іспанії.' },
+      { nameUA: 'Давид Вілья', wiki: 'David_Villa', emoji: '🇪🇸', descUA: 'Легендарний іспанський форвард, чемпіон світу та Європи.' },
+      { nameUA: 'Девід Бекхем', wiki: 'David_Beckham', emoji: '⚽', descUA: 'Англійський півзахисник, майстер штрафних ударів.' },
+      { nameUA: 'Джамал Мусіала', wiki: 'Jamal_Musiala', emoji: '🇩🇪', descUA: 'Молода зірка Баварії та збірної Німеччини, дриблер.' },
+      { nameUA: 'Джанлуїджі Буффон', wiki: 'Gianluigi_Buffon', emoji: '🧤', descUA: 'Один із найвидатніших воротарів в історії футболу.' },
+      { nameUA: 'Джуд Беллінгем', wiki: 'Jude_Bellingham', emoji: '🏴', descUA: 'Універсальний півзахисник Реала та Англії, зірка покоління.' },
+      { nameUA: 'Дієго Марадона', wiki: 'Diego_Maradona', emoji: '🇦🇷', descUA: 'Автор голу "Рука Бога", видатний аргентинський футболіст.' },
+      { nameUA: 'Зінедін Зідан', wiki: 'Zinedine_Zidane', emoji: '🇫🇷', descUA: 'Майстер витонченої гри, легенда Франції та колишній тренер Реала.' },
+      { nameUA: 'Златан Ібрагімович', wiki: 'Zlatan_Ibrahimovi%C4%87', emoji: '🦁', descUA: 'Шведський суперфорвард із бойовим характером та величезним его.' },
+      { nameUA: 'Ікер Касільяс', wiki: 'Iker_Casillas', emoji: '🧤', descUA: 'Багаторічний капітан Реала та Іспанії, який виграв усі титули.' },
+      
+    ]
+  },
+  {
+    id: 'bloggers', icon: '📱', nameUA: 'Блогери',
+    chars: [
+      { nameUA: 'IShowSpeed', wiki: 'IShowSpeed', emoji: '⚡', descUA: 'Ексцентричний молодий стрімер, фанат Роналду.' },
+      { nameUA: 'Джейк Пол', wiki: 'Jake_Paul', emoji: '🥊', descUA: 'Блогер-боксер, який влаштовує гучні поєдинки.' },
+      { nameUA: 'Джеймс Чарльз', wiki: 'James_Charles_(influencer)', emoji: '💄', descUA: 'Американський б\'юті-блогер та визажист.' },
+      { nameUA: 'Кай Сенат', wiki: 'Kai_Cenat', emoji: '👑', descUA: 'Рекордсмен Twitch за кількістю підписників, зірка трансляцій.' },
+      { nameUA: 'Логан Пол', wiki: 'Logan_Paul', emoji: '🎥', descUA: 'Епатажна американська блогер, рестлер WWE.' },
+      { nameUA: 'Марк Робер', wiki: 'Mark_Rober', emoji: '🚀', descUA: 'Інженер, екс-співробітник NASA, який створює наукові вірусні ролики.' },
+      { nameUA: 'MrBeast', wiki: 'MrBeast', emoji: '💸', descUA: 'Джиммі Дональдсон, найпопулярніший блогер у світі, який роздає мільйонів.' },
+      { nameUA: 'PewDiePie', wiki: 'PewDiePie', emoji: '👊', descUA: 'Фелікс Чельберг, легендарний шведський блогер, першопроходець YouTube.' },
+      { nameUA: 'Vsauce', wiki: 'Vsauce', emoji: '🧠', descUA: 'Майкл Стівенс, головний популяризатор науки на YouTube.' },
+      { nameUA: 'Зак Кінг', wiki: 'Zach_King', emoji: '🪄', descUA: 'Король відеомонтажу та "цифрової магії" в коротких роликах.' },
+      { nameUA: 'Данила Поперечний', wiki: 'Danila_Poperechny', emoji: '🎤', descUA: 'Російський стендап-комік, блогер та подкастер.' },
+      { nameUA: 'Івангай', wiki: 'EeOneGuy', emoji: '🎭', descUA: 'Легенда раннього YouTube в СНД з гаслом "Хаю-хай".' },
+      { nameUA: 'Катя Клеп', wiki: 'Kate_Clapp', emoji: '🎀', descUA: 'Першопроходець жіночого блогінгу на російськомовному YouTube.' },
+      { nameUA: 'Стас Давидов', wiki: 'This_is_Horosho', emoji: '📺', descUA: 'Ведучий культового шоу оглядів вірусних відео This is Хорошо.' },
+      { nameUA: 'Wylsacom', wiki: 'Wylsacom', emoji: '🍏', descUA: 'Валентин Пєтухов, головний техноблогер СНД, оглядач гаджетів.' },
+      { nameUA: 'Євген Синельников', wiki: 'Yevgen_Synelnykov', emoji: '🎬', descUA: 'Український режисер та ведучий, співавтор проекту "Орел і Решка".' }
     ]
   }
 ];
 
+let state = {
+  lang: 'ua', playerCount: 5, selectedCats: new Set(CATEGORIES.map(c => c.id)),
+  currentPlayer: 0, spySet: new Set(), usedChars: [], chosenChar: null, cardOpen: false
+};
+
+let currentGame = null; 
+let secretState = {
+  lang: 'ua', playerCount: 2, selectedCats: new Set(CATEGORIES.map(c => c.id)),
+  role: null, peer: null, conn: null, roomCode: null,
+  grid: [], mySelected: null, opponentSelectedWiki: null, myEliminated: new Set(),
+  isMyTurn: false, gameActive: false, stage: 'lobby',
+  myReady: false, opponentReady: false, accuseMode: false
+};
+
 // ════════════════════════════════════════════
-// УТІЛІТИ ТА КЕШ
+//  IMAGE FETCH & CACHE
 // ════════════════════════════════════════════
 const imgCache = {};
+
 async function fetchWikiImage(slug, displayName=''){
   if(imgCache[slug] !== undefined) return imgCache[slug];
-  let url = null;
-  try {
-    const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(slug)}`);
-    if(res.ok) {
-      const d = await res.json();
-      url = d?.thumbnail?.source || d?.originalimage?.source || null;
-    }
-  } catch(e){}
   
-  if (!url && displayName) {
+  let url = null;
+  if (!url) {
     try {
-      const q = encodeURIComponent(displayName);
-      const res = await fetch(`https://source.unsplash.com/600x600/?${q},portrait`, { method: 'HEAD' });
-      if (res.ok) url = `https://source.unsplash.com/600x600/?${q},portrait`;
+      const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(slug)}`, { signal: AbortSignal.timeout(5000) });
+      if(res.ok) { const d = await res.json(); url = d?.originalimage?.source || d?.thumbnail?.source || null; }
     } catch(e){}
   }
-  imgCache[slug] = url || ''; 
+  if (!url) {
+    try {
+      const res = await fetch(`https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(slug)}&prop=pageimages&format=json&pithumbsize=500&origin=*`, { signal: AbortSignal.timeout(5000) });
+      if(res.ok) {
+        const d = await res.json(); const pages = d?.query?.pages || {};
+        for (const k in pages) { const p = pages[k]; if (p?.original?.source) { url = p.original.source; break; } if (p?.thumbnail?.source) { url = p.thumbnail.source; break; } }
+      }
+    } catch(e){}
+  }
+  
+  imgCache[slug] = url || '';
   return url;
 }
 
-function secureRandomInt(max) { return Math.floor(Math.random() * max); }
-function secureShuffle(array) {
-  let arr = [...array];
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = secureRandomInt(i + 1);
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+// ════════════════════════════════════════════
+//  UI & TRANSLATION
+// ════════════════════════════════════════════
+function updateStaticTexts() {
+  const t = TRANSLATIONS.ua;
+  const tg = TRANSLATIONS.ua;
+
+  document.getElementById('btn-rules').textContent = t.rulesBtn;
+  document.getElementById('modal-rules-title').textContent = t.rulesModalTitle;
+  document.getElementById('modal-rules-body').innerHTML = t.rulesContent;
+  
+  document.getElementById('menu-subtitle').textContent = t.menuSubtitle;
+  document.getElementById('menu-spy-title').textContent = t.menuSpyTitle;
+  document.getElementById('menu-spy-desc').textContent = t.menuSpyDesc;
+  document.getElementById('menu-secret-title').textContent = t.menuSecretTitle;
+  document.getElementById('menu-secret-desc').textContent = t.menuSecretDesc;
+
+  document.getElementById('role-title').textContent = tg.roleTitle;
+  document.getElementById('role-subtitle').textContent = tg.roleSubtitle;
+  document.getElementById('role-host-title').textContent = tg.roleHost;
+  document.getElementById('role-guest-title').textContent = tg.roleGuest;
+
+  document.getElementById('setup-label-players').textContent = t.setupPlayers;
+  document.getElementById('setup-spy-hint').innerHTML = t.setupSpyHint.replace('{N}', Math.floor(state.playerCount / 3));
+  document.getElementById('setup-label-categories').textContent = t.setupCategories;
+  document.getElementById('btn-select-all').textContent = state.selectedCats.size === CATEGORIES.length ? t.deselectAll : t.selectAll;
+  document.getElementById('btn-start-deal').textContent = t.startBtn;
+  
+  if(document.getElementById('screen-deal').classList.contains('active')) {
+    document.getElementById('deal-player-name').textContent = t.playerBadge.replace('{N}', state.currentPlayer + 1);
+    document.getElementById('deal-prompt-text').textContent = state.currentPlayer === 0 ? t.promptTake : t.promptPass;
+    document.getElementById('btn-open-card-init').textContent = t.openCardBtn;
+    document.getElementById('text-tap-open').textContent = t.tapToOpen;
+    document.getElementById('btn-restart-action').textContent = t.restartBtn;
   }
-  return arr;
+  document.getElementById('final-title').innerHTML = t.finalTitle;
+  document.getElementById('label-stat-players').textContent = t.finalPlayers;
+  document.getElementById('label-stat-spies').textContent = t.finalSpies;
+  document.getElementById('final-description').textContent = t.finalDesc;
+  document.getElementById('btn-new-game-restart').textContent = t.newGameBtn;
+  document.getElementById('confirm-title').textContent = t.abortConfirmTitle;
+  document.getElementById('confirm-desc').textContent = t.abortConfirmDesc;
+  document.getElementById('btn-cancel').textContent = t.cancelBtn;
+  document.getElementById('btn-confirm').textContent = t.confirmBtn;
+
+  document.getElementById('label-host-setup').textContent = tg.secretHostSetup;
+  document.getElementById('label-host-cats').textContent = tg.secretHostCats;
+  document.getElementById('btn-host-all').textContent = secretState.selectedCats.size === CATEGORIES.length ? tg.deselectAll : tg.selectAll;
+  document.getElementById('btn-generate-room').textContent = tg.secretGenerateBtn;
+  document.getElementById('label-host-code').textContent = tg.secretHostCode;
+  document.getElementById('text-host-share').textContent = tg.secretHostShare;
+  document.getElementById('btn-start-secret-game').textContent = tg.secretStartBtn;
+  document.getElementById('btn-host-cancel').textContent = tg.cancelBtn;
+  document.getElementById('label-guest-code').textContent = tg.secretGuestCode;
+  document.getElementById('btn-join-game').textContent = tg.secretConnectBtn;
+  
+  const readyBtn = document.getElementById('btn-myst-ready');
+  const endTurnBtn = document.getElementById('btn-myst-end-turn');
+  const accuseBtn = document.getElementById('btn-myst-accuse');
+  if(readyBtn) readyBtn.textContent = tg.secretReadyBtn;
+  if(endTurnBtn) endTurnBtn.textContent = tg.secretEndTurnBtn;
+  if(accuseBtn) accuseBtn.textContent = secretState.accuseMode ? tg.secretCancelAccuseBtn : tg.secretAccuseBtn;
+  document.getElementById('btn-myst-surrender').textContent = tg.secretSurrenderBtn;
+  document.getElementById('btn-res-menu').textContent = tg.secretBackMenuBtn;
+  document.getElementById('res-lbl-mine').textContent = tg.resMyChoice;
+  document.getElementById('res-lbl-opp').textContent = tg.resOppChoice;
+}
+
+function switchScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  updateStaticTexts();
 }
 
 let toastTimer;
 function showToast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  t.textContent = msg; t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-// Управління екранами та модалками
-function switchScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  
-  const header = document.getElementById('main-header');
-  if(id === 'screen-mystery-game') {
-    header.style.opacity = '0'; header.style.pointerEvents = 'none';
-  } else {
-    header.style.opacity = '1'; header.style.pointerEvents = 'all';
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+function openInfoModal(charData) {
+  const t = TRANSLATIONS.ua;
+  const name = charData.nameUA;
+  const description = charData.descUA;
+  const cardTitle = t.characterYour || 'Персонаж';
+  const cardNote = t.characterWarn || 'Не кажи ім’я вголос';
+
+  document.getElementById('modal-info-title').textContent = name;
+  document.getElementById('modal-info-body').innerHTML = `
+    <div class="info-modal-card">
+      <div class="card-img-wrap" style="min-height:260px; border-radius: 24px; overflow:hidden; background: rgba(0,0,0,0.08);">
+        <div class="card-img-placeholder">${charData.emoji}</div>
+        <div class="img-loader"><div class="spinner"></div></div>
+        <img class="card-img loading" id="modal-char-photo" alt="${name}" />
+        <div class="card-img-overlay"></div>
+      </div>
+      <div class="card-info" style="padding: 18px 18px 14px; position: static;">
+        <div class="card-top-label">${cardTitle}</div>
+        <div class="card-name">${name}</div>
+        <div class="card-bot-label">${cardNote}</div>
+      </div>
+      <p style="font-size: 1rem; line-height: 1.6; color: var(--text); margin-top: 14px;">${description}</p>
+    </div>
+  `;
+
+  const modalImg = document.getElementById('modal-char-photo');
+  const modalLoader = modalImg.closest('.card-img-wrap').querySelector('.img-loader');
+  const modalPlaceholder = modalImg.closest('.card-img-wrap').querySelector('.card-img-placeholder');
+
+  fetchWikiImage(charData.wiki || name, name).then(url => {
+    if (url) {
+      modalImg.src = url;
+      modalImg.onload = () => {
+        modalImg.classList.remove('loading');
+        modalLoader.style.display = 'none';
+        modalPlaceholder.style.display = 'none';
+      };
+      modalImg.onerror = () => { modalLoader.style.display = 'none'; };
+    } else {
+      modalLoader.style.display = 'none';
+    }
+  });
+
+  openModal('infoModal');
+}
+
+// ════════════════════════════════════════════
+//  MAIN MENU NAVIGATION
+// ════════════════════════════════════════════
+function selectGame(game) {
+  currentGame = game;
+  if (game === 'spy') {
+    document.body.classList.remove('is-secret-mode');
+    document.getElementById('btn-rules').style.display = 'block';
+    document.getElementById('btn-back-menu').style.display = 'block';
+    document.getElementById('header-title').textContent = '🕵️‍♂️ SPY';
+    buildCatsUI();
+    switchScreen('screen-setup');
+  } else if (game === 'secret') {
+    document.body.classList.add('is-secret-mode');
+    document.getElementById('btn-rules').style.display = 'none';
+    document.getElementById('btn-back-menu').style.display = 'block';
+    document.getElementById('header-title').textContent = '🎭 ТАЄМНИЦЯ';
+    switchScreen('screen-secret-role-choice');
   }
-  checkOrientation(); 
 }
 
-function openModal(id) {
-  document.getElementById(id).classList.add('active');
-}
-function closeModal(e, id) {
-  if (e.target.id === id) { document.getElementById(id).classList.remove('active'); }
-}
-function closeModalForce(id) {
-  document.getElementById(id).classList.remove('active');
-}
-
-function resetToMenu() {
-  if(peer) { peer.destroy(); peer = null; }
-  if(conn) { conn.close(); conn = null; }
-  switchScreen('screen-main');
+function backToMenu() {
+  currentGame = null;
+  document.body.classList.remove('is-secret-mode');
+  document.getElementById('btn-rules').style.display = 'none';
+  document.getElementById('btn-back-menu').style.display = 'none';
+  document.getElementById('header-title').textContent = '🕵️‍♂️ PartyBox';
+  cancelSecretLobby();
+  switchScreen('screen-main-menu');
 }
 
 // ════════════════════════════════════════════
-// ЛОГІКА ГРИ "ШПИГУН"
+//  SPY GAME LOGIC
 // ════════════════════════════════════════════
-let spyState = {
-  playerCount: 5,
-  selectedCats: new Set(CATEGORIES.map(c => c.id)),
-  currentPlayer: 0,
-  spySet: new Set(),
-  chosenChar: null,
-  cardOpen: false
-};
-
-function buildSpyCatsUI() {
-  const container = document.getElementById('spy-cats-container');
+function buildCatsUI() {
+  const container = document.getElementById('cats-container');
   container.innerHTML = '';
   CATEGORIES.forEach(cat => {
-    const active = spyState.selectedCats.has(cat.id);
+    const active = state.selectedCats.has(cat.id);
+    const displayName = cat.nameUA;
     const el = document.createElement('div');
     el.className = 'cat-toggle' + (active ? ' active' : '');
-    el.innerHTML = `
-      <div class="ct-icon">${cat.icon}</div>
-      <div style="flex: 1;">
-        <div class="ct-name">${cat.nameUA}</div>
-        <div class="ct-count">${cat.chars.length} персонажів</div>
-      </div>
-      <div class="ct-check">${active ? '✓' : ''}</div>
-    `;
-    el.onclick = () => {
-      if (spyState.selectedCats.has(cat.id) && spyState.selectedCats.size === 1) { showToast('Обери хоча б одну категорію!'); return; }
-      spyState.selectedCats.has(cat.id) ? spyState.selectedCats.delete(cat.id) : spyState.selectedCats.add(cat.id);
-      buildSpyCatsUI();
-    };
+    el.innerHTML = `<div class="ct-icon">${cat.icon}</div><div style="flex:1;"><div class="ct-name">${displayName}</div><div class="ct-count">${cat.chars.length} персонажів</div></div><div class="ct-check">${active ? '✓' : ''}</div>`;
+    el.addEventListener('click', () => toggleCategory(cat.id));
     container.appendChild(el);
   });
 }
-
-function toggleAllSpyCats() {
-  if (spyState.selectedCats.size === CATEGORIES.length) { spyState.selectedCats = new Set([CATEGORIES[0].id]); } 
-  else { spyState.selectedCats = new Set(CATEGORIES.map(c => c.id)); }
-  buildSpyCatsUI();
+function toggleCategory(id) {
+  if (state.selectedCats.has(id)) {
+    if (state.selectedCats.size === 1) { showToast(TRANSLATIONS.ua.noCategoryError); return; }
+    state.selectedCats.delete(id);
+  } else state.selectedCats.add(id);
+  buildCatsUI(); updateStaticTexts();
 }
-
-function changeSpyCount(delta) {
-  const next = spyState.playerCount + delta;
+function toggleAll() {
+  state.selectedCats = state.selectedCats.size === CATEGORIES.length ? new Set([CATEGORIES[0].id]) : new Set(CATEGORIES.map(c => c.id));
+  buildCatsUI(); updateStaticTexts();
+}
+function changeCount(delta) {
+  const next = state.playerCount + delta;
   if (next < 3 || next > 12) return; 
-  spyState.playerCount = next;
+  state.playerCount = next;
   document.getElementById('player-count').textContent = next;
-  document.getElementById('spy-count-hint').textContent = Math.max(1, Math.floor(next / 3));
+  updateStaticTexts();
 }
 
-function startSpyGame() {
+function secureRandomInt(max) { return Math.floor(Math.random() * max); }
+function secureShuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = secureRandomInt(i + 1);
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+function startGame() {
   const pool = [];
-  CATEGORIES.forEach(cat => { if (spyState.selectedCats.has(cat.id)) pool.push(...cat.chars); });
-  if (pool.length === 0) { showToast('Немає персонажів!'); return; }
+  CATEGORIES.forEach(cat => { if (state.selectedCats.has(cat.id)) pool.push(...cat.chars); });
+  if (pool.length === 0) return;
+  const chosen = pool[secureRandomInt(pool.length)];
+  state.chosenChar = chosen;
   
-  spyState.chosenChar = pool[secureRandomInt(pool.length)];
-  const spiesCount = Math.max(1, Math.floor(spyState.playerCount / 3));
-  const roleIndices = secureShuffle([...Array(spyState.playerCount).keys()]);
+  const spiesCount = Math.max(1, Math.floor(state.playerCount / 3));
+  const roleIndices = secureShuffle([...Array(state.playerCount).keys()]);
+  state.spySet = new Set(roleIndices.slice(0, spiesCount));
+  state.currentPlayer = 0;
+  state.cardOpen = false;
   
-  spyState.spySet = new Set(roleIndices.slice(0, spiesCount));
-  spyState.currentPlayer = 0;
-  spyState.cardOpen = false;
+  document.getElementById('final-players').textContent = state.playerCount;
+  document.getElementById('final-spies').textContent = spiesCount;
   
-  showSpyDealPrompt(true);
-  switchScreen('screen-deal');
+  showDealPrompt(true); switchScreen('screen-deal');
 }
 
-function showSpyDealPrompt(isFirst = false) {
-  document.getElementById('deal-player-name').textContent = `Гравець ${spyState.currentPlayer + 1}`;
-  document.getElementById('deal-prompt-text').textContent = isFirst ? 'Візьми пристрій, інші відверніться' : 'Передай пристрій наступному гравцеві';
+function showDealPrompt(isFirst) {
+  updateStaticTexts();
   document.getElementById('deal-prompt').style.display = 'block';
   document.getElementById('flip-scene').style.display = 'none';
   document.getElementById('deal-actions').style.display = 'none';
   document.getElementById('flip-card').classList.remove('flipped');
 }
 
-function openSpyCard() {
-  if (spyState.cardOpen) return;
-  spyState.cardOpen = true;
-  
-  const isSpy = spyState.spySet.has(spyState.currentPlayer);
+function openCard() {
+  if (state.cardOpen) return;
+  state.cardOpen = true;
+  const isSpy = state.spySet.has(state.currentPlayer);
   const back = document.getElementById('flip-back');
+  const t = TRANSLATIONS.ua;
   
   if (isSpy) {
     back.className = 'flip-face flip-back back-spy';
-    back.innerHTML = `<div class="spy-content"><div class="spy-emoji">🕵️‍♂️</div><h2 class="spy-title">Ти Шпигун!</h2><p class="spy-sub">Слухай уважно та вгадай персонажа</p></div>`;
+    back.innerHTML = `<div class="spy-content"><div class="spy-emoji">🕵️‍♂️</div><div class="spy-title">${t.youAreSpy}</div><div class="spy-sub">${t.spyTask}</div></div>
+    <div class="spy-card-info"><div class="spy-badge"><div class="spy-dot"></div><div class="spy-badge-text">${t.spyBadge}</div></div></div>`;
   } else {
     back.className = 'flip-face flip-back back-char';
-    back.innerHTML = `<div class="spy-content"><div class="char-emoji">${spyState.chosenChar.emoji}</div><p style="color:var(--cyan); font-size:0.8rem; letter-spacing:2px; text-transform:uppercase;">Персонаж</p><h2 class="char-title">${spyState.chosenChar.nameUA}</h2></div>`;
+    const charName = state.chosenChar.nameUA;
+    back.innerHTML = `
+      <div class="card-img-wrap">
+        <div class="card-img-placeholder" id="card-ph">${state.chosenChar.emoji}</div>
+        <div class="img-loader" id="img-ldr"><div class="spinner"></div></div>
+        <img class="card-img loading" id="card-photo" alt="${charName}"/>
+        <div class="card-img-overlay"></div>
+      </div>
+      <div class="card-info">
+        <div class="info-trigger-btn" id="spy-info-btn">i</div>
+        <div class="card-top-label">${t.characterYour}</div>
+        <div class="card-name">${charName}</div>
+        <div class="card-bot-label">${t.characterWarn}</div>
+      </div>
+    `;
+    
+    document.getElementById('spy-info-btn').onclick = (e) => {
+      e.stopPropagation();
+      openInfoModal(state.chosenChar);
+    };
+
+    const imgEl = back.querySelector('#card-photo');
+    const ldr = back.querySelector('#img-ldr');
+    const ph = back.querySelector('#card-ph');
+    fetchWikiImage(state.chosenChar.wiki, charName).then(url => {
+      if(url){
+        imgEl.onload = () => { imgEl.classList.remove('loading'); ldr.style.display='none'; ph.style.display='none'; };
+        imgEl.onerror = () => { imgEl.style.display='none'; ldr.style.display='none'; ph.style.display='flex'; };
+        imgEl.src = url;
+      } else {
+        ldr.style.display='none'; ph.style.display='flex';
+      }
+    });
   }
   
   document.getElementById('deal-prompt').style.display = 'none';
   document.getElementById('flip-scene').style.display = 'block';
-  
-  requestAnimationFrame(() => {
+  setTimeout(() => {
     document.getElementById('flip-card').classList.add('flipped');
     setTimeout(() => {
-      const isLast = spyState.currentPlayer >= spyState.playerCount - 1;
-      document.getElementById('btn-close-card').textContent = isLast ? 'Завершити роздачу' : 'Закрити карту';
+      document.getElementById('btn-close-card').textContent = state.currentPlayer >= state.playerCount - 1 ? t.finishHandoutBtn : t.closeCardBtn;
       document.getElementById('deal-actions').style.display = 'flex';
-    }, 400); 
-  });
+    }, 400);
+  }, 50);
 }
 
-function closeSpyCard() {
+function closeCard() {
   document.getElementById('flip-card').classList.remove('flipped');
   document.getElementById('deal-actions').style.display = 'none';
-  spyState.cardOpen = false;
+  state.cardOpen = false;
   setTimeout(() => {
-    spyState.currentPlayer++;
-    if (spyState.currentPlayer >= spyState.playerCount) { switchScreen('screen-final'); } 
-    else { showSpyDealPrompt(false); }
+    document.getElementById('flip-scene').style.display = 'none';
+    state.currentPlayer++;
+    if (state.currentPlayer >= state.playerCount) switchScreen('screen-final');
+    else showDealPrompt(false);
   }, 400);
 }
 
-// ════════════════════════════════════════════
-// ЛОГІКА ГРИ "ТАЄМНИЦЯ" (Мережева через PeerJS)
-// ════════════════════════════════════════════
-let peer = null;
-let conn = null;
+function confirmAbort() { openModal('confirmModal'); }
+function executeRestart() { closeModal('confirmModal'); resetGame(); }
+function resetGame() {
+  state.currentPlayer = 0; state.cardOpen = false;
+  document.getElementById('deal-actions').style.display = 'none';
+  document.getElementById('flip-scene').style.display = 'none';
+  switchScreen('screen-setup');
+}
 
-let mystState = {
-  role: null, 
-  selectedCats: new Set(CATEGORIES.map(c => c.id)),
-  boardChars: [], // Всі персонажі, а не тільки 16
-  myChar: null, 
-  oppChar: null, 
-  status: 'setup', 
-  myReady: false,
-  oppReady: false,
-  isMyTurn: false,
-  accuseMode: false
-};
+// ════════════════════════════════════════════
+//  SECRET GAME LOGIC (ТАЄМНИЦЯ)
+// ════════════════════════════════════════════
+function chooseSecretHost() {
+  secretState.role = 'host';
+  buildSecretCatsUI();
+  document.getElementById('host-setup-view').style.display = 'flex';
+  document.getElementById('host-lobby-view').style.display = 'none';
+  switchScreen('screen-secret-lobby-host');
+}
 
-function buildMysteryCatsUI() {
-  const container = document.getElementById('mystery-cats-container');
+function chooseSecretGuest() {
+  secretState.role = 'guest';
+  document.getElementById('room-code-input').value = '';
+  document.getElementById('join-status').textContent = '';
+  switchScreen('screen-secret-lobby-guest');
+}
+
+function buildSecretCatsUI() {
+  const container = document.getElementById('secret-cats-container');
   container.innerHTML = '';
   CATEGORIES.forEach(cat => {
-    const active = mystState.selectedCats.has(cat.id);
+    const active = secretState.selectedCats.has(cat.id);
+    const displayName = cat.nameUA;
     const el = document.createElement('div');
     el.className = 'cat-toggle' + (active ? ' active' : '');
-    el.innerHTML = `<div class="ct-icon">${cat.icon}</div><div style="flex:1;"><div class="ct-name">${cat.nameUA}</div><div class="ct-count">${cat.chars.length} персонажів</div></div><div class="ct-check">${active ? '✓' : ''}</div>`;
-    el.onclick = () => {
-      if (mystState.selectedCats.has(cat.id) && mystState.selectedCats.size === 1) { showToast('Обери хоча б одну категорію!'); return; }
-      mystState.selectedCats.has(cat.id) ? mystState.selectedCats.delete(cat.id) : mystState.selectedCats.add(cat.id);
-      buildMysteryCatsUI();
-    };
+    el.innerHTML = `<div class="ct-icon">${cat.icon}</div><div style="flex:1;"><div class="ct-name">${displayName}</div></div><div class="ct-check">${active ? '✓' : ''}</div>`;
+    el.addEventListener('click', () => {
+      if (active && secretState.selectedCats.size === 1) return;
+      active ? secretState.selectedCats.delete(cat.id) : secretState.selectedCats.add(cat.id);
+      buildSecretCatsUI(); updateStaticTexts();
+    });
     container.appendChild(el);
   });
 }
 
 function toggleAllMysteryCats() {
-  if (mystState.selectedCats.size === CATEGORIES.length) { mystState.selectedCats = new Set([CATEGORIES[0].id]); } 
-  else { mystState.selectedCats = new Set(CATEGORIES.map(c => c.id)); }
-  buildMysteryCatsUI();
+  secretState.selectedCats = secretState.selectedCats.size === CATEGORIES.length ? new Set([CATEGORIES[0].id]) : new Set(CATEGORIES.map(c => c.id));
+  buildSecretCatsUI(); updateStaticTexts();
 }
 
-function generateCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let res = '';
-  for(let i=0; i<6; i++) res += chars.charAt(secureRandomInt(chars.length));
-  return res;
-}
-
-function createPeerWithRetry(attempts = 0) {
-  if (attempts > 5) { showToast('Помилка з\'єднання. Спробуйте пізніше.'); cancelMysteryLobby(); return; }
+function generateSecretRoomCode() {
+  const pool = [];
+  CATEGORIES.forEach(cat => { if (secretState.selectedCats.has(cat.id)) pool.push(...cat.chars); });
+  if (pool.length < 16) { showToast(TRANSLATIONS.ua.noCategoryError); return; }
+  secretState.grid = secureShuffle(pool).slice(0, 16);
   
-  const code = generateCode();
-  const fullId = 'ua-myst-v2-' + code; 
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  secretState.roomCode = code;
   
-  peer = new Peer(fullId);
-  peer.on('open', (id) => {
-    document.getElementById('host-room-code').textContent = code;
+  secretState.peer = new Peer('pb-secret-' + code);
+  secretState.peer.on('open', id => {
+    document.getElementById('room-code-display').textContent = code;
     document.getElementById('host-setup-view').style.display = 'none';
     document.getElementById('host-lobby-view').style.display = 'flex';
+    document.getElementById('label-waiting-players').textContent = TRANSLATIONS.ua.secretWaitMsg;
   });
-  peer.on('error', (err) => {
-    if (err.type === 'unavailable-id') { peer.destroy(); createPeerWithRetry(attempts + 1); } 
-    else { showToast('Помилка: ' + err.message); cancelMysteryLobby(); }
-  });
-  peer.on('connection', (c) => {
-    if(conn) { c.close(); return; } 
-    conn = c;
-    setupConnection();
+  secretState.peer.on('connection', conn => {
+    secretState.conn = conn;
     conn.on('open', () => {
-      conn.send({ type: 'init_game', chars: mystState.boardChars });
-      startMysteryPhase1();
+      document.getElementById('host-wait-group').style.display = 'none';
+      document.getElementById('host-connected-group').style.display = 'block';
+      document.getElementById('host-connected-group').textContent = TRANSLATIONS.ua.secretConnectedMsg;
+      document.getElementById('btn-start-secret-game').style.display = 'block';
     });
+    conn.on('data', handleNetworkData);
+    conn.on('close', cancelSecretLobby);
   });
+  secretState.peer.on('error', err => { showToast('Помилка з\'єднання. Спробуйте ще раз.'); cancelSecretLobby(); });
 }
 
-function initMysteryHost() {
-  const pool = [];
-  CATEGORIES.forEach(cat => { if (mystState.selectedCats.has(cat.id)) pool.push(...cat.chars); });
-  if (pool.length < 5) { showToast('Занадто мало персонажів!'); return; }
+function joinGame() {
+  const code = document.getElementById('room-code-input').value.trim().replace(/\s/g, '');
+  if (code.length !== 6) { showToast('Введіть 6 цифр'); return; }
   
-  mystState.role = 'host';
-  // Використовуємо ВСІХ персонажів з обраних категорій, просто перемішуємо їх
-  mystState.boardChars = secureShuffle(pool); 
-  
-  createPeerWithRetry(0);
+  secretState.peer = new Peer();
+  secretState.peer.on('open', () => {
+    const conn = secretState.peer.connect('pb-secret-' + code, { reliable: true });
+    secretState.conn = conn;
+    conn.on('open', () => showToast(TRANSLATIONS.ua.secretConnectedMsg));
+    conn.on('data', handleNetworkData);
+    conn.on('close', cancelSecretLobby);
+  });
+  secretState.peer.on('error', () => showToast('Кімнату не знайдено.'));
 }
 
-function cancelMysteryLobby() {
-  if(peer) { peer.destroy(); peer = null; }
-  document.getElementById('host-lobby-view').style.display = 'none';
+function cancelSecretLobby() {
+  if (secretState.peer) { secretState.peer.destroy(); secretState.peer = null; }
+  secretState.conn = null;
   document.getElementById('host-setup-view').style.display = 'flex';
+  document.getElementById('host-lobby-view').style.display = 'none';
+  document.getElementById('host-wait-group').style.display = 'flex';
+  document.getElementById('host-connected-group').style.display = 'none';
+  document.getElementById('btn-start-secret-game').style.display = 'none';
 }
 
-function joinMysteryGame() {
-  const code = document.getElementById('join-code-input').value.trim().toUpperCase();
-  if (code.length !== 6) { showToast('Невірний код'); return; }
-  
-  document.getElementById('join-status').textContent = 'Підключення...';
-  mystState.role = 'guest';
-  peer = new Peer(); 
-  
-  peer.on('open', () => {
-    conn = peer.connect('ua-myst-v2-' + code, { reliable: true });
-    conn.on('open', () => {
-      document.getElementById('join-status').textContent = 'З\'єднано! Очікування даних...';
-      setupConnection();
-    });
-    conn.on('error', () => { document.getElementById('join-status').textContent = 'Помилка.'; peer.destroy(); });
-  });
+function startSecretGame() {
+  secretState.conn.send({ type: 'init', grid: secretState.grid.map(c => ({ nameUA: c.nameUA, emoji: c.emoji, wiki: c.wiki, descUA: c.descUA })) });
+  initSecretGameState();
 }
 
-function setupConnection() {
-  conn.on('data', (data) => {
-    switch(data.type) {
-      case 'init_game': mystState.boardChars = data.chars; startMysteryPhase1(); break;
-      case 'ready': mystState.oppReady = true; checkMysteryStart(); break;
-      case 'end_turn': setMyTurn(true); break;
-      case 'accuse': handleOpponentAccusation(data.charId); break;
-      case 'accuse_result': handleMyAccusationResult(data.win, data.oppChar); break;
-      case 'abandon': showMysteryResult(true, null, 'Суперник здався!'); break;
-    }
-  });
-  conn.on('close', () => { if(mystState.status !== 'end') { showToast('Суперник відключився.'); resetToMenu(); } });
+function handleNetworkData(data) {
+  if (data.type === 'init') {
+    secretState.grid = data.grid;
+    initSecretGameState();
+  } else if (data.type === 'ready') {
+    secretState.opponentReady = true;
+    checkBothReady();
+  } else if (data.type === 'end_turn') {
+    secretState.isMyTurn = true;
+    renderSecretGame();
+  } else if (data.type === 'guess') {
+    const isCorrect = secretState.mySelected === data.idx;
+    secretState.conn.send({ type: 'guess_res', correct: isCorrect, oppChar: secretState.mySelected });
+    showSecretResult(!isCorrect, data.idx, secretState.mySelected); 
+  } else if (data.type === 'guess_res') {
+    showSecretResult(data.correct, secretState.mySelected, data.oppChar); 
+  } else if (data.type === 'surrender') {
+    showToast('Супротивник здався.');
+    setTimeout(backToMenu, 2000);
+  }
 }
 
-function startMysteryPhase1() {
-  mystState.status = 'picking'; mystState.myChar = null; mystState.myReady = false; mystState.oppReady = false;
+function initSecretGameState() {
+  secretState.stage = 'selection';
+  secretState.mySelected = null;
+  secretState.myEliminated = new Set();
+  secretState.myReady = false;
+  secretState.opponentReady = false;
+  secretState.accuseMode = false;
+  secretState.isMyTurn = false;
   
-  renderMysteryBoard();
+  // Повертаємо видимість підказці про горизонтальний екран на початку нової гри
+  document.getElementById('orientation-tip').classList.remove('dismissed');
   
   document.getElementById('mystery-my-char-wrap').style.display = 'none';
-  document.getElementById('mystery-instruction-wrap').style.display = 'flex';
-  document.getElementById('btn-myst-ready').style.display = 'block';
-  document.getElementById('btn-myst-ready').disabled = true;
-  document.getElementById('btn-myst-end-turn').style.display = 'none';
-  document.getElementById('btn-myst-accuse').style.display = 'none';
-  
-  setTurnText('ОБЕРІТЬ СВОГО ПЕРСОНАЖА', 'gray');
-  switchScreen('screen-mystery-game');
+  switchScreen('screen-secret-game');
+  renderSecretGame();
 }
 
-function renderMysteryBoard() {
-  const grid = document.getElementById('mystery-grid');
-  grid.innerHTML = '';
+function dismissOrientationTip() {
+  document.getElementById('orientation-tip').classList.add('dismissed');
+}
+
+function checkBothReady() {
+  if (secretState.myReady && secretState.opponentReady) {
+    secretState.stage = 'playing';
+    secretState.isMyTurn = secretState.role === 'host';
+    renderSecretGame();
+  }
+}
+
+function renderSecretGame() {
+  const gridEl = document.getElementById('cards-grid');
+  gridEl.innerHTML = '';
+  const t = TRANSLATIONS.ua;
   
-  mystState.boardChars.forEach((char, index) => {
-    const el = document.createElement('div');
-    el.className = 'm-card';
-    el.id = `mcard-${index}`;
-    el.innerHTML = `
-      <div class="m-card-img-wrap">
-        <div class="m-card-ph" id="mph-${index}">${char.emoji}</div>
-        <img class="m-card-img" id="mimg-${index}" alt="">
+  secretState.grid.forEach((char, idx) => {
+    const cell = document.createElement('div');
+    cell.className = 'card-cell';
+    const charName = char.nameUA;
+    
+    if (secretState.myEliminated.has(idx)) cell.classList.add('eliminated');
+    if (secretState.stage === 'selection' && secretState.mySelected === idx) cell.classList.add('selected');
+    if (secretState.stage === 'playing' && !secretState.isMyTurn) cell.classList.add('locked');
+    if (secretState.accuseMode) cell.classList.add('accuse-target');
+    
+    cell.innerHTML = `
+      <div class="card-img-wrap">
+        <div class="card-img-placeholder">${char.emoji}</div>
+        <div class="img-loader"><div class="spinner"></div></div>
+        <img class="card-img loading" alt="${charName}" />
+        <div class="card-img-overlay"></div>
+        <div class="info-trigger-btn" title="Info">i</div>
       </div>
-      <div class="m-card-name">${char.nameUA}</div>
+      <div class="secret-card-info">
+        <div class="card-top-label">${charName}</div>
+        <div class="card-bot-label">${t.characterWarn}</div>
+      </div>
     `;
-    el.onclick = () => handleCardClick(index, el);
-    grid.appendChild(el);
+
+    const imgEl = cell.querySelector('.card-img');
+    const loader = cell.querySelector('.img-loader');
+    const placeholder = cell.querySelector('.card-img-placeholder');
+    const infoBtn = cell.querySelector('.info-trigger-btn');
+    infoBtn.onclick = (e) => { e.stopPropagation(); openInfoModal(char); };
+
+    fetchWikiImage(char.wiki || charName, charName).then(url => {
+      if (url) {
+        imgEl.src = url;
+        imgEl.onload = () => {
+          imgEl.classList.remove('loading');
+          loader.style.display = 'none';
+          placeholder.style.display = 'none';
+        };
+        imgEl.onerror = () => { loader.style.display = 'none'; };
+      } else {
+        loader.style.display = 'none';
+      }
+    });
+
+    cell.onclick = () => handleCardClick(idx);
+    gridEl.appendChild(cell);
   });
 
-  // Поетапне завантаження фотографій, щоб уникнути зависань, коли карток багато (наприклад, 60+)
-  let loadIndex = 0;
-  function loadNextBatch() {
-    const batchSize = 4;
-    let loadedInBatch = 0;
-    while(loadedInBatch < batchSize && loadIndex < mystState.boardChars.length) {
-      const idx = loadIndex;
-      const char = mystState.boardChars[idx];
-      fetchWikiImage(char.wiki, char.nameUA).then(url => {
-        if(url) {
-          const img = document.getElementById(`mimg-${idx}`);
-          const ph = document.getElementById(`mph-${idx}`);
-          if(img && ph) {
-            img.src = url;
-            img.onload = () => { img.style.opacity = '1'; ph.style.opacity = '0'; };
-          }
-        }
-      });
-      loadIndex++;
-      loadedInBatch++;
-    }
-    if (loadIndex < mystState.boardChars.length) {
-      setTimeout(loadNextBatch, 150); // Невелика затримка між пачками запитів
-    }
+  const readyBtn = document.getElementById('btn-myst-ready');
+  const endBtn = document.getElementById('btn-myst-end-turn');
+  const accBtn = document.getElementById('btn-myst-accuse');
+  const instr = document.getElementById('mystery-instruction-wrap');
+  const turnInd = document.getElementById('turn-indicator');
+  
+  if (secretState.stage === 'selection') {
+    instr.textContent = secretState.myReady ? t.secretInstrWaitReady : t.secretInstrPick;
+    readyBtn.style.display = 'block'; endBtn.style.display = 'none'; accBtn.style.display = 'none';
+    readyBtn.disabled = secretState.myReady;
+    turnInd.textContent = t.turnWait; turnInd.className = 'turn-indicator blink';
+  } else if (secretState.stage === 'playing') {
+    readyBtn.style.display = 'none';
+    endBtn.style.display = secretState.isMyTurn ? 'block' : 'none';
+    accBtn.style.display = secretState.isMyTurn ? 'block' : 'none';
+    accBtn.textContent = secretState.accuseMode ? t.secretCancelAccuseBtn : t.secretAccuseBtn;
+    
+    if (secretState.accuseMode) instr.textContent = t.secretInstrAccuseMode;
+    else instr.textContent = secretState.isMyTurn ? t.secretInstrMyTurn : t.secretInstrEnemyTurn;
+    
+    turnInd.textContent = secretState.isMyTurn ? t.turnMine : t.turnEnemy;
+    turnInd.className = 'turn-indicator ' + (secretState.isMyTurn ? '' : 'enemy');
   }
-  loadNextBatch();
 }
 
-function handleCardClick(idx, el) {
-  const char = mystState.boardChars[idx];
-  
-  if (mystState.status === 'picking') {
-    document.querySelectorAll('.m-card').forEach(c => c.classList.remove('selected'));
-    el.classList.add('selected');
-    mystState.myChar = char;
-    
-    document.getElementById('btn-myst-ready').disabled = false;
-    document.getElementById('mystery-my-char-name').textContent = char.nameUA;
-    
-    const imgEl = document.getElementById(`mimg-${idx}`);
-    const tgtImg = document.getElementById('mystery-my-char-img');
-    if (imgEl && imgEl.src && imgEl.style.opacity === '1') {
-      tgtImg.src = imgEl.src; tgtImg.style.display = 'block';
+function handleCardClick(idx) {
+  if (secretState.stage === 'selection') {
+    if (!secretState.myReady) { secretState.mySelected = idx; renderSecretGame(); }
+  } else if (secretState.stage === 'playing' && secretState.isMyTurn) {
+    if (secretState.accuseMode) {
+      secretState.accuseMode = false;
+      secretState.conn.send({ type: 'guess', idx: idx });
+      showToast('Обвинувачення відправлено...');
+      secretState.stage = 'ended';
+      renderSecretGame();
     } else {
-      tgtImg.style.display = 'none'; 
-    }
-  } 
-  else if (mystState.status === 'playing') {
-    if (!mystState.isMyTurn) return;
-    if (el.classList.contains('selected')) return; // Себе викреслити не можна
-    
-    if (mystState.accuseMode) {
-      mystState.status = 'wait_result';
-      conn.send({ type: 'accuse', charId: char.wiki });
-    } else {
-      el.classList.toggle('eliminated'); // Локальне викреслювання
+      if (idx !== secretState.mySelected) {
+        secretState.myEliminated.has(idx) ? secretState.myEliminated.delete(idx) : secretState.myEliminated.add(idx);
+        renderSecretGame();
+      }
     }
   }
 }
 
 function sendMysteryReady() {
-  mystState.myReady = true;
-  document.getElementById('btn-myst-ready').style.display = 'none';
-  document.getElementById('mystery-instruction-wrap').style.display = 'none';
+  if (secretState.mySelected === null) { showToast('Оберіть персонажа!'); return; }
+  secretState.myReady = true;
+  secretState.conn.send({ type: 'ready' });
+  
+  const myChar = secretState.grid[secretState.mySelected];
+  const charName = myChar.nameUA;
+  
+  document.getElementById('mystery-my-char-emoji').textContent = myChar.emoji;
+  document.getElementById('mystery-my-char-name').textContent = charName;
+  
+  const imgEl = document.getElementById('mystery-my-char-img');
+  imgEl.src = ''; imgEl.style.display = 'none';
+  document.getElementById('mystery-my-char-emoji').style.display = 'block';
+  
+  const infoBtn = document.getElementById('btn-myst-info');
+  infoBtn.onclick = (e) => { e.stopPropagation(); openInfoModal(myChar); };
+  
+  fetchWikiImage(myChar.wiki, charName).then(url => {
+    if(url) {
+      imgEl.src = url;
+      imgEl.style.display = 'block';
+      document.getElementById('mystery-my-char-emoji').style.display = 'none';
+    }
+  });
+
   document.getElementById('mystery-my-char-wrap').style.display = 'flex';
   
-  setTurnText('ОЧІКУВАННЯ СУПЕРНИКА...', 'gray');
-  conn.send({ type: 'ready' });
-  checkMysteryStart();
+  checkBothReady();
+  renderSecretGame();
 }
 
-function checkMysteryStart() {
-  if (mystState.myReady && mystState.oppReady && mystState.status === 'picking') {
-    mystState.status = 'playing';
-    document.getElementById('btn-myst-end-turn').style.display = 'block';
-    document.getElementById('btn-myst-accuse').style.display = 'block';
-    setMyTurn(mystState.role === 'host'); // Хост ходить першим
-  }
+function endSecretTurn() {
+  secretState.isMyTurn = false;
+  secretState.accuseMode = false;
+  secretState.conn.send({ type: 'end_turn' });
+  renderSecretGame();
 }
-
-function setMyTurn(isMine) {
-  mystState.isMyTurn = isMine;
-  mystState.accuseMode = false;
-  document.getElementById('btn-myst-accuse').classList.remove('accuse-mode-active');
-  document.getElementById('btn-myst-accuse').textContent = 'ЗВИНУВАТИТИ';
-  
-  const ind = document.getElementById('mystery-turn-indicator');
-  const btnEnd = document.getElementById('btn-myst-end-turn');
-  const btnAcc = document.getElementById('btn-myst-accuse');
-  
-  if (isMine) {
-    ind.textContent = 'ВАШ ХІД. ВІДГАДУЙТЕ!';
-    ind.className = 'turn-indicator turn-mine';
-    btnEnd.disabled = false; btnAcc.disabled = false;
-  } else {
-    ind.textContent = 'ХІД СУПЕРНИКА...';
-    ind.className = 'turn-indicator turn-opponent';
-    btnEnd.disabled = true; btnAcc.disabled = true;
-  }
-}
-
-function endMysteryTurn() { setMyTurn(false); conn.send({ type: 'end_turn' }); }
 
 function toggleAccuseMode() {
-  mystState.accuseMode = !mystState.accuseMode;
-  const btn = document.getElementById('btn-myst-accuse');
-  if (mystState.accuseMode) {
-    btn.classList.add('accuse-mode-active'); btn.textContent = 'НАТИСНІТЬ НА КАРТКУ!';
-  } else {
-    btn.classList.remove('accuse-mode-active'); btn.textContent = 'ЗВИНУВАТИТИ';
-  }
+  secretState.accuseMode = !secretState.accuseMode;
+  renderSecretGame();
 }
 
-function handleOpponentAccusation(guessWikiId) {
-  const oppWins = (guessWikiId === mystState.myChar.wiki);
-  conn.send({ type: 'accuse_result', win: oppWins, oppChar: mystState.myChar });
-  showMysteryResult(!oppWins, null, oppWins ? 'Суперник розгадав вашу таємницю!' : 'Суперник зробив хибне звинувачення!');
+function surrenderSecretGame() {
+  if (secretState.conn) secretState.conn.send({ type: 'surrender' });
+  backToMenu();
 }
 
-function handleMyAccusationResult(iWin, oppChar) {
-  showMysteryResult(iWin, oppChar, iWin ? 'Ви геніальний детектив!' : 'Ви помилилися...');
-}
+function showSecretResult(iWon, myCharIdx, oppCharIdx) {
+  const t = TRANSLATIONS.ua;
+  document.getElementById('result-icon').textContent = iWon ? '🎉' : '💔';
+  document.getElementById('result-title').textContent = iWon ? t.resWinTitle : t.resLoseTitle;
+  document.getElementById('result-message').textContent = iWon ? t.resWinMsg : t.resLoseMsg;
+  document.getElementById('result-title').style.background = iWon ? 'linear-gradient(135deg,var(--cyan),var(--violet))' : 'linear-gradient(135deg,var(--red),var(--pink))';
 
-function abandonMysteryGame() { if(conn) conn.send({ type: 'abandon' }); resetToMenu(); }
+  const mChar = secretState.grid[myCharIdx];
+  const oChar = secretState.grid[oppCharIdx];
 
-function showMysteryResult(isWin, oppCharData, descText) {
-  mystState.status = 'end';
-  
-  document.getElementById('result-title').textContent = isWin ? 'ВИ ПЕРЕМОГЛИ!' : 'ПОРАЗКА';
-  document.getElementById('result-title').style.color = isWin ? 'var(--green)' : 'var(--red)';
-  document.getElementById('result-emoji').textContent = isWin ? '🏆' : '💀';
-  document.getElementById('result-desc').textContent = descText;
-  
-  const myImg = document.getElementById('res-my-img');
-  const oppImg = document.getElementById('res-opp-img');
-  
-  if (mystState.myChar && imgCache[mystState.myChar.wiki]) { myImg.src = imgCache[mystState.myChar.wiki]; myImg.style.display = 'block'; } 
-  else { myImg.style.display = 'none'; }
-  
-  if (oppCharData && imgCache[oppCharData.wiki]) { oppImg.src = imgCache[oppCharData.wiki]; oppImg.style.display = 'block'; } 
-  else { oppImg.style.display = 'none'; }
-  
-  switchScreen('screen-mystery-result');
-}
+  const setupResultImage = (charObj, prefix) => {
+    const emojiEl = document.getElementById(`${prefix}-emoji`);
+    const imgEl = document.getElementById(`${prefix}-img`);
+    const nameEl = document.getElementById(`${prefix}-name`);
+    
+    emojiEl.style.display = 'block';
+    imgEl.style.display = 'none';
+    imgEl.src = '';
+    
+    if(charObj) {
+      const charName = charObj.nameUA;
+      emojiEl.textContent = charObj.emoji;
+      nameEl.textContent = charName;
+      
+      fetchWikiImage(charObj.wiki, charName).then(url => {
+        if(url) {
+          imgEl.src = url;
+          imgEl.style.display = 'block';
+          emojiEl.style.display = 'none';
+        }
+      });
+    } else {
+      emojiEl.textContent = '❓';
+      nameEl.textContent = '-';
+    }
+  };
 
-function setTurnText(text, colorClass) {
-  const ind = document.getElementById('mystery-turn-indicator');
-  ind.textContent = text; ind.className = 'turn-indicator'; 
-  if(colorClass) ind.style.color = colorClass;
+  setupResultImage(mChar, 'res-my');
+  setupResultImage(oChar, 'res-opp');
+
+  if (secretState.peer) { secretState.peer.destroy(); secretState.peer = null; }
+  switchScreen('screen-secret-result');
 }
 
 // ════════════════════════════════════════════
-// LANDSCAPE LOCK & INIT
+//  INITIALIZATION
 // ════════════════════════════════════════════
-function checkOrientation() {
-  const lock = document.getElementById('portrait-lock');
-  const gameActive = document.getElementById('screen-mystery-game').classList.contains('active');
-  
-  if (gameActive && window.innerHeight > window.innerWidth) {
-    lock.classList.add('active');
-  } else {
-    lock.classList.remove('active');
-  }
-}
-
-window.addEventListener('resize', checkOrientation);
-window.addEventListener('orientationchange', () => setTimeout(checkOrientation, 100));
-
-// Ініціалізація
-buildSpyCatsUI();
-buildMysteryCatsUI();
+buildCatsUI();
+updateStaticTexts();
 </script>
 </body>
 </html>
