@@ -606,7 +606,7 @@ header {
 </div>
 
 <header>
-  <div class="header-logo" style="flex: 1;"><span id="header-title">🕵️‍♂️ SPY</span></div>
+  <div class="header-logo" style="flex: 1;"><span id="header-title">🕵️‍♂️ PartyBox</span></div>
   <div class="header-actions">
     <button class="header-btn" id="btn-back-menu" style="display: none;" onclick="backToMenu()">← Меню</button>
     <button class="header-btn" onclick="openModal('rulesModal')" id="btn-rules" style="display: none;">Правила</button>
@@ -1408,7 +1408,12 @@ function generateSecretRoomCode() {
   const code = Math.floor(100000 + Math.random() * 900000).toString();
   secretState.roomCode = code;
   
-  secretState.peer = new Peer('pb-secret-' + code);
+  const peerConfig = {
+    iceServers: [
+      { urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302', 'stun:stun3.l.google.com:19302', 'stun:stun4.l.google.com:19302'] }
+    ]
+  };
+  secretState.peer = new Peer('pb-secret-' + code, { config: peerConfig });
   secretState.peer.on('open', id => {
     document.getElementById('room-code-display').textContent = code;
     document.getElementById('host-setup-view').style.display = 'none';
@@ -1433,7 +1438,12 @@ function joinGame() {
   const code = document.getElementById('room-code-input').value.trim().replace(/\s/g, '');
   if (code.length !== 6) { showToast('Введіть 6 цифр'); return; }
   
-  secretState.peer = new Peer();
+  const peerConfig = {
+    iceServers: [
+      { urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302', 'stun:stun3.l.google.com:19302', 'stun:stun4.l.google.com:19302'] }
+    ]
+  };
+  secretState.peer = new Peer({ config: peerConfig });
   secretState.peer.on('open', () => {
     const conn = secretState.peer.connect('pb-secret-' + code, { reliable: true });
     secretState.conn = conn;
