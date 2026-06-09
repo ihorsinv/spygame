@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>PartyBox: Шпигун & Таємниця 🕵️</title>
-<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
@@ -205,7 +204,7 @@ header {
 .screen:not(.active) * {
   pointer-events: none !important;
 }
-#screen-setup, #screen-secret-result {overflow-y:hidden;}
+#screen-setup {overflow-y:hidden;}
 #screen-secret-game { 
   overflow-y: auto; 
   padding: 0;
@@ -213,62 +212,151 @@ header {
 }
 .screen-center{justify-content:center;}
 
-/* RESULT SCREEN */
-#screen-secret-result .result-card {
-  width: min(100%, 760px);
-  max-width: 760px;
-  padding: 32px 28px;
+/* ══════════════════════════════════════════════════════════════════
+   ОНОВЛЕНИЙ ЕКРАН РЕЗУЛЬТАТІВ (RESULT SCREEN) - 100dvh RUBBER LAYOUT
+   ══════════════════════════════════════════════════════════════════ */
+#screen-secret-result {
+  height: 100dvh;
+  min-height: 100dvh;
+  padding: env(safe-area-inset-top, 10px) 12px env(safe-area-inset-bottom, 10px) 12px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  border-radius: 32px;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+#screen-secret-result .result-card {
+  width: 100%;
+  max-width: 600px;
+  height: 100%;
+  max-height: 100%;
+  padding: 20px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  border-radius: 26px;
   background: rgba(12, 11, 24, 0.95);
   border: 1px solid rgba(255,255,255,0.08);
   box-shadow: 0 24px 80px rgba(0,0,0,0.45);
-  max-height: calc(100dvh - 40px);
   overflow: hidden;
 }
-#screen-secret-result .result-header { display:flex; flex-direction:column; gap: 16px; align-items:center; }
-#screen-secret-result .result-icon { font-size: 4.8rem; }
-#screen-secret-result .result-title { font-family: 'Unbounded', sans-serif; font-size: clamp(2rem, 4vw, 2.6rem); font-weight: 900; line-height:1.05; text-align:center; background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-#screen-secret-result .result-message { color: var(--text); font-size: 1rem; line-height:1.6; text-align:center; max-width: 88%; }
-#screen-secret-result .result-grid { display: flex; gap: 18px; justify-content: center; align-items: stretch; flex-wrap: wrap; }
-#screen-secret-result .result-panel { flex: 1 1 220px; min-width: 220px; max-width: 280px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 18px; display:flex; flex-direction:column; gap: 14px; align-items:center; }
-#screen-secret-result .result-panel-label { color: var(--muted); font-size: 0.72rem; letter-spacing: 1.6px; text-transform: uppercase; font-weight: 700; }
-#screen-secret-result .result-panel-img { 
-  width: 120px; 
-  height: 120px; 
-  border-radius: 26px; 
-  overflow:hidden; 
+
+#screen-secret-result .result-header { 
+  flex-shrink: 0; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 4px; 
+  align-items: center; 
+}
+
+#screen-secret-result .result-icon { 
+  font-size: clamp(2.2rem, 6vh, 3.2rem); 
+  line-height: 1; 
+  margin-bottom: 2px;
+}
+
+#screen-secret-result .result-title { 
+  font-family: 'Unbounded', sans-serif; 
+  font-size: clamp(1.4rem, 4.5vh, 2rem); 
+  font-weight: 900; 
+  line-height: 1.1; 
+  text-align: center; 
+  color: var(--text); 
+}
+
+#screen-secret-result .result-title.win { color: var(--cyan); }
+#screen-secret-result .result-title.lose { color: var(--red); }
+
+#screen-secret-result .result-message { 
+  color: var(--text); 
+  font-size: clamp(0.8rem, 2.2vh, 0.92rem); 
+  line-height: 1.3; 
+  text-align: center; 
+  max-width: 95%; 
+}
+
+#screen-secret-result .result-grid {
+  display: flex;
+  flex-direction: row; /* Завжди в рядок для економії висоти */
+  gap: 10px;
+  justify-content: center;
+  align-items: stretch;
+  flex: 1 1 0; /* Займає весь вільний простір */
+  min-height: 0; /* Дозволяє стискатися */
+  width: 100%;
+}
+
+#screen-secret-result .result-panel { 
+  flex: 1 1 0; 
+  min-width: 0;
+  background: rgba(255,255,255,0.04); 
+  border: 1px solid rgba(255,255,255,0.1); 
+  border-radius: 18px; 
+  padding: 10px 8px; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 8px; 
+  align-items: center; 
+  justify-content: center; 
+  min-height: 0; 
+  overflow: hidden;
+}
+
+#screen-secret-result .result-panel-label { 
+  color: var(--muted); 
+  font-size: clamp(0.55rem, 1.5vh, 0.64rem); 
+  letter-spacing: 1px; 
+  text-transform: uppercase; 
+  font-weight: 700; 
+  text-align: center; 
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+  width: 100%; 
+  flex-shrink: 0;
+}
+
+#screen-secret-result .result-panel-img {
+  width: 100%;
+  max-width: 180px; /* Обмеження ширини на великих екранах */
+  aspect-ratio: 1 / 1; /* Квадрат */
+  border-radius: 14px;
+  overflow: hidden;
   background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.6) 100%);
   border: 1px solid rgba(255,255,255,0.08);
-  display:flex; 
-  align-items:center; 
-  justify-content:center; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 0; /* Ефект гуми */
+  min-height: 0;
 }
-#screen-secret-result .result-panel-img img { width: 100%; height: 100%; object-fit: contain; display:block; }
-#screen-secret-result .result-panel-emoji { font-size: 3rem; }
-#screen-secret-result .result-panel-name { color: var(--text); font-size: 1rem; font-weight: 800; text-align:center; line-height:1.3; }
-#screen-secret-result .result-button { width: 100%; max-width: 320px; margin: 0 auto; }
-#screen-secret-result .result-card { margin: 0 auto; }
 
-@media (max-width: 760px) {
-  #screen-secret-result .result-card { padding: 26px 20px; gap: 20px; }
-  #screen-secret-result .result-grid { flex-direction: column; gap: 16px; }
-  #screen-secret-result .result-panel { max-width: 100%; }
-  #screen-secret-result .result-panel-img { width: 110px; height: 110px; }
-  #screen-secret-result .result-title { font-size: clamp(1.8rem, 7vw, 2.4rem); }
+#screen-secret-result .result-panel-img img { width: 100%; height: 100%; object-fit: contain; display: block; }
+#screen-secret-result .result-panel-emoji { font-size: clamp(2rem, 8vh, 4rem); line-height: 1; }
+
+#screen-secret-result .result-panel-name { 
+  color: var(--text); 
+  font-size: clamp(0.75rem, 2vh, 0.95rem); 
+  font-weight: 800; 
+  text-align: center; 
+  line-height: 1.2; 
+  flex-shrink: 0; 
+  display: -webkit-box; 
+  -webkit-line-clamp: 2; 
+  line-clamp: 2; 
+  -webkit-box-orient: vertical; 
+  overflow: hidden; 
 }
-@media (max-width: 520px) {
-  #screen-secret-result { padding: calc(env(safe-area-inset-top, 16px) + 10px) 12px calc(env(safe-area-inset-bottom, 16px) + 10px); }
-  #screen-secret-result .result-card { padding: 20px 16px; }
-  #screen-secret-result .result-message { font-size: 0.95rem; }
-  :root { --card-w: 94vw; }
-  .mystery-layout { gap: 8px; padding: 8px; }
-  .mystery-grid-wrap { grid-auto-rows: minmax(130px, 145px); gap: 8px; padding: 8px; max-height: 38vh; }
-  .mystery-sidebar { padding: 10px; max-height: 35vh; }
-  .mystery-actions { gap: 6px; }
-  .mystery-actions button { font-size: 0.7rem; padding: 8px 6px; }
+
+#screen-secret-result .result-button { 
+  width: 100%; 
+  max-width: 300px; 
+  margin: 0 auto; 
+  flex-shrink: 0; 
+  height: var(--btn-h); 
+  min-height: var(--btn-h); 
 }
 
 /* GLASS */
@@ -921,6 +1009,8 @@ header {
   .mystery-actions button { font-size: 0.6rem; padding: 5px 6px; }
 }
 </style>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -1186,7 +1276,7 @@ header {
 </div>
 
 <!-- SECRET FINAL RESULT -->
-<div id="screen-secret-result" class="screen screen-center">
+<div id="screen-secret-result" class="screen">
   <div class="glass result-card">
     <div class="result-header">
       <span id="result-icon" class="result-icon">🏆</span>
@@ -1220,6 +1310,112 @@ header {
 <div class="toast" id="toast"></div>
 
 <script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBXHJoDHeh55JhCmfJgYjWyN--BZVzlM5s",
+  authDomain: "partybox1303.firebaseapp.com",
+  databaseURL: "https://partybox1303-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "partybox1303",
+  storageBucket: "partybox1303.firebasestorage.app",
+  messagingSenderId: "693748041380",
+  appId: "1:693748041380:web:2595063bb9a47621c20831",
+  measurementId: "G-F35L57EYZP"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+const Network = {
+  _roomRef: null,
+  _msgListener: null,
+  _lastMsgKey: null,
+  _onMsgCallback: null,
+  _onDisconnectCallback: null,
+  _myRole: null,
+
+  async createRoom(code, grid) {
+    const roomRef = db.ref('rooms/' + code);
+    await roomRef.remove();
+    await roomRef.set({
+      grid: grid,
+      createdAt: firebase.database.ServerValue.TIMESTAMP,
+      hostOnline: true,
+      guestOnline: false
+    });
+    await roomRef.onDisconnect().remove();
+    this._roomRef = roomRef;
+    this._myRole = 'host';
+    return roomRef;
+  },
+
+  async joinRoom(code) {
+    const roomRef = db.ref('rooms/' + code);
+    const snap = await roomRef.once('value');
+    if (!snap.exists()) throw new Error('room-not-found');
+    await roomRef.child('guestOnline').set(true);
+    await roomRef.child('guestOnline').onDisconnect().set(false);
+    this._roomRef = roomRef;
+    this._myRole = 'guest';
+    return snap.val();
+  },
+
+  listenForGuest(onConnected) {
+    if (!this._roomRef) return;
+    this._roomRef.child('guestOnline').on('value', snap => {
+      if (snap.val() === true) onConnected();
+    });
+  },
+
+  listenForDisconnect(callback) {
+    if (!this._roomRef || this._onDisconnectCallback) return;
+    const field = this._myRole === 'host' ? 'guestOnline' : 'hostOnline';
+    this._roomRef.child(field).on('value', snap => {
+      if (snap.val() === false && secretState.gameActive) {
+        callback();
+      }
+    });
+    this._onDisconnectCallback = callback;
+  },
+
+  send(type, payload = {}) {
+    if (!this._roomRef) return;
+    this._roomRef.child('messages').push({
+      from: this._myRole,
+      type: type,
+      payload: payload,
+      ts: firebase.database.ServerValue.TIMESTAMP
+    });
+  },
+
+  listenMessages(callback) {
+    if (!this._roomRef || this._msgListener) return;
+    this._onMsgCallback = callback;
+    this._roomRef.child('messages').limitToLast(1).once('value', snap => {
+      snap.forEach(child => { this._lastMsgKey = child.key; });
+      this._roomRef.child('messages').orderByKey().on('child_added', snap => {
+        if (this._lastMsgKey && snap.key <= this._lastMsgKey) return;
+        const data = snap.val();
+        if (data.from !== this._myRole) {
+          callback({ type: data.type, ...data.payload });
+        }
+      });
+      this._msgListener = true;
+    });
+  },
+
+  async disconnect() {
+    if (!this._roomRef) return;
+    if (this._myRole === 'host') {
+      await this._roomRef.remove();
+    } else {
+      await this._roomRef.child('guestOnline').set(false);
+    }
+    this._roomRef.off();
+    this._roomRef = null;
+    this._myRole = null;
+    this._msgListener = null;
+    this._lastMsgKey = null;
+  }
+};
+
 // ════════════════════════════════════════════
 //  LOCALIZATION DICTIONARY & FULL DATABASE
 // ════════════════════════════════════════════
@@ -1761,10 +1957,11 @@ let state = {
   currentPlayer: 0, spySet: new Set(), usedChars: [], chosenChar: null, cardOpen: false
 };
 
-let currentGame = null; 
+let currentGame = null;
+
 let secretState = {
   lang: 'ua', playerCount: 2, selectedCats: new Set(CATEGORIES.map(c => c.id)),
-  role: null, peer: null, conn: null, roomCode: null,
+  role: null, roomCode: null,
   grid: [], mySelected: null, opponentSelectedWiki: null, myEliminated: new Set(),
   isMyTurn: false, gameActive: false, stage: 'lobby',
   myReady: false, opponentReady: false, accuseMode: false
@@ -2001,7 +2198,7 @@ function backToMenu() {
   document.getElementById('btn-rules').style.display = 'none';
   document.getElementById('btn-back-menu').style.display = 'none';
   document.getElementById('header-title').textContent = '🕵️‍♂️ PartyBox';
-  document.querySelector('header').style.display = 'flex';
+  document.querySelector('header').style.display = 'flex'; // Повертаємо хедер в меню
   cancelSecretLobby();
   try {
     state.currentPlayer = 0;
@@ -2219,79 +2416,81 @@ function toggleAllMysteryCats() {
   buildSecretCatsUI(); updateStaticTexts();
 }
 
-function generateSecretRoomCode() {
+async function generateSecretRoomCode() {
   const pool = [];
   CATEGORIES.forEach(cat => { if (secretState.selectedCats.has(cat.id)) pool.push(...cat.chars); });
   if (pool.length < 16) { showToast(TRANSLATIONS.ua.noCategoryError); return; }
   secretState.grid = secureShuffle(pool).slice(0, 16);
-  
+
   const code = Math.floor(100000 + Math.random() * 900000).toString();
   secretState.roomCode = code;
-  
-  const peerConfig = {
-    iceServers: [
-      { urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302', 'stun:stun3.l.google.com:19302', 'stun:stun4.l.google.com:19302'] }
-    ]
-  };
-  secretState.peer = new Peer('pb-secret-' + code, { config: peerConfig });
-  secretState.peer.on('open', id => {
+
+  try {
+    document.getElementById('btn-generate-room').disabled = true;
+    await Network.createRoom(code, secretState.grid.map(c => ({
+      nameUA: c.nameUA, emoji: c.emoji, wiki: c.wiki, descUA: c.descUA
+    })));
+
     document.getElementById('room-code-display').textContent = code;
     document.getElementById('host-setup-view').style.display = 'none';
     document.getElementById('host-lobby-view').style.display = 'flex';
     document.getElementById('label-waiting-players').textContent = TRANSLATIONS.ua.secretWaitMsg;
-    (async () => {
-      try { await prefetchImages(secretState.grid.map(c => c.wiki || c.nameUA), 3); }
-      catch (e) { /* ignore prefetch errors */ }
-    })();
-  });
-  secretState.peer.on('connection', conn => {
-    secretState.conn = conn;
-    conn.on('open', () => {
+
+    Network.listenForGuest(() => {
       document.getElementById('host-wait-group').style.display = 'none';
       document.getElementById('host-connected-group').style.display = 'block';
       document.getElementById('host-connected-group').textContent = TRANSLATIONS.ua.secretConnectedMsg;
       document.getElementById('btn-start-secret-game').style.display = 'block';
     });
-    conn.on('data', handleNetworkData);
-    conn.on('close', cancelSecretLobby);
-  });
-  secretState.peer.on('error', err => { showToast('Помилка з\'єднання. Спробуйте ще раз.'); cancelSecretLobby(); });
+
+    prefetchImages(secretState.grid.map(c => c.wiki || c.nameUA), 3).catch(() => {});
+  } catch (e) {
+    showToast('Помилка створення кімнати. Спробуйте ще раз.');
+    document.getElementById('btn-generate-room').disabled = false;
+  }
 }
 
-function joinGame() {
+async function joinGame() {
   const code = document.getElementById('room-code-input').value.trim().replace(/\s/g, '');
   if (code.length !== 6) { showToast('Введіть 6 цифр'); return; }
-  
-  const peerConfig = {
-    iceServers: [
-      { urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302', 'stun:stun3.l.google.com:19302', 'stun:stun4.l.google.com:19302'] }
-    ]
-  };
-  secretState.peer = new Peer({ config: peerConfig });
-  secretState.peer.on('open', () => {
-    const conn = secretState.peer.connect('pb-secret-' + code, { reliable: true });
-    secretState.conn = conn;
-    conn.on('open', () => {
-      document.getElementById('join-status').textContent = TRANSLATIONS.ua.secretConnectedMsg;
-    });
-    conn.on('data', handleNetworkData);
-    conn.on('close', cancelSecretLobby);
-  });
-  secretState.peer.on('error', () => showToast('Кімнату не знайдено.'));
+
+  const joinBtn = document.getElementById('btn-join-game');
+  joinBtn.disabled = true;
+  document.getElementById('join-status').textContent = 'Підключення...';
+
+  try {
+    const roomData = await Network.joinRoom(code);
+    secretState.roomCode = code;
+    secretState.grid = roomData.grid;
+    Network.listenMessages(handleNetworkData);
+    document.getElementById('join-status').textContent = TRANSLATIONS.ua.secretConnectedMsg;
+    prefetchImages(secretState.grid.map(c => c.wiki || c.nameUA), 3).catch(() => {});
+  } catch (e) {
+    const msg = e.message === 'room-not-found'
+      ? 'Кімнату не знайдено. Перевірте код 🔍'
+      : 'Помилка підключення. Спробуйте ще раз.';
+    showToast(msg);
+    document.getElementById('join-status').textContent = '';
+    joinBtn.disabled = false;
+  }
 }
 
 function cancelSecretLobby() {
-  if (secretState.peer) { secretState.peer.destroy(); secretState.peer = null; }
-  secretState.conn = null;
+  Network.disconnect().catch(() => {});
   document.getElementById('host-setup-view').style.display = 'flex';
   document.getElementById('host-lobby-view').style.display = 'none';
   document.getElementById('host-wait-group').style.display = 'flex';
   document.getElementById('host-connected-group').style.display = 'none';
   document.getElementById('btn-start-secret-game').style.display = 'none';
+  document.getElementById('btn-generate-room').disabled = false;
 }
 
 function startSecretGame() {
-  secretState.conn.send({ type: 'init', grid: secretState.grid.map(c => ({ nameUA: c.nameUA, emoji: c.emoji, wiki: c.wiki, descUA: c.descUA })) });
+  Network.send('init', {
+    grid: secretState.grid.map(c => ({
+      nameUA: c.nameUA, emoji: c.emoji, wiki: c.wiki, descUA: c.descUA
+    }))
+  });
   initSecretGameState();
 }
 
@@ -2310,7 +2509,7 @@ function handleNetworkData(data) {
     renderSecretGame();
   } else if (data.type === 'guess') {
     const isCorrect = secretState.mySelected === data.idx;
-    secretState.conn.send({ type: 'guess_res', correct: isCorrect, oppChar: secretState.mySelected });
+    Network.send('guess_res', { correct: isCorrect, oppChar: secretState.mySelected });
     showSecretResult(!isCorrect, data.idx, secretState.mySelected); 
   } else if (data.type === 'guess_res') {
     showSecretResult(data.correct, secretState.mySelected, data.oppChar); 
@@ -2328,6 +2527,13 @@ function initSecretGameState() {
   secretState.opponentReady = false;
   secretState.accuseMode = false;
   secretState.isMyTurn = false;
+  secretState.gameActive = true;
+  Network.listenMessages(handleNetworkData);
+  Network.listenForDisconnect(() => {
+    showToast('З\'єднання з суперником перервано 💔');
+    secretState.gameActive = false;
+    setTimeout(backToMenu, 2500);
+  });
   
   document.getElementById('orientation-tip').classList.remove('dismissed');
   
@@ -2434,7 +2640,7 @@ function handleCardClick(idx) {
   } else if (secretState.stage === 'playing' && secretState.isMyTurn) {
     if (secretState.accuseMode) {
       secretState.accuseMode = false;
-      secretState.conn.send({ type: 'guess', idx: idx });
+      Network.send('guess', { idx: idx });
       showToast('Обвинувачення відправлено...');
       secretState.stage = 'ended';
       renderSecretGame();
@@ -2454,7 +2660,7 @@ function handleCardClick(idx) {
 function sendMysteryReady() {
   if (secretState.mySelected === null) { showToast('Оберіть персонажа!'); return; }
   secretState.myReady = true;
-  secretState.conn.send({ type: 'ready' });
+  Network.send('ready');
   
   const myChar = secretState.grid[secretState.mySelected];
   const charName = myChar.nameUA;
@@ -2486,7 +2692,7 @@ function sendMysteryReady() {
 function endSecretTurn() {
   secretState.isMyTurn = false;
   secretState.accuseMode = false;
-  secretState.conn.send({ type: 'end_turn' });
+  Network.send('end_turn');
   renderSecretGame();
 }
 
@@ -2496,16 +2702,21 @@ function toggleAccuseMode() {
 }
 
 function surrenderSecretGame() {
-  if (secretState.conn) secretState.conn.send({ type: 'surrender' });
+  Network.send('surrender');
+  secretState.gameActive = false;
+  Network.disconnect().catch(() => {});
   backToMenu();
 }
 
 function showSecretResult(iWon, myCharIdx, oppCharIdx) {
   const t = TRANSLATIONS.ua;
+  const resultTitle = document.getElementById('result-title');
+  resultTitle.textContent = iWon ? t.resWinTitle : t.resLoseTitle;
+  resultTitle.classList.toggle('win', iWon);
+  resultTitle.classList.toggle('lose', !iWon);
   document.getElementById('result-icon').textContent = iWon ? '🎉' : '💔';
-  document.getElementById('result-title').textContent = iWon ? t.resWinTitle : t.resLoseTitle;
   document.getElementById('result-message').textContent = iWon ? t.resWinMsg : t.resLoseMsg;
-  document.getElementById('result-title').style.background = iWon ? 'linear-gradient(135deg,var(--cyan),var(--violet))' : 'linear-gradient(135deg,var(--red),var(--pink))';
+  resultTitle.style.background = '';
 
   const mChar = secretState.grid[myCharIdx];
   const oChar = secretState.grid[oppCharIdx];
@@ -2540,8 +2751,11 @@ function showSecretResult(iWon, myCharIdx, oppCharIdx) {
   setupResultImage(mChar, 'res-my');
   setupResultImage(oChar, 'res-opp');
 
-  if (secretState.peer) { secretState.peer.destroy(); secretState.peer = null; }
-  document.querySelector('header').style.display = 'flex';
+  secretState.gameActive = false;
+  Network.disconnect().catch(() => {});
+  
+  // ПРИХОВУЄМО ХЕДЕР ТУТ
+  document.querySelector('header').style.display = 'none';
   switchScreen('screen-secret-result');
 }
 
