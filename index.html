@@ -19,7 +19,7 @@
   --bg:              #07070e;
   --surface-1:       rgba(255, 255, 255, 0.07);   /* базовий glass */
   --surface-2:       rgba(255, 255, 255, 0.07);   /* inputs, stepper, toggle */
-  --surface-deep:    rgba(10, 10, 22, 0.96);      /* сайдбар, re1sult-card */
+  --surface-deep:    rgba(10, 10, 22, 0.96);      /* сайдбар, result-card */
 
   /* — Границі — */
   --border-1:        rgba(255, 255, 255, 0.08);   /* тонка/стандартна */
@@ -133,7 +133,7 @@ html,body{
 }
 
 /* ORBS */
-.orb{position:fixed;border-radius:50%;filter:blur(100px);opacity:0.12;pointer-events:none;z-index:0;animation:drift 20s ease-in-out infinite alternate;}
+.orb{position:fixed;border-radius:50%;filter:blur(40px);opacity:0.12;pointer-events:none;z-index:0;animation:drift 20s ease-in-out infinite alternate;}
 .orb1{width:500px;height:500px;background:var(--violet);top:-150px;left:-100px;}
 .orb2{width:400px;height:400px;background:var(--cyan);bottom:-100px;right:-80px;animation-delay:-6s;}
 .orb3{width:300px;height:300px;background:var(--pink);top:40%;left:50%;animation-delay:-12s;}
@@ -201,11 +201,17 @@ header {
   -webkit-overflow-scrolling:touch;
 }
 .screen.active{opacity:1;pointer-events:all;transform:translateY(0);}
+/* Safety: ensure inactive screens (and their children) never receive pointer events.
+   This prevents hidden but present elements (e.g. flipped card back) from blocking UI. */
+.screen:not(.active),
+.screen:not(.active) * {
+  pointer-events: none !important;
+}
 #screen-setup, #screen-secret-result {overflow-y:hidden;}
 #screen-secret-game { 
   overflow-y: auto; 
-  padding: 0 !important;
-  padding-top: max(env(safe-area-inset-top, 16px), 16px) !important;
+  padding: 0;
+  padding-top: max(env(safe-area-inset-top, 16px), 16px);
 }
 .screen-center{justify-content:center;}
 
@@ -277,7 +283,7 @@ header {
   height:calc(100dvh - var(--screen-pt) - var(--screen-pb) - 34px);
   overflow:hidden;
 }
-.auto-height-card { height: auto !important; }
+.auto-height-card { height: auto; }
 .section-label{
   font-size:0.75rem;
   letter-spacing:2.5px;
@@ -385,19 +391,19 @@ header {
 .back-char{ background:linear-gradient(170deg,#0f0a22 0%,#06060c 100%); border:1px solid rgba(0,245,212,0.25); }
 .back-spy{ background:linear-gradient(170deg,#1c0613 0%,#090207 100%); border:1px solid rgba(255,60,92,0.3); }
 
-/* CARD INNER ELEMENTS */
-.card-img-wrap{ width:100%; flex:1; position:relative; overflow:hidden; min-height:0; background: rgba(0,0,0,0.2); }
-.card-img{ width:100%; height:100%; object-fit:contain; display:block; transition:opacity 0.7s; padding: 12px; }
-.card-img.loading{ opacity:0; }
-.card-img-overlay{ position:absolute; inset:0; background:linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(15,10,34,0.95) 100%); pointer-events: none; }
-.card-img-placeholder{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:6rem; background:rgba(255,255,255,0.01); }
-.img-loader{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(7,7,14,0.4); }
-.spinner{ width:32px; height:32px; border:3px solid rgba(255,255,255,0.1); border-top-color:var(--cyan); border-radius:50%; animation:spin 0.8s linear infinite; }
-@keyframes spin{to{transform:rotate(360deg)}}
-.card-info{ padding:20px 65px 24px 24px; flex-shrink:0; display:flex; flex-direction:column; gap:6px; position: relative; }
-.card-top-label{ font-size:0.68rem; letter-spacing:3px; text-transform:uppercase; color:var(--muted); font-weight: 700; }
-.card-name{ font-family:'Unbounded',sans-serif; font-size:clamp(1.1rem, 4.5vw, 1.45rem); font-weight:800; line-height:1.25; background:linear-gradient(135deg,var(--cyan),#a8ffea); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-.card-bot-label{ font-size:0.65rem; letter-spacing:2px; text-transform:uppercase; color:rgba(0,245,212,0.55); margin-top:2px; font-weight: 600; }
+/* CARD INNER ELEMENTS (BASE) */
+.card-img-wrap { width: 100%; flex: 1; position: relative; overflow: hidden; min-height: 0; background: transparent; padding: 14px; }
+.card-img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; display: block; transition: opacity 0.7s; border-radius: 16px; background: rgba(255,255,255,0.04); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.card-img.loading { opacity: 0; }
+.card-img-overlay { position: absolute; inset: 14px; background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(15,10,34,0.95) 100%); pointer-events: none; border-radius: 16px; }
+.card-img-placeholder { position: absolute; inset: 14px; display: flex; align-items: center; justify-content: center; font-size: 6rem; background: rgba(255,255,255,0.03); border-radius: 16px; }
+.img-loader { position: absolute; inset: 14px; display: flex; align-items: center; justify-content: center; background: rgba(7,7,14,0.4); border-radius: 16px; }
+.spinner { width: 32px; height: 32px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--cyan); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.card-info { padding: 20px 65px 24px 24px; flex-shrink: 0; display: flex; flex-direction: column; gap: 6px; position: relative; }
+.card-top-label { font-size: 0.68rem; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.card-name { font-family: 'Unbounded', sans-serif; font-size: clamp(1.1rem, 4.5vw, 1.45rem); font-weight: 800; line-height: 1.25; background: linear-gradient(135deg, var(--cyan), #a8ffea); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.card-bot-label { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(0,245,212,0.55); margin-top: 2px; font-weight: 600; }
 .info-trigger-btn { position: absolute; bottom: 24px; right: 24px; width: 36px; height: 36px; background: rgba(255,255,255,0.08); border: 1px solid var(--border2); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--cyan); font-size: 1rem; font-weight: bold; transition: all 0.2s; z-index: 20; }
 .info-trigger-btn:hover { background: var(--cyan); color: #07070e; box-shadow: 0 0 12px rgba(0,245,212,0.4); }
 
@@ -497,7 +503,7 @@ header {
   z-index: 2000;
 }
 .orientation-tip-overlay.dismissed {
-  display: none !important;
+  display: none;
 }
 @media (orientation: portrait) {
   #screen-secret-game.active .orientation-tip-overlay:not(.dismissed) {
@@ -550,18 +556,8 @@ header {
 .mystery-actions .btn-primary,
 .mystery-actions .btn-ghost,
 .mystery-actions .btn-danger { width: 100%; }
-.mystery-card {
-  width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.14);
-  border-radius: 28px; padding: 16px; display: flex; flex-direction: column; gap: 14px;
-  box-shadow: 0 18px 40px rgba(0,0,0,0.20);
-}
-.mystery-card-img-wrap {
-  width: 100%; min-height: 190px; border-radius: 22px; overflow: hidden;
-  position: relative; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12);
-}
-.mystery-card-name { font-family: 'Unbounded', sans-serif; font-size: 1.25rem; line-height: 1.05; }
-.mystery-card-note { font-size: 0.72rem; letter-spacing: 1.6px; }
 
+/* SECRET GRID CARD OVERRIDES */
 .card-cell {
   position: relative; cursor: pointer; background: var(--surface2); border: 1px solid var(--border); border-radius: 16px;
   display: grid; grid-template-rows: 1fr auto; min-height: 82px; padding: 0; text-align: center;
@@ -572,12 +568,18 @@ header {
 .card-cell.selected { border-color: var(--cyan); background: rgba(0, 245, 212, 0.12); box-shadow: 0 0 10px rgba(0, 245, 212, 0.2), inset 0 0 6px rgba(0, 245, 212, 0.08); }
 .card-cell.eliminated { opacity: 0.25; filter: grayscale(100%); cursor: not-allowed; }
 .card-cell.locked { cursor: not-allowed; opacity: 0.6; pointer-events: none;}
-.card-cell .card-img-wrap { width: 100%; height: 100%; position: relative; overflow: hidden; border-radius: 14px 14px 0 0; }
-.card-cell .card-img-placeholder { font-size: min(5vw, 1.8rem); }
+
+/* ОНОВЛЕНО: Переносимо відступи на обгортку для створення ідеально рівних рамок */
+.card-cell .card-img-wrap { width: 100%; height: 100%; position: relative; overflow: hidden; border-radius: 14px 14px 0 0; padding: 8px; }
+.card-cell .card-img { border-radius: 10px; }
+.card-cell .card-img-overlay { inset: 8px; border-radius: 10px; }
+.card-cell .card-img-placeholder { inset: 8px; border-radius: 10px; font-size: min(5vw, 2.5rem); }
+.card-cell .img-loader { inset: 8px; border-radius: 10px; }
+
 .card-cell .secret-card-info { width: 100%; padding: 4px 6px 6px; display: flex; flex-direction: column; gap: 0px; align-items: flex-start; }
 .card-cell .secret-card-info .card-top-label { color: rgba(255,255,255,0.92); font-size: 0.68rem; font-weight: 700; }
 .card-cell .secret-card-info .card-bot-label { display: none; }
-.card-cell .info-trigger-btn { position: absolute; bottom: 6px; right: 6px; width: 26px; height: 26px; border-radius: 50%; background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.18); backdrop-filter: blur(4px); color: var(--cyan); font-size: 0.75rem; display: flex; align-items: center; justify-content: center; }
+.card-cell .info-trigger-btn { position: absolute; bottom: 12px; right: 12px; width: 26px; height: 26px; border-radius: 50%; background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.18); backdrop-filter: blur(4px); color: var(--cyan); font-size: 0.75rem; display: flex; align-items: center; justify-content: center; }
 .card-cell .info-trigger-btn:hover { transform: translateY(-1px); }
 .card-cell.accuse-target { border-color: var(--red); background: rgba(255, 60, 92, 0.2); box-shadow: 0 0 15px rgba(255, 60, 92, 0.4); animation: pulseRed 1s infinite alternate; }
 
@@ -606,7 +608,7 @@ header {
   width: 100%; min-height: 180px; border-radius: 20px; overflow: hidden;
   position: relative; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12);
 }
-.mystery-card-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.mystery-card-img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; display: block; }
 .mystery-card-image-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.4) 100%); }
 .mystery-card-emoji { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 4.5rem; color: rgba(255,255,255,0.9); text-shadow: 0 6px 20px rgba(0,0,0,0.35); }
 .mystery-card-info { width: 100%; text-align: center; display: flex; flex-direction: column; gap: 6px; }
@@ -677,7 +679,7 @@ header {
   .mystery-layout { flex-direction: column; gap: 8px; padding: 8px; }
   .mystery-grid-wrap { grid-template-columns: 1fr 1fr; grid-auto-rows: minmax(150px, auto); gap: 12px; padding: 12px; max-height: 40vh; overflow-y: auto; }
   .card-cell { border-radius: 12px; }
-  .card-cell .info-trigger-btn { bottom: 6px; right: 6px; width: 22px; height: 22px; font-size: 10px; }
+  .card-cell .info-trigger-btn { bottom: 10px; right: 10px; width: 22px; height: 22px; font-size: 10px; }
   .mystery-sidebar { padding: 10px; max-height: 36vh; flex: 0 0 auto; gap: 10px; }
   .mystery-card { gap: 6px; padding: 8px; }
   .mystery-card-img-wrap { min-height: 110px; }
@@ -692,15 +694,15 @@ header {
 }
 
 @media (orientation: landscape) and (max-height: 600px) {
-  #screen-secret-game { padding-top: env(safe-area-inset-top, 4px) !important; }
-  .orientation-tip-overlay { display: none !important; }
+  #screen-secret-game { padding-top: env(safe-area-inset-top, 4px); }
+  .orientation-tip-overlay { display: none; }
   .mystery-layout { gap: 10px; padding: 10px; }
   .mystery-grid-wrap { grid-template-columns: repeat(4, 1fr); grid-auto-rows: minmax(200px, auto); gap: 10px; padding: 10px; max-height: 100%; overflow-y: auto; }
   .card-cell { border-radius: 14px; }
   .card-cell .card-img-wrap { border-radius: 12px; }
   .card-cell .secret-card-info { padding: 8px 10px 10px; }
   .card-cell .secret-card-info .card-top-label { font-size: 0.75rem; }
-  .card-cell .info-trigger-btn { bottom: 6px; right: 6px; width: 26px; height: 26px; font-size: 11px; }
+  .card-cell .info-trigger-btn { bottom: 10px; right: 10px; width: 26px; height: 26px; font-size: 11px; }
   .mystery-sidebar { max-height: 100%; padding: 10px; flex: 0 0 240px; gap: 10px; }
   .mystery-card { gap: 8px; padding: 10px; }
   .mystery-card-img-wrap { min-height: 160px; }
@@ -760,7 +762,6 @@ header {
       <div class="game-mode-title" id="role-guest-title">Підключитися (Гість)</div>
     </div>
     
-    <!-- ДОДАНА ПРИМІТКА ПРО WI-FI -->
     <div class="wifi-note">
       <span class="wifi-icon">🛜</span>
       <span id="role-wifi-note">Для з'єднання потрібно бути в одній Wi-Fi мережі</span>
@@ -906,7 +907,6 @@ header {
       <div class="status-dot"></div>
       <span id="label-waiting-players">Очікування підключення...</span>
     </div>
-    <!-- Виправлено колір var(--cyan) на var(--green) -->
     <div id="host-connected-group" style="display:none;text-align:center;font-size:0.85rem;color:var(--green);font-weight:bold;margin-bottom:20px;">
       ✓ Гравець підключився!
     </div>
@@ -925,13 +925,12 @@ header {
     <div class="section-label" style="text-align: center;" id="label-guest-code">Введіть код кімнати</div>
     <input type="text" class="input-code mt16" id="room-code-input" placeholder="000000" maxlength="6">
     <button class="btn-primary mt24" onclick="joinGame()" id="btn-join-game">Підключитися</button>
-    <!-- Виправлено колір var(--cyan) на var(--green) -->
     <div id="join-status" style="color: var(--green); text-align: center; margin-top: 15px; font-size: 0.9rem; font-weight: bold;"></div>
   </div>
 </div>
 
 <!-- SECRET GAMEPLAY -->
-<div id="screen-secret-game" class="screen" style="padding: env(safe-area-inset-top, 0) 0 0 0;">
+<div id="screen-secret-game" class="screen">
   
   <!-- ORIENTATION RECOMENDATION MODAL -->
   <div id="orientation-tip" class="orientation-tip-overlay">
@@ -1097,57 +1096,47 @@ const CATEGORIES = [
       {nameUA: 'Агент Сміт', wiki: 'Agent_Smith', emoji: '🕶️',descUA: 'Головна програма-антагоніст у віртуальному світі Матриці.' },
       {nameUA: 'Аладдін', wiki: 'Aladdin_(Disney_character)', emoji: '🧞‍♂️',descUA: 'Вуличний злодюжка з Аграби, який знайшов чарівну лампу з Джином.' },
       {nameUA: 'Ар\'я Старк', wiki: 'Arya_Stark', emoji: '🗡️',descUA: 'Відважна безлика войовниця та молодша донька лорда Еддарда Старка.' },
-      {nameUA: 'Барні Стінсон', wiki: 'Барні_Стінсон', emoji: '👔', descUA: 'Харизматичний любитель костюмів та лазертагу з "Як я зустрів вашу маму".' },
       {nameUA: 'Барт Сімпсон', wiki: 'Bart_Simpson', emoji: '🛹',descUA: 'Хуліган та непосида зі скейтбордом, старший син Гомера та Мардж.' },
       {nameUA: 'Білосніжка', wiki: 'Snow_White_(Disney_character)', emoji: '🍎',descUA: 'Принцеса, яка переховувалася в лісі у семи гномів від злої мачухи.' },
-      {nameUA: 'Бетмен', wiki: 'Batman', emoji: '🦇',descUA: 'Брюс Вейн, мільярдер, що захищає Готем під масою кажана.' },
+      {nameUA: 'Бетмен', wiki: 'Бэтмен', emoji: '🦇',descUA: 'Брюс Вейн, мільярдер, що захищає Готем під масою кажана.' },
       {nameUA: 'Валл-і', wiki: 'WALL-E_(character)', emoji: '🤖',descUA: 'Зворушливий робот-сміттяр, який залишився на занедбаній Землі.' },
       {nameUA: 'Венздей Аддамс', wiki: 'Уэнздей_Аддамс', emoji: '🖤',descUA: 'Готична та похмура дівчинка з кісками з сімейки Аддамс.' },
-      {nameUA: 'Віто Корлеоне', wiki: 'Vito_Corleone', emoji: '🌹',descUA: 'Дон мафії, Хрещений батько, глава впливового кримінального клану.' },
+      {nameUA: 'Віто Корлеоне', wiki: 'Вито_Корлеоне', emoji: '🌹',descUA: 'Дон мафії, Хрещений батько, глава впливового кримінального клану.' },
       {nameUA: 'Волан-де-Морт', wiki: 'Lord_Voldemort', emoji: '🐍',descUA: 'Темний лорд, чиє ім\'я бояться називати всі чарівники.' },
-      {nameUA: 'Гендальф', wiki: 'Gandalf', emoji: '🧙‍♂️',descUA: 'Могутній старий чарівник та один із захисників Середзем\'я.' },
-      {nameUA: 'Ганнібал Лектер', wiki: 'Hannibal_Lecter', emoji: '🍷',descUA: 'Геніальний судовий психіатр, естет і серійний вбивця-канібал.' },
-      {nameUA: 'Гаррі Поттер', wiki: 'Harry_Potter_(character)', emoji: '⚡',descUA: 'Хлопчик, який вижив, видатний чарівник зі шрамом-блискавкою.' },
+      {nameUA: 'Гендальф', wiki: 'Гэндальф', emoji: '🧙‍♂️',descUA: 'Могутній старий чарівник та один із захисників Середзем\'я.' },
+      {nameUA: 'Гаррі Поттер', wiki: 'Гаррі_Поттер', emoji: '⚡',descUA: 'Хлопчик, який вижив, видатний чарівник зі шрамом-блискавкою.' },
       {nameUA: 'Герміона Ґрейнджер', wiki: 'Hermione_Granger', emoji: '📚',descUA: 'Найрозумніша та найстаранніша учениця Гоґвортсу, подруга Гаррі.' },
-      {nameUA: 'Гладіатор', wiki: 'Maximus_Decimus_Meridius', emoji: '🛡️',descUA: 'Максимус, римський полководець, який став гладіатором на арені Колізею.' },
       {nameUA: 'Гомер Сімпсон', wiki: 'Homer_Simpson', emoji: '🍩',descUA: 'Батько сімейства Сімпсонів, який обожнює пиво та пончики на АЕС.' },
-      {nameUA: 'Гомес Аддамс', wiki: 'Gomez_Addams', emoji: '🤵',descUA: 'Ексцентричний мільярдер та пристрасний глава сімейки Аддамс.' },
       {nameUA: 'Грінч', wiki: 'Grinch', emoji: '💚',descUA: 'Зелена волохата істота, яка ненавиділа Різдво.' },
-      {nameUA: 'Дамблдор', wiki: 'Albus_Dumbledore', emoji: '🧙',descUA: 'Найвеличніший директор школи Гоґвортс із довгою бородою.' },
+      {nameUA: 'Дамблдор', wiki: 'Альбус_Дамблдор', emoji: '🧙',descUA: 'Найвеличніший директор школи Гоґвортс із довгою бородою.' },
       {nameUA: 'Дарт Вейдер', wiki: 'Darth_Vader', emoji: '⚔️',descUA: 'Колишній джедай Енакін Скайвокер, який перейшов на Темну сторону Сили.' },
       {nameUA: 'Дієнеріс Таргарієн', wiki: 'Daenerys_Targaryen', emoji: '🐉',descUA: 'Мати драконів, руйнівниця кайданів та королева Семи Королівств.' },
-      {nameUA: 'Декстер Морган', wiki: 'Dexter_Morgan', emoji: '🩸',descUA: 'Судово-медичний експерт, який полює на маніяків ночами.' },
-      {nameUA: 'Джеймс Бонд', wiki: 'James_Bond', emoji: '🕴️',descUA: 'Легендарний британський шпигун під кодовим номером 007.' },
-      {nameUA: 'Джейк Перальта', wiki: 'Jake_Peralta', emoji: '🚓',descUA: 'Інфантильний, але геніальний детектив із відділку Бруклін 9-9.' },
+      {nameUA: 'Декстер Морган', wiki: 'Декстер_Морган', emoji: '🩸',descUA: 'Судово-медичний експерт, який полює на маніяків ночами.' },
+      {nameUA: 'Джеймс Бонд', wiki: 'Джеймс_Бонд', emoji: '🕴️',descUA: 'Легендарний британський шпигун під кодовим номером 007.' },
       {nameUA: 'Джеймі Ланністер', wiki: 'Jaime_Lannister', emoji: '🦁',descUA: 'Царевбивця, чудовий лицар із золотою рукою.' },
-      {nameUA: 'Джейсон Борн', wiki: 'Jason_Bourne', emoji: '🏃‍♂️',descUA: 'Колишній агент ЦРУ, який втратив пам\'ять і шукає правду про себе.' },
-      {nameUA: 'Джек Горобець', wiki: 'Jack_Sparrow', emoji: '🏴‍☠️',descUA: 'Капітан та легендарний пірат Карибського моря.' },
+      {nameUA: 'Джейсон Борн', wiki: 'Джейсон_Борн', emoji: '🏃‍♂️',descUA: 'Колишній агент ЦРУ, який втратив пам\'ять і шукає правду про себе.' },
+      {nameUA: 'Джек Горобець', wiki: 'Джек_Спарроу', emoji: '🏴‍☠️',descUA: 'Капітан та легендарний пірат Карибського моря.' },
       {nameUA: 'Джессі Пінкман', wiki: 'Jesse_Pinkman', emoji: '💊', descUA: 'Напарник Волтера Вайта із серіалу "Пуститися берега".' },
-      {nameUA: 'Джої Тріббіані', wiki: 'Joey_Tribbiani', emoji: '🍕', descUA: 'Актор-італієць, який обожнює їжу та фразу "How you doin?".' },
+      {nameUA: 'Джої Тріббіані', wiki: 'Джої_Тріббіані', emoji: '🍕', descUA: 'Актор-італієць, який обожнює їжу та фразу "How you doin?".' },
       {nameUA: 'Джон Макклейн', wiki: 'John_McClane', emoji: '🏢',descUA: 'Поліцейський-одинак, який рятує заручників у хмарочосі.' },
       {nameUA: 'Джон Сноу', wiki: 'Jon_Snow_(character)', emoji: '🐺',descUA: 'Бастард лорда Старка, а можливо і ні.' },
-      {nameUA: 'Джон Вік', wiki: 'John_Wick', emoji: '🔫',descUA: 'Баба Яга, нестримний кілер, який мстить за свого собаку.' },
+      {nameUA: 'Джон Вік', wiki: 'Джон_Уік', emoji: '🔫',descUA: 'Баба Яга, нестримний кілер, який мстить за свого собаку.' },
       {nameUA: 'Джокер', wiki: 'Joker_(DC_Comics)', emoji: '🃏',descUA: 'Божевільний злочинець-клоун, заклятий ворог Бетмена.' },
-      {nameUA: 'Діана Принс', wiki: 'Wonder_Woman', emoji: '👑',descUA: 'Диво-Жінка, амазонка-войовниця з Ліги Справедливості.' },
-      {nameUA: 'Доктор Браун', wiki: 'Emmett_Brown', emoji: '⚡',descUA: 'Емметт Браун, творець машини часу на базі ДеЛореан.' },
-      {nameUA: 'Доктор Ватсон', wiki: 'John_Watson', emoji: '🩺',descUA: 'Вірний соратник та біограф нишпорки Шерлока Холмса.' },
+      {nameUA: 'Доктор Браун', wiki: 'Эмметт_Браун', emoji: '⚡',descUA: 'Емметт Браун, творець машини часу на базі ДеЛореан.' },
       {nameUA: 'Доктор Стрендж', wiki: 'Doctor_Strange', emoji: '🌀',descUA: 'Верховний маг Землі, який захищає реальність у всесвіті Marvel.' },
       {nameUA: 'Доктор Хаус', wiki: 'Gregory_House', emoji: '🩼',descUA: 'Геніальний лікар-діагност, цинік, який страждає на кульгавість.' },
-      {nameUA: 'Дон Дрейпер', wiki: 'Don_Draper', emoji: '🥃',descUA: 'Загадковий і харизматичний креативний директор агентства Божевільні.' },
       {nameUA: 'Драко Мелфой', wiki: 'Draco_Malfoy', emoji: '🍏',descUA: 'Слизеринець, зарозумілий суперник Гаррі Поттера в школі.' },
       {nameUA: 'Дуайт Шрут', wiki: 'Dwight_Schrute', emoji: '👓',descUA: 'Найкращий помічник регіонального менеджера в Dunder Mifflin.' },
-      {nameUA: 'Дедпул', wiki: 'Deadpool', emoji: '⚔️',descUA: 'Балакучий найманець у червоній масці з чорним гумором.' },
+      {nameUA: 'Дедпул', wiki: 'Deadpool_(film)', emoji: '⚔️',descUA: 'Балакучий найманець у червоній масці з чорним гумором.' },
       {nameUA: 'Деріл Діксон', wiki: 'Daryl_Dixon', emoji: '🏹',descUA: 'Уцілілий з арбалетом із серіалу Ходячі мерці.' },
-      {nameUA: 'Залізна Людина', wiki: 'Iron_Man', emoji: '🦾',descUA: 'Мільярдер Тоні Старк, який створив костюм-броню.' },
-      {nameUA: 'Попелюшка', wiki: 'Cinderella_(Disney_character)', emoji: '👠',descUA: 'Дівчина, яка загубила кришталевий черевичок на балу у принца.' },
-      {nameUA: 'Індіана Джонс', wiki: 'Indiana_Jones', emoji: '🤠',descUA: 'Знаменитий археолог у капелюсі та з батогом.' },
+      {nameUA: 'Залізна Людина', wiki: 'Залізна_людина', emoji: '🦾',descUA: 'Мільярдер Тоні Старк, який створив костюм-броню.' },
+      {nameUA: 'Попелюшка', wiki: 'Золушка_(Дисней)', emoji: '👠',descUA: 'Дівчина, яка загубила кришталевий черевичок на балу у принца.' },
+      {nameUA: 'Індіана Джонс', wiki: 'Індіана_Джонс', emoji: '🤠',descUA: 'Знаменитий археолог у капелюсі та з батогом.' },
       {nameUA: 'Итан Хант', wiki: 'Ethan_Hunt', emoji: '🧗‍♂️',descUA: 'Спеціаліст із нездійсненних місій у міжнародній розвідці.' },
-      {nameUA: 'Кайло Рен', wiki: 'Kylo_Ren', emoji: '🔴',descUA: 'Лідер Першого Ордена, онук Дарта Вейдера.' },
-      {nameUA: 'Капітан Америка', wiki: 'Captain_America', emoji: '🛡️',descUA: 'Стів Роджерс, суперсолдат із щитом із вібраніуму.' },
-      {nameUA: 'Карлсон', wiki: 'Karlsson-on-the-Roof', emoji: '🛸',descUA: 'Чоловік у розквіті сил із пропелером на спині.' },
-      {nameUA: 'Кітнісс Евердін', wiki: 'Katniss_Everdeen', emoji: '🏹',descUA: 'Переспівниця, учасниця Голодних ігор.' },
-      {nameUA: 'Кевін Маккаллістер', wiki: 'Kevin_McCallister', emoji: '🏡',descUA: 'Хлопчик, який залишився один удома на Різдво та переміг злодіїв.' },
-      {nameUA: 'Кларк Кент', wiki: 'Superman', emoji: '👓',descUA: 'Скромний журналіст, який приховує особистість Супермена.' },
+      {nameUA: 'Капітан Америка', wiki: 'Капітан_Америка', emoji: '🛡️',descUA: 'Стів Роджерс, суперсолдат із щитом із вібраніуму.' },
+      {nameUA: 'Кітнісс Евердін', wiki: 'Китнисс_Эвердин', emoji: '🏹',descUA: 'Переспівниця, учасниця Голодних ігор.' },
+      {nameUA: 'Кевін Маккаллістер', wiki: 'Один_дома', emoji: '🏡',descUA: 'Хлопчик, який залишився один удома на Різдво та переміг злодіїв.' },
+      {nameUA: 'Кларк Кент', wiki: 'Супермен', emoji: '👓',descUA: 'Скромний журналіст, який приховує особистість Супермена.' },
       {nameUA: 'Кіт у чоботях', wiki: 'Puss_in_Boots_(Shrek)', emoji: '🐱',descUA: 'Відважний кіт зі шпагою та зворушливим поглядом.' },
       {nameUA: 'Крамер', wiki: 'Cosmo_Kramer', emoji: '🚪',descUA: 'Ексцентричний сусід Джеффа Сайнфелда з божевільними ідеями.' },
       {nameUA: 'Леон Професіонал', wiki: 'Leon:_The_Professional', emoji: '🌱',descUA: 'Мовчазний кілер, який врятував дівчинку Матильду.' },
@@ -1583,6 +1572,18 @@ let secretState = {
 // ════════════════════════════════════════════
 const imgCache = {};
 
+// Простой семафор для ограничения конкурентных сетевых запросов
+const _fetchSemaphore = { max: 3, current: 0, queue: [] };
+async function _withSemaphore(fn) {
+  if (_fetchSemaphore.current >= _fetchSemaphore.max) await new Promise(res => _fetchSemaphore.queue.push(res));
+  _fetchSemaphore.current++;
+  try { return await fn(); }
+  finally {
+    _fetchSemaphore.current--;
+    const r = _fetchSemaphore.queue.shift(); if (r) r();
+  }
+}
+
 async function fetchWikiImage(slug, displayName=''){
   const query = (slug || displayName || '').trim();
   if (!query) return null;
@@ -1596,37 +1597,54 @@ async function fetchWikiImage(slug, displayName=''){
 
   let url = null;
 
-  for (const domain of domains) {
-    if (url) break;
-    try {
-      const res = await fetch(`https://${domain}/api/rest_v1/page/summary/${encodeURIComponent(title)}`, { signal: AbortSignal.timeout(5000) });
-      if (res.ok) {
-        const d = await res.json();
-        url = d?.originalimage?.source || d?.thumbnail?.source || null;
-      }
-    } catch (e) {}
-  }
-
-  if (!url) {
+  // Ограничиваем реальное сетевое поведение семафором, чтобы не делать десятки
+  // одновременных запросов (браузер/сервер может вернуть 429).
+  await _withSemaphore(async () => {
     for (const domain of domains) {
       if (url) break;
       try {
-        const res = await fetch(`https://${domain}/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=pageimages&format=json&pithumbsize=500&origin=*`, { signal: AbortSignal.timeout(5000) });
+        const res = await fetch(`https://${domain}/api/rest_v1/page/summary/${encodeURIComponent(title)}`, { signal: AbortSignal.timeout(5000) });
         if (res.ok) {
           const d = await res.json();
-          const pages = d?.query?.pages || {};
-          for (const k in pages) {
-            const p = pages[k];
-            if (p?.original?.source) { url = p.original.source; break; }
-            if (p?.thumbnail?.source) { url = p.thumbnail.source; break; }
-          }
+          url = d?.originalimage?.source || d?.thumbnail?.source || null;
         }
       } catch (e) {}
     }
-  }
+
+    if (!url) {
+      for (const domain of domains) {
+        if (url) break;
+        try {
+          const res = await fetch(`https://${domain}/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=pageimages&format=json&pithumbsize=500&origin=*`, { signal: AbortSignal.timeout(5000) });
+          if (res.ok) {
+            const d = await res.json();
+            const pages = d?.query?.pages || {};
+            for (const k in pages) {
+              const p = pages[k];
+              if (p?.original?.source) { url = p.original.source; break; }
+              if (p?.thumbnail?.source) { url = p.thumbnail.source; break; }
+            }
+          }
+        } catch (e) {}
+      }
+    }
+  });
 
   imgCache[query] = url || '';
   return url;
+}
+
+// Префетч изображений с контролем конкурентности
+async function prefetchImages(items = [], concurrency = 3) {
+  const queue = items.slice();
+  const workers = new Array(Math.max(1, concurrency)).fill(0).map(async () => {
+    while (queue.length) {
+      const item = queue.shift();
+      if (!item) continue;
+      try { await fetchWikiImage(item); } catch (e) { /* ignore */ }
+    }
+  });
+  await Promise.all(workers);
 }
 
 // ════════════════════════════════════════════
@@ -1634,7 +1652,6 @@ async function fetchWikiImage(slug, displayName=''){
 // ════════════════════════════════════════════
 function updateStaticTexts() {
   const t = TRANSLATIONS.ua;
-  const tg = TRANSLATIONS.ua;
 
   document.getElementById('btn-rules').textContent = t.rulesBtn;
   document.getElementById('modal-rules-title').textContent = t.rulesModalTitle;
@@ -1647,11 +1664,11 @@ function updateStaticTexts() {
   document.getElementById('menu-secret-title').textContent = t.menuSecretTitle;
   document.getElementById('menu-secret-desc').textContent = t.menuSecretDesc;
 
-  document.getElementById('role-title').textContent = tg.roleTitle;
-  document.getElementById('role-subtitle').textContent = tg.roleSubtitle;
-  document.getElementById('role-host-title').textContent = tg.roleHost;
-  document.getElementById('role-guest-title').textContent = tg.roleGuest;
-  document.getElementById('role-wifi-note').textContent = tg.secretWifiNote;
+  document.getElementById('role-title').textContent = t.roleTitle;
+  document.getElementById('role-subtitle').textContent = t.roleSubtitle;
+  document.getElementById('role-host-title').textContent = t.roleHost;
+  document.getElementById('role-guest-title').textContent = t.roleGuest;
+  document.getElementById('role-wifi-note').textContent = t.secretWifiNote;
 
   document.getElementById('setup-label-players').textContent = t.setupPlayers;
   document.getElementById('setup-spy-hint').innerHTML = t.setupSpyHint.replace('{N}', Math.floor(state.playerCount / 3));
@@ -1676,27 +1693,27 @@ function updateStaticTexts() {
   document.getElementById('btn-cancel').textContent = t.cancelBtn;
   document.getElementById('btn-confirm').textContent = t.confirmBtn;
 
-  document.getElementById('label-host-setup').textContent = tg.secretHostSetup;
-  document.getElementById('label-host-cats').textContent = tg.secretHostCats;
-  document.getElementById('btn-host-all').textContent = secretState.selectedCats.size === CATEGORIES.length ? tg.deselectAll : tg.selectAll;
-  document.getElementById('btn-generate-room').textContent = tg.secretGenerateBtn;
-  document.getElementById('label-host-code').textContent = tg.secretHostCode;
-  document.getElementById('text-host-share').textContent = tg.secretHostShare;
-  document.getElementById('btn-start-secret-game').textContent = tg.secretStartBtn;
-  document.getElementById('btn-host-cancel').textContent = tg.cancelBtn;
-  document.getElementById('label-guest-code').textContent = tg.secretGuestCode;
-  document.getElementById('btn-join-game').textContent = tg.secretConnectBtn;
+  document.getElementById('label-host-setup').textContent = t.secretHostSetup;
+  document.getElementById('label-host-cats').textContent = t.secretHostCats;
+  document.getElementById('btn-host-all').textContent = secretState.selectedCats.size === CATEGORIES.length ? t.deselectAll : t.selectAll;
+  document.getElementById('btn-generate-room').textContent = t.secretGenerateBtn;
+  document.getElementById('label-host-code').textContent = t.secretHostCode;
+  document.getElementById('text-host-share').textContent = t.secretHostShare;
+  document.getElementById('btn-start-secret-game').textContent = t.secretStartBtn;
+  document.getElementById('btn-host-cancel').textContent = t.cancelBtn;
+  document.getElementById('label-guest-code').textContent = t.secretGuestCode;
+  document.getElementById('btn-join-game').textContent = t.secretConnectBtn;
   
   const readyBtn = document.getElementById('btn-myst-ready');
   const endTurnBtn = document.getElementById('btn-myst-end-turn');
   const accuseBtn = document.getElementById('btn-myst-accuse');
-  if(readyBtn) readyBtn.textContent = tg.secretReadyBtn;
-  if(endTurnBtn) endTurnBtn.textContent = tg.secretEndTurnBtn;
-  if(accuseBtn) accuseBtn.textContent = secretState.accuseMode ? tg.secretCancelAccuseBtn : tg.secretAccuseBtn;
-  document.getElementById('btn-myst-surrender').textContent = tg.secretSurrenderBtn;
-  document.getElementById('btn-res-menu').textContent = tg.secretBackMenuBtn;
-  document.getElementById('res-lbl-mine').textContent = tg.resMyChoice;
-  document.getElementById('res-lbl-opp').textContent = tg.resOppChoice;
+  if(readyBtn) readyBtn.textContent = t.secretReadyBtn;
+  if(endTurnBtn) endTurnBtn.textContent = t.secretEndTurnBtn;
+  if(accuseBtn) accuseBtn.textContent = secretState.accuseMode ? t.secretCancelAccuseBtn : t.secretAccuseBtn;
+  document.getElementById('btn-myst-surrender').textContent = t.secretSurrenderBtn;
+  document.getElementById('btn-res-menu').textContent = t.secretBackMenuBtn;
+  document.getElementById('res-lbl-mine').textContent = t.resMyChoice;
+  document.getElementById('res-lbl-opp').textContent = t.resOppChoice;
 }
 
 function switchScreen(id) {
@@ -1787,6 +1804,20 @@ function backToMenu() {
   document.getElementById('header-title').textContent = '🕵️‍♂️ PartyBox';
   document.querySelector('header').style.display = 'flex';
   cancelSecretLobby();
+  // Reset Spy deal state to avoid invisible flipped card stealing pointer-events
+  try {
+    state.currentPlayer = 0;
+    state.cardOpen = false;
+    const flipCard = document.getElementById('flip-card');
+    if (flipCard) flipCard.classList.remove('flipped');
+    const flipScene = document.getElementById('flip-scene');
+    if (flipScene) flipScene.style.display = 'none';
+    const dealActions = document.getElementById('deal-actions');
+    if (dealActions) dealActions.style.display = 'none';
+    const dealPrompt = document.getElementById('deal-prompt');
+    if (dealPrompt) dealPrompt.style.display = 'block';
+  } catch (e) { /* ignore DOM errors */ }
+
   switchScreen('screen-main-menu');
 }
 
@@ -2002,6 +2033,10 @@ function generateSecretRoomCode() {
     document.getElementById('host-setup-view').style.display = 'none';
     document.getElementById('host-lobby-view').style.display = 'flex';
     document.getElementById('label-waiting-players').textContent = TRANSLATIONS.ua.secretWaitMsg;
+    (async () => {
+      try { await prefetchImages(secretState.grid.map(c => c.wiki || c.nameUA), 3); }
+      catch (e) { /* ignore prefetch errors */ }
+    })();
   });
   secretState.peer.on('connection', conn => {
     secretState.conn = conn;
@@ -2030,7 +2065,6 @@ function joinGame() {
   secretState.peer.on('open', () => {
     const conn = secretState.peer.connect('pb-secret-' + code, { reliable: true });
     secretState.conn = conn;
-    // Оновлена логіка успішного підключення гостя (зелений текст замість червоного Toast)
     conn.on('open', () => {
       document.getElementById('join-status').textContent = TRANSLATIONS.ua.secretConnectedMsg;
     });
@@ -2058,7 +2092,10 @@ function startSecretGame() {
 function handleNetworkData(data) {
   if (data.type === 'init') {
     secretState.grid = data.grid;
-    initSecretGameState();
+    (async () => {
+      try { await prefetchImages(secretState.grid.map(c => c.wiki || c.nameUA), 3); } catch (e) { /* ignore */ }
+      initSecretGameState();
+    })();
   } else if (data.type === 'ready') {
     secretState.opponentReady = true;
     checkBothReady();
@@ -2086,7 +2123,6 @@ function initSecretGameState() {
   secretState.accuseMode = false;
   secretState.isMyTurn = false;
   
-  // Повертаємо видимість підказці про горизонтальний екран на початку нової гри
   document.getElementById('orientation-tip').classList.remove('dismissed');
   
   document.getElementById('mystery-my-char-wrap').style.display = 'none';
