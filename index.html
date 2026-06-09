@@ -116,7 +116,7 @@
   --t-med:  0.25s;
   --t-slow: 0.65s;
 
-  /* ── Backward-compat aliases (видалити після оновлення HTML) ── */
+  /* ── Backward-compat aliases ── */
   --muted:    var(--text-muted);
   --surface2: var(--surface-2);
   --border2:  var(--border-2);
@@ -171,7 +171,7 @@ header {
 }
 .header-btn {
   background: var(--surface2);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-1);
   color: var(--text);
   padding: 8px 14px;
   border-radius: 12px;
@@ -201,7 +201,6 @@ header {
   -webkit-overflow-scrolling:touch;
 }
 .screen.active{opacity:1;pointer-events:all;transform:translateY(0);}
-/* Safety: ensure inactive screens (and their children) never receive pointer events. */
 .screen:not(.active),
 .screen:not(.active) * {
   pointer-events: none !important;
@@ -242,6 +241,7 @@ header {
 #screen-secret-result .result-panel-name { color: var(--text); font-size: 1rem; font-weight: 800; text-align:center; line-height:1.3; }
 #screen-secret-result .result-button { width: 100%; max-width: 320px; margin: 0 auto; }
 #screen-secret-result .result-card { margin: 0 auto; }
+
 @media (max-width: 760px) {
   #screen-secret-result .result-card { padding: 26px 20px; gap: 20px; }
   #screen-secret-result .result-grid { flex-direction: column; gap: 16px; }
@@ -255,7 +255,7 @@ header {
   #screen-secret-result .result-message { font-size: 0.95rem; }
   :root { --card-w: 94vw; }
   .mystery-layout { gap: 8px; padding: 8px; }
-  .mystery-grid-wrap { grid-auto-rows: 90px; gap: 8px; padding: 8px; max-height: 35vh; }
+  .mystery-grid-wrap { grid-auto-rows: minmax(130px, 145px); gap: 8px; padding: 8px; max-height: 38vh; }
   .mystery-sidebar { padding: 10px; max-height: 35vh; }
   .mystery-actions { gap: 6px; }
   .mystery-actions button { font-size: 0.7rem; padding: 8px 6px; }
@@ -263,8 +263,8 @@ header {
 
 /* GLASS */
 .glass{
-  background:var(--surface);
-  border:1px solid var(--border);
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.08);
   border-radius:28px;
   backdrop-filter:blur(30px) saturate(190%);
   -webkit-backdrop-filter:blur(30px) saturate(190%);
@@ -296,8 +296,8 @@ header {
 .stepper{
   display:flex;
   align-items:center;
-  background:var(--surface2);
-  border:1px solid var(--border2);
+  background:var(--surface-2);
+  border:1px solid var(--border-2);
   border-radius:18px;
   overflow:hidden;
   width:100%;
@@ -316,7 +316,7 @@ header {
 }
 .stepper button:hover, .stepper button:active{ background:rgba(255,255,255,0.08); }
 .stepper .val{ flex:1; text-align:center; font-family:'Unbounded',sans-serif; font-size:1.8rem; font-weight:700; }
-.spy-hint{ text-align:center; color:var(--muted); font-size:0.8rem; margin-top:10px; }
+.spy-hint{ text-align:center; color:var(--text-muted); font-size:0.8rem; margin-top:10px; }
 .spy-hint strong{ color:var(--violet); }
 
 /* VERTICAL CATEGORY SELECTOR */
@@ -325,19 +325,19 @@ header {
 .cats{ display:flex; flex-direction: column; gap: 6px; height:100%; overflow-y: auto; padding-right: 4px; }
 .cat-toggle{
   display:flex; flex-direction: row; align-items: center; gap:16px; padding:0 18px;
-  flex:1; min-height:44px; max-height:80px; background:var(--surface2);
-  border:1px solid var(--border); border-radius:18px; cursor:pointer;
+  flex:1; min-height:44px; max-height:80px; background:var(--surface-2);
+  border:1px solid var(--border-1); border-radius:18px; cursor:pointer;
   transition:all 0.25s cubic-bezier(0.16, 1, 0.3, 1); user-select:none;
 }
 .cat-toggle.active{ border-color:var(--cyan); background:rgba(0,245,212,0.06); box-shadow:0 0 20px rgba(0,245,212,0.12); }
 .cat-toggle .ct-icon{ font-size:1.8rem; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); }
 .cat-toggle .ct-check{
-  width:24px; height:24px; border-radius:8px; border:2px solid var(--border2);
+  width:24px; height:24px; border-radius:8px; border:2px solid var(--border-2);
   display:flex; align-items:center; justify-content:center; font-size:0.8rem; transition:all 0.25s; flex-shrink: 0;
 }
 .cat-toggle.active .ct-check{ background:var(--cyan); border-color:var(--cyan); color:#07070e; font-weight: bold; }
 .cat-toggle .ct-name{ font-size:0.95rem; font-weight:700; line-height: 1.3; }
-.cat-toggle .ct-count{ font-size:0.72rem; color:var(--muted); margin-top:3px; }
+.cat-toggle .ct-count{ font-size:0.72rem; color:var(--text-muted); margin-top:3px; }
 
 /* BUTTONS */
 .btn-primary{
@@ -350,7 +350,7 @@ header {
 .btn-primary:active{ transform:translateY(0); filter:brightness(0.9); }
 .btn-primary:disabled{ opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 .btn-ghost{
-  background:var(--surface2); border:1px solid var(--border2); border-radius:16px;
+  background:var(--surface-2); border:1px solid var(--border-2); border-radius:16px;
   color:var(--text); font-size:0.9rem; padding:16px 24px; cursor:pointer;
   transition:all 0.2s; width:100%; font-weight: 600;
 }
@@ -368,20 +368,20 @@ header {
   font-family:'Unbounded',sans-serif; font-size:clamp(1.8rem, 8vw, 2.6rem); font-weight:900;
   background:linear-gradient(135deg,var(--violet),var(--pink)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:12px;
 }
-.prompt-text{ color:var(--muted); font-size:0.95rem; line-height:1.6; margin-bottom:28px; }
+.prompt-text{ color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:28px; }
 
-/* 3D FLIP CARD (ОПТИМИЗИРОВАНО) */
+/* 3D FLIP CARD */
 .flip-scene{ width:var(--card-w); height:var(--card-h); perspective:2200px; }
 .flip-card{ 
   width:100%; height:100%; position:relative; transform-style:preserve-3d; 
   transition:transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); 
-  will-change: transform; /* Подсказка для GPU */
+  will-change: transform;
 }
 .flip-card.flipped{ transform:rotateY(180deg); }
 .flip-face{ 
   position:absolute; inset:0; width: 100%; height: 100%; border-radius:28px; 
   overflow:hidden; backface-visibility:hidden; -webkit-backface-visibility:hidden; 
-  transform: translateZ(0); /* Фикс мерцания на iOS */
+  transform: translateZ(0);
   will-change: opacity;
 }
 .flip-front{
@@ -392,18 +392,18 @@ header {
 .front-pattern{ position:absolute; inset:0; opacity:0.04; background-image:repeating-linear-gradient(45deg,var(--violet) 0,var(--violet) 1px,transparent 0,transparent 50%); background-size:24px 24px; }
 .front-glow{ 
   position:absolute; width:220px; height:220px; 
-  background:radial-gradient(circle,rgba(255,255,255,0.08) 0%,transparent 60%); /* Замена тяжелого filter:blur */
+  background:radial-gradient(circle,rgba(255,255,255,0.08) 0%,transparent 60%);
   top:50%; left:50%; transform:translate(-50%,-50%); border-radius:50%; 
 }
 .front-icon{ font-size:4.5rem; text-shadow: 0 0 25px rgba(185,124,255,0.5); position:relative; z-index:1; }
-.front-label{ color:var(--muted); font-size:0.8rem; letter-spacing:3px; text-transform:uppercase; position:relative; z-index:1; font-weight: 600; }
+.front-label{ color:var(--text-muted); font-size:0.8rem; letter-spacing:3px; text-transform:uppercase; position:relative; z-index:1; font-weight: 600; }
 .flip-back{ transform:rotateY(180deg); display:flex; flex-direction:column; box-shadow:0 10px 50px rgba(0,0,0,0.7); z-index: 1; opacity: 0; pointer-events: none; transition: opacity 0.15s ease; }
 .flip-card.flipped .flip-front { opacity: 0; pointer-events: none; }
 .flip-card.flipped .flip-back { opacity: 1; pointer-events: auto; }
 .back-char{ background:linear-gradient(170deg,#0f0a22 0%,#06060c 100%); border:1px solid rgba(0,245,212,0.25); }
 .back-spy{ background:linear-gradient(170deg,#1c0613 0%,#090207 100%); border:1px solid rgba(255,60,92,0.3); }
 
-/* CARD INNER ELEMENTS (BASE) */
+/* CARD IMAGES SETUP (SPY ROLE WINDOW) */
 .card-img-wrap { width: 100%; flex: 1; position: relative; overflow: hidden; min-height: 0; background: transparent; padding: 14px; }
 .card-img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; display: block; transition: opacity 0.7s; border-radius: 16px; background: rgba(255,255,255,0.04); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
 .card-img.loading { opacity: 0; }
@@ -413,10 +413,10 @@ header {
 .spinner { width: 32px; height: 32px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--cyan); border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .card-info { padding: 20px 65px 24px 24px; flex-shrink: 0; display: flex; flex-direction: column; gap: 6px; position: relative; }
-.card-top-label { font-size: 0.68rem; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.card-top-label { font-size: 0.68rem; letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; }
 .card-name { font-family: 'Unbounded', sans-serif; font-size: clamp(1.1rem, 4.5vw, 1.45rem); font-weight: 800; line-height: 1.25; background: linear-gradient(135deg, var(--cyan), #a8ffea); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 .card-bot-label { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(0,245,212,0.55); margin-top: 2px; font-weight: 600; }
-.info-trigger-btn { position: absolute; bottom: 24px; right: 24px; width: 36px; height: 36px; background: rgba(255,255,255,0.08); border: 1px solid var(--border2); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--cyan); font-size: 1rem; font-weight: bold; transition: all 0.2s; z-index: 20; }
+.info-trigger-btn { position: absolute; bottom: 24px; right: 24px; width: 36px; height: 36px; background: rgba(255,255,255,0.08); border: 1px solid var(--border-2); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--cyan); font-size: 1rem; font-weight: bold; transition: all 0.2s; z-index: 20; }
 .info-trigger-btn:hover { background: var(--cyan); color: #07070e; box-shadow: 0 0 12px rgba(0,245,212,0.4); }
 
 /* SPY CONTENT */
@@ -437,9 +437,9 @@ header {
 .final-icon{ font-size:4.5rem; display:block; margin-bottom:20px; animation:pulse 2.5s ease-in-out infinite; }
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
 .final-title{ font-family:'Unbounded',sans-serif; font-size:clamp(1.4rem, 6vw, 1.9rem); font-weight:900; line-height:1.25; margin-bottom:16px; background:linear-gradient(135deg,var(--cyan),var(--violet)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-.final-sub{ color:var(--muted); font-size:0.92rem; line-height:1.7; margin-bottom:28px; }
+.final-sub{ color:var(--text-muted); font-size:0.92rem; line-height:1.7; margin-bottom:28px; }
 .final-stats{ display:flex; gap:12px; justify-content:center; margin-bottom:28px; }
-.stat-chip{ background:var(--surface2); border:1px solid var(--border); border-radius:14px; padding:12px 20px; font-size:0.8rem; color:var(--muted); flex: 1; }
+.stat-chip{ background:var(--surface-2); border:1px solid var(--border-1); border-radius:14px; padding:12px 20px; font-size:0.8rem; color:var(--text-muted); flex: 1; }
 .stat-chip strong{ color:var(--text); display:block; font-family:'Unbounded',sans-serif; font-size:1.3rem; margin-bottom: 4px; }
 
 /* MODALS */
@@ -448,7 +448,7 @@ header {
 .modal-content { width: 90%; max-width: 420px; padding: 30px 24px; position: relative; transform: scale(0.92); transition: transform 1.25s cubic-bezier(0.16, 1, 0.3, 1); max-height: 85vh; overflow-y: auto; }
 #infoModal .modal-content { width: min(92vw, 640px); max-width: 92vw; }
 .modal-overlay.active .modal-content { transform: scale(1); }
-.close-modal-btn { position: absolute; top: 18px; right: 18px; font-size: 1.8rem; color: var(--muted); background: none; border: none; cursor: pointer; transition: color 0.2s; line-height: 1; }
+.close-modal-btn { position: absolute; top: 18px; right: 18px; font-size: 1.8rem; color: var(--text-muted); background: none; border: none; cursor: pointer; transition: color 0.2s; line-height: 1; }
 .close-modal-btn:hover { color: var(--text); }
 .modal-title { font-family: 'Unbounded', sans-serif; font-size: 1.2rem; font-weight: 800; margin-bottom: 20px; text-align: center; background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 .rules-scroll { font-size: 0.95rem; line-height: 1.6; color: rgba(240, 240, 248, 0.85); }
@@ -474,7 +474,7 @@ header {
 .game-mode-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4); border-color: var(--cyan); }
 .game-mode-icon { font-size: 3.5rem; }
 .game-mode-title { font-family: 'Unbounded', sans-serif; font-size: 1.4rem; font-weight: 800; text-align: center; }
-.game-mode-desc { font-size: 0.85rem; color: var(--muted); text-align: center; line-height: 1.5; }
+.game-mode-desc { font-size: 0.85rem; color: var(--text-muted); text-align: center; line-height: 1.5; }
 
 /* WIFI NOTE */
 .wifi-note {
@@ -530,7 +530,7 @@ header {
 @keyframes tipScaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
 .huge-code { font-family: 'Unbounded', sans-serif; font-size: clamp(2.1rem, 8vw, 3.5rem); letter-spacing: 0.35em; text-align: center; color: var(--cyan); }
-.input-code { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 16px; padding: 16px 18px; color: var(--text); font-size: 1.2rem; font-family: 'Unbounded', sans-serif; text-transform: uppercase; letter-spacing: 0.25em; text-align:center; }
+.input-code { width: 100%; background: var(--surface-2); border: 1px solid var(--border-1); border-radius: 16px; padding: 16px 18px; color: var(--text); font-size: 1.2rem; font-family: 'Unbounded', sans-serif; text-transform: uppercase; letter-spacing: 0.25em; text-align:center; }
 .input-code:focus { outline: none; border-color: var(--cyan); box-shadow: 0 0 12px rgba(0, 245, 212, 0.15); }
 
 /* HORIZONTAL PREMIUM LAYOUT FOR MYSTERY GAME */
@@ -547,8 +547,11 @@ header {
 }
 .mystery-grid-wrap {
   flex: 1 1 0; min-width: 0;
-  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(240px, auto); gap: 16px;
-  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 18px;
+  display: grid; 
+  grid-template-columns: repeat(4, 1fr); 
+  grid-auto-rows: minmax(130px, 150px); 
+  gap: 12px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 14px;
   max-height: 100%; overflow-y: auto; overscroll-behavior: contain;
   scrollbar-width: thin; scrollbar-color: rgba(0,245,212,0.35) transparent;
 }
@@ -569,11 +572,25 @@ header {
 .mystery-actions .btn-ghost,
 .mystery-actions .btn-danger { width: 100%; }
 
-/* SECRET GRID CARD OVERRIDES */
+/* ════════════════════════════════════════════
+   OПТИМІЗОВАНІ КАРТКИ ДЛЯ СІТКИ (SECRET GRID)
+   ════════════════════════════════════════════ */
 .card-cell {
-  position: relative; cursor: pointer; background: var(--surface2); border: 1px solid var(--border); border-radius: 16px;
-  display: grid; grid-template-rows: 1fr auto; min-height: 82px; padding: 0; text-align: center;
-  transition: all 0.2s; user-select: none; -webkit-tap-highlight-color: transparent;
+  position: relative; 
+  cursor: pointer; 
+  background: var(--surface-2); 
+  border: 1px solid var(--border-1); 
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column; 
+  align-items: stretch;
+  justify-content: space-between;
+  height: 100%;
+  padding: 0; 
+  text-align: center;
+  transition: all 0.2s; 
+  user-select: none; 
+  -webkit-tap-highlight-color: transparent;
   overflow: hidden;
 }
 .card-cell:active { transform: scale(0.98); }
@@ -581,17 +598,90 @@ header {
 .card-cell.eliminated { opacity: 0.25; filter: grayscale(100%); cursor: not-allowed; }
 .card-cell.locked { cursor: not-allowed; opacity: 0.6; pointer-events: none;}
 
-.card-cell .card-img-wrap { width: 100%; height: 100%; position: relative; overflow: hidden; border-radius: 14px 14px 0 0; padding: 8px; }
-.card-cell .card-img { border-radius: 10px; }
-.card-cell .card-img-overlay { inset: 8px; border-radius: 10px; }
-.card-cell .card-img-placeholder { inset: 8px; border-radius: 10px; font-size: min(5vw, 2.5rem); text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
-.card-cell .img-loader { inset: 8px; border-radius: 10px; }
+/* Upper image container */
+.card-cell .card-img-wrap { 
+  width: 100%; 
+  flex: 1; 
+  position: relative; 
+  overflow: hidden; 
+  border-radius: 14px 14px 0 0; 
+  padding: 0; 
+}
+.card-cell .card-img { 
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+  object-position: center top;
+  border-radius: 0;
+  background: rgba(255,255,255,0.02);
+}
+.card-cell .card-img-overlay { 
+  position: absolute;
+  inset: 0; 
+  border-radius: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(7,7,14,0.85) 100%);
+}
+.card-cell .card-img-placeholder { 
+  position: absolute;
+  inset: 0; 
+  border-radius: 0; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem; 
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3); 
+}
+.card-cell .img-loader { 
+  position: absolute;
+  inset: 0; 
+  border-radius: 0; 
+}
 
-.card-cell .secret-card-info { width: 100%; padding: 4px 6px 6px; display: flex; flex-direction: column; gap: 0px; align-items: flex-start; }
-.card-cell .secret-card-info .card-top-label { color: rgba(255,255,255,0.92); font-size: 0.68rem; font-weight: 700; }
+/* Lower name container - fixed identical height */
+.card-cell .secret-card-info { 
+  width: 100%; 
+  height: 40px; 
+  padding: 0 8px; 
+  display: flex; 
+  flex-direction: column; 
+  justify-content: center;
+  align-items: center;
+  background: rgba(12, 11, 24, 0.95);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+.card-cell .secret-card-info .card-top-label { 
+  color: #fff; 
+  font-size: clamp(0.68rem, 1.8vw, 0.8rem); 
+  font-weight: 700; 
+  text-align: center;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.5px;
+}
 .card-cell .secret-card-info .card-bot-label { display: none; }
-.card-cell .info-trigger-btn { position: absolute; bottom: 12px; right: 12px; width: 26px; height: 26px; border-radius: 50%; background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.18); backdrop-filter: blur(4px); color: var(--cyan); font-size: 0.75rem; display: flex; align-items: center; justify-content: center; }
-.card-cell .info-trigger-btn:hover { transform: translateY(-1px); }
+
+/* Info i button */
+.card-cell .info-trigger-btn { 
+  position: absolute; 
+  top: 8px; 
+  right: 8px; 
+  width: 24px; 
+  height: 24px; 
+  border-radius: 50%; 
+  background: rgba(0,0,0,0.65); 
+  border: 1px solid rgba(255,255,255,0.18); 
+  backdrop-filter: blur(4px); 
+  -webkit-backdrop-filter: blur(4px);
+  color: var(--cyan); 
+  font-size: 0.72rem; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  z-index: 5;
+}
+.card-cell .info-trigger-btn:hover { transform: scale(1.1); background: var(--cyan); color: #07070e; }
 .card-cell.accuse-target { border-color: var(--red); background: rgba(255, 60, 92, 0.2); box-shadow: 0 0 15px rgba(255, 60, 92, 0.4); animation: pulseRed 1s infinite alternate; }
 
 @keyframes pulseRed { from { box-shadow: 0 0 5px rgba(255,60,92,0.4); } to { box-shadow: 0 0 20px rgba(255,60,92,0.8); } }
@@ -604,33 +694,123 @@ header {
 .turn-indicator.blink { animation: blink-turn 1.5s ease-in-out infinite; }
 @keyframes blink-turn { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-.my-target-wrap { display: flex; justify-content: center; flex: 0 0 auto; }
-.my-target-label { color: var(--muted); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; font-weight: 600; }
-.my-target-wrap .mystery-card { width: 100%; max-width: 140px; padding: 8px; gap: 6px; }
-.my-target-wrap .mystery-card-img-wrap { min-height: 100px; }
-.my-target-wrap .mystery-card-name { font-size: 0.8rem; }
+/* ════════════════════════════════════════════
+   СИДБАР КАРТКА «ВИ ЗАГАДАЛИ» (UNIFIED STYLE)
+   ════════════════════════════════════════════ */
+.my-target-wrap { 
+  display: flex; 
+  justify-content: center; 
+  flex: 0 0 auto; 
+  width: 100%;
+  margin-bottom: 8px;
+}
+.my-target-label { 
+  color: var(--text-muted); 
+  font-size: 0.62rem; 
+  text-transform: uppercase; 
+  letter-spacing: 0.8px; 
+  margin-bottom: 2px; 
+  font-weight: 700; 
+  text-align: center;
+}
 
 .mystery-card {
-  width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.16);
-  border-radius: 24px; padding: 14px; display: flex; flex-direction: column; gap: 12px;
-  box-shadow: 0 18px 60px rgba(0,0,0,0.2);
+  width: 100%; 
+  max-width: 140px; 
+  background: var(--surface-2); 
+  border: 1px solid var(--border-1);
+  border-radius: 16px; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: stretch;
+  justify-content: space-between;
+  padding: 0; /* Прибираємо внутрішні відступи для картинки edge-to-edge */
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  overflow: hidden;
 }
 .mystery-card-img-wrap {
-  width: 100%; min-height: 180px; border-radius: 20px; overflow: hidden;
-  position: relative; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12);
+  width: 100%; 
+  aspect-ratio: 1 / 1; /* Квадратне зображення, як у сітці */
+  border-radius: 14px 14px 0 0; 
+  overflow: hidden;
+  position: relative; 
+  background: rgba(255,255,255,0.02);
 }
-.mystery-card-img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; display: block; }
-.mystery-card-image-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.4) 100%); }
-.mystery-card-emoji { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 4.5rem; color: rgba(255,255,255,0.9); text-shadow: 0 6px 20px rgba(0,0,0,0.35); }
-.mystery-card-info { width: 100%; text-align: center; display: flex; flex-direction: column; gap: 6px; }
-.mystery-card-name { font-family: 'Unbounded', sans-serif; font-size: 1.5rem; font-weight: 900; line-height: 1.1;
-  background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+.mystery-card-img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+  object-position: center top; 
+  display: block; 
+}
+.mystery-card-image-overlay { 
+  position: absolute; 
+  inset: 0; 
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(7,7,14,0.85) 100%); 
+}
+.mystery-card-emoji { 
+  position: absolute; 
+  inset: 0; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  font-size: 2.5rem; 
+  color: rgba(255,255,255,0.9); 
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3); 
+}
+.mystery-card-info { 
+  width: 100%; 
+  height: 52px; /* Статична висота для "Ви загадали" та імені */
+  padding: 4px 8px; 
+  display: flex; 
+  flex-direction: column; 
+  justify-content: center; 
+  align-items: center; 
+  background: rgba(12, 11, 24, 0.95);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+.mystery-card-name { 
+  font-family: 'Unbounded', sans-serif; 
+  font-size: clamp(0.72rem, 1.8vw, 0.8rem); 
+  font-weight: 800; 
+  line-height: 1.2;
+  background: linear-gradient(135deg, var(--cyan), var(--violet)); 
+  -webkit-background-clip: text; 
+  background-clip: text; 
+  -webkit-text-fill-color: transparent;
+  text-align: center;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .mystery-card-note { display: none; }
+
+/* Ідентична кнопка інформації в сидбарі */
 .mystery-info-btn {
-  position: absolute; top: 12px; right: 12px; width: 36px; height: 36px;
-  border-radius: 14px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.08);
-  color: var(--cyan); font-size: 1rem; font-weight: 700; cursor: pointer;
+  position: absolute; 
+  top: 8px; 
+  right: 8px; 
+  width: 24px; 
+  height: 24px;
+  border-radius: 50%; 
+  background: rgba(0,0,0,0.65); 
+  border: 1px solid rgba(255,255,255,0.18); 
+  backdrop-filter: blur(4px); 
+  -webkit-backdrop-filter: blur(4px);
+  color: var(--cyan); 
+  font-size: 0.72rem; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+  z-index: 5;
+}
+.mystery-info-btn:hover {
+  transform: scale(1.1);
+  background: var(--cyan);
+  color: #07070e;
 }
 
 .sidebar-img-circle {
@@ -655,9 +835,9 @@ header {
   }
   .mystery-grid-wrap {
     max-width: calc(100% - 300px);
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-auto-rows: minmax(180px, auto);
-    gap: 14px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-rows: minmax(130px, 150px);
+    gap: 12px;
     padding: 16px;
     max-height: calc(100vh - 150px);
   }
@@ -669,36 +849,26 @@ header {
   }
   #mystery-instruction-wrap { margin-bottom: 10px; }
   .mystery-sidebar-body { flex: 1 1 auto; min-height: 0; }
-  .card-cell .card-img-wrap { aspect-ratio: 1 / 1; }
-  .card-cell .secret-card-info { padding: 10px 8px 10px; }
-  .cell-emoji { font-size: min(4.5vh, 2rem); }
-  .cell-name { font-size: min(2.2vh, 0.72rem); }
 }
 
 @media (max-width: 760px) {
   .mystery-layout { flex-direction: column; gap: 10px; padding: 10px; }
-  .mystery-grid-wrap { grid-template-columns: 1fr 1fr; grid-auto-rows: minmax(160px, auto); max-width: 100%; max-height: 45vh; gap: 12px; }
+  .mystery-grid-wrap { grid-template-columns: repeat(3, 1fr); grid-auto-rows: minmax(120px, 135px); max-width: 100%; max-height: 45vh; gap: 8px; padding: 8px; }
   .mystery-sidebar { width: 100%; min-width: 0; flex: 0 0 auto; max-height: 35vh; padding: 12px; }
   .my-target-wrap { margin: 0 auto; }
-  .my-target-wrap .mystery-card { max-width: 130px; padding: 8px; }
+  .my-target-wrap .mystery-card { max-width: 120px; }
   .mystery-actions { display: flex; gap: 8px; flex-wrap: wrap; }
   .mystery-actions button { flex: 1 1 calc(50% - 4px); min-width: 0; font-size: 0.75rem; padding: 10px; }
 }
 
 @media (max-width: 640px) {
   .mystery-layout { flex-direction: column; gap: 8px; padding: 8px; }
-  .mystery-grid-wrap { grid-template-columns: 1fr 1fr; grid-auto-rows: minmax(150px, auto); gap: 12px; padding: 12px; max-height: 40vh; overflow-y: auto; }
+  .mystery-grid-wrap { grid-template-columns: repeat(2, 1fr); grid-auto-rows: minmax(120px, 135px); gap: 8px; padding: 8px; max-height: 40vh; overflow-y: auto; }
   .card-cell { border-radius: 12px; }
-  .card-cell .info-trigger-btn { bottom: 10px; right: 10px; width: 22px; height: 22px; font-size: 10px; }
+  .card-cell .info-trigger-btn { top: 6px; right: 6px; width: 22px; height: 22px; font-size: 10px; }
   .mystery-sidebar { padding: 10px; max-height: 36vh; flex: 0 0 auto; gap: 10px; }
-  .mystery-card { gap: 6px; padding: 8px; }
-  .mystery-card-img-wrap { min-height: 110px; }
-  .mystery-card-name { font-size: 0.9rem; }
-  .mystery-card-emoji { font-size: 2.8rem; }
   .my-target-wrap { margin: 0 auto; }
-  .my-target-wrap .mystery-card { max-width: 120px; padding: 6px; gap: 4px; }
-  .my-target-wrap .mystery-card-img-wrap { min-height: 90px; }
-  .my-target-wrap .mystery-card-name { font-size: 0.75rem; }
+  .my-target-wrap .mystery-card { max-width: 110px; }
   .mystery-actions { display: flex; gap: 6px; flex-wrap: wrap; }
   .mystery-actions button { flex: 1 1 calc(50% - 3px); min-width: 0; font-size: 0.68rem; padding: 7px; }
 }
@@ -707,22 +877,15 @@ header {
   #screen-secret-game { padding-top: env(safe-area-inset-top, 4px); }
   .orientation-tip-overlay { display: none; }
   .mystery-layout { gap: 10px; padding: 10px; }
-  .mystery-grid-wrap { grid-template-columns: repeat(4, 1fr); grid-auto-rows: minmax(200px, auto); gap: 10px; padding: 10px; max-height: 100%; overflow-y: auto; }
+  .mystery-grid-wrap { grid-template-columns: repeat(4, 1fr); grid-auto-rows: minmax(110px, 125px); gap: 10px; padding: 10px; max-height: 100%; overflow-y: auto; }
   .card-cell { border-radius: 14px; }
-  .card-cell .card-img-wrap { border-radius: 12px; }
-  .card-cell .secret-card-info { padding: 8px 10px 10px; }
-  .card-cell .secret-card-info .card-top-label { font-size: 0.75rem; }
-  .card-cell .info-trigger-btn { bottom: 10px; right: 10px; width: 26px; height: 26px; font-size: 11px; }
+  .card-cell .secret-card-info { height: 32px; padding: 0 4px; }
+  .card-cell .secret-card-info .card-top-label { font-size: 0.68rem; }
+  .card-cell .info-trigger-btn { top: 6px; right: 6px; width: 22px; height: 22px; font-size: 10px; }
   .mystery-sidebar { max-height: 100%; padding: 10px; flex: 0 0 240px; gap: 10px; }
-  .mystery-card { gap: 8px; padding: 10px; }
-  .mystery-card-img-wrap { min-height: 160px; }
-  .mystery-card-name { font-size: 1rem; }
-  .mystery-card-emoji { font-size: 3.5rem; }
   .turn-indicator { font-size: 0.75rem; padding: 5px 8px; }
   .my-target-wrap { margin: 0 auto; }
-  .my-target-wrap .mystery-card { max-width: 130px; padding: 8px; gap: 6px; }
-  .my-target-wrap .mystery-card-img-wrap { min-height: 110px; }
-  .my-target-wrap .mystery-card-name { font-size: 0.7rem; }
+  .my-target-wrap .mystery-card { max-width: 120px; }
   .mystery-sidebar-body { font-size: 0.6rem; padding: 4px 0; }
   .mystery-actions { gap: 4px; }
   .mystery-actions button { font-size: 0.6rem; padding: 5px 6px; }
@@ -739,7 +902,7 @@ header {
 <div id="screen-main-menu" class="screen active">
   <div class="main-menu-container">
     <div style="text-align: center; margin-bottom: 20px;">
-      <div style="font-size: 0.85rem; color: var(--muted); letter-spacing: 1px;" id="menu-subtitle">Оберіть гру</div>
+      <div style="font-size: 0.85rem; color: var(--text-muted); letter-spacing: 1px;" id="menu-subtitle">Оберіть гру</div>
     </div>
     
     <div class="game-mode-card spy-mode" onclick="selectGame('spy')">
@@ -761,7 +924,7 @@ header {
   <div class="main-menu-container">
     <div style="text-align: center; margin-bottom: 18px;">
       <div style="font-family: 'Unbounded', sans-serif; font-size: 1.9rem; font-weight: 900; background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px;" id="role-title">Оберіть роль</div>
-      <div style="font-size: 0.85rem; color: var(--muted); letter-spacing: 1px;" id="role-subtitle">Створіть кімнату або підключіться</div>
+      <div style="font-size: 0.85rem; color: var(--text-muted); letter-spacing: 1px;" id="role-subtitle">Створіть кімнату або підключіться</div>
     </div>
     <div class="game-mode-card spy-mode" onclick="chooseSecretHost()">
       <div class="game-mode-icon">🏠</div>
@@ -837,7 +1000,7 @@ header {
     
     <div class="deal-actions" id="deal-actions" style="display:none">
       <button class="btn-ghost" id="btn-close-card" onclick="closeCard()">Закрити карту</button>
-      <button class="btn-primary" style="background:rgba(255,255,255,0.06);color:var(--muted);border:1px solid var(--border2);box-shadow:none;" onclick="confirmAbort()" id="btn-restart-action">Почати заново</button>
+      <button class="btn-primary" style="background:rgba(255,255,255,0.06);color:var(--text-muted);border:1px solid var(--border-2);box-shadow:none;" onclick="confirmAbort()" id="btn-restart-action">Почати заново</button>
     </div>
   </div>
 </div>
@@ -860,7 +1023,7 @@ header {
 <div class="modal-overlay" id="confirmModal">
   <div class="modal-content glass" style="text-align: center;">
     <div class="modal-title" id="confirm-title">Почати заново?</div>
-    <div style="color: var(--muted); margin-bottom: 28px; font-size: 0.95rem;" id="confirm-desc">Всі ролі будуть скинуті.</div>
+    <div style="color: var(--text-muted); margin-bottom: 28px; font-size: 0.95rem;" id="confirm-desc">Всі ролі будуть скинуті.</div>
     <div style="display: flex; gap: 12px;">
       <button class="btn-ghost" style="padding: 14px;" onclick="closeModal('confirmModal')" id="btn-cancel">Скасувати</button>
       <button class="btn-primary btn-danger" style="padding: 14px;" onclick="executeRestart()" id="btn-confirm">Так</button>
@@ -891,7 +1054,7 @@ header {
       <button class="header-btn" onclick="switchScreen('screen-secret-role-choice')" style="padding: 4px 10px; border: none; background: rgba(255,255,255,0.1)">← Назад</button>
       <div class="section-label" style="margin: 0;" id="label-host-setup">Створити гру</div>
     </div>
-    <p id="host-instruction" style="color: var(--muted); font-size: 0.8rem; margin-bottom: 10px; text-align: center;">Оберіть категорії (У грі буде 16 карток)</p>
+    <p id="host-instruction" style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 10px; text-align: center;">Оберіть категорії (У грі буде 16 карток)</p>
     
     <div id="secret-cats-section">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-shrink:0;">
@@ -911,7 +1074,7 @@ header {
   <div class="glass setup-card auto-height-card screen-center" id="host-lobby-view" style="display: none; padding: 40px 24px;">
     <div class="section-label" style="text-align: center;" id="label-host-code">Код кімнати:</div>
     <div class="huge-code" id="room-code-display">------</div>
-    <p style="color: var(--muted); text-align: center; margin-bottom: 20px; line-height: 1.5;" id="text-host-share">Передайте цей код другому гравцю.</p>
+    <p style="color: var(--text-muted); text-align: center; margin-bottom: 20px; line-height: 1.5;" id="text-host-share">Передайте цей код другому гравцю.</p>
     
     <div id="host-wait-group" style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px;">
       <div class="status-dot"></div>
@@ -947,14 +1110,14 @@ header {
     <div class="modal-content glass" style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 40px 24px; gap: 12px; margin: 0 16px;">
       <span style="font-size: 4rem; display: block; animation: pulse 2.5s infinite; margin-bottom: 8px;">📱🔄</span>
       <div style="color: var(--cyan); font-weight: 800; font-family: 'Unbounded', sans-serif; font-size: 1.3rem; line-height: 1.3;">Рекомендовано горизонтально!</div>
-      <div style="font-size: 0.95rem; color: var(--muted); line-height: 1.5; margin-bottom: 8px;">Поверніть пристрій горизонтально для зручнішого перегляду карток.</div>
+      <div style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 8px;">Поверніть пристрій горизонтально для зручнішого перегляду карток.</div>
       <button class="btn-primary mt16" onclick="dismissOrientationTip()">Зрозуміло</button>
     </div>
   </div>
 
   <div class="mystery-layout">
     <div class="mystery-grid-wrap" id="cards-grid">
-      <!-- Generated via JS -->
+      <!-- Створюється через JS -->
     </div>
 
     <div class="mystery-sidebar">
@@ -986,7 +1149,7 @@ header {
         <button class="btn-primary" id="btn-myst-ready" onclick="sendMysteryReady()">Я ГОТОВИЙ</button>
         <button class="btn-ghost" id="btn-myst-end-turn" style="display:none;" onclick="endSecretTurn()">Завершити хід</button>
         <button class="btn-danger btn-primary" id="btn-myst-accuse" style="display:none;" onclick="toggleAccuseMode()">ЗВИНУВАТИ</button>
-        <button class="btn-ghost" style="padding: 8px; font-size: 0.75rem; border:none; background: transparent; color:var(--muted);" onclick="surrenderSecretGame()" id="btn-myst-surrender">Здатися</button>
+        <button class="btn-ghost" style="padding: 8px; font-size: 0.75rem; border:none; background: transparent; color:var(--text-muted);" onclick="surrenderSecretGame()" id="btn-myst-surrender">Здатися</button>
       </div>
     </div>
   </div>
@@ -1582,7 +1745,6 @@ let secretState = {
 // ════════════════════════════════════════════
 const imgCache = {};
 
-// Простой семафор для ограничения конкурентных сетевых запросов
 const _fetchSemaphore = { max: 3, current: 0, queue: [] };
 async function _withSemaphore(fn) {
   if (_fetchSemaphore.current >= _fetchSemaphore.max) await new Promise(res => _fetchSemaphore.queue.push(res));
@@ -1949,12 +2111,9 @@ function openCard() {
   document.getElementById('deal-prompt').style.display = 'none';
   document.getElementById('flip-scene').style.display = 'block';
   
-  /* Фикс производительности: вызываем reflow для подготовки CSS Transition */
   void document.getElementById('flip-scene').offsetWidth;
-
   document.getElementById('flip-card').classList.add('flipped');
 
-  // Ждем точные 600ms окончания новой ускоренной CSS-трансформации
   setTimeout(() => {
     document.getElementById('btn-close-card').textContent = state.currentPlayer >= state.playerCount - 1 ? t.finishHandoutBtn : t.closeCardBtn;
     document.getElementById('deal-actions').style.display = 'flex';
@@ -1962,14 +2121,10 @@ function openCard() {
 }
 
 function closeCard() {
-  // Прячем кнопки моментально для предотвращения мискликов
   document.getElementById('deal-actions').style.display = 'none';
-  
-  // Возвращаем карточку назад
   document.getElementById('flip-card').classList.remove('flipped');
   state.cardOpen = false;
 
-  // Ожидаем завершения CSS-анимации ровно 600ms (переворот обратно)
   setTimeout(() => {
     document.getElementById('flip-scene').style.display = 'none';
     state.currentPlayer++;
@@ -1981,6 +2136,9 @@ function closeCard() {
   }, 600);
 }
 
+// ════════════════════════════════════════════
+//  INITIALIZATION & HELPERS
+// ════════════════════════════════════════════
 function confirmAbort() { openModal('confirmModal'); }
 function executeRestart() { closeModal('confirmModal'); resetGame(); }
 function resetGame() {
