@@ -201,8 +201,7 @@ header {
   -webkit-overflow-scrolling:touch;
 }
 .screen.active{opacity:1;pointer-events:all;transform:translateY(0);}
-/* Safety: ensure inactive screens (and their children) never receive pointer events.
-   This prevents hidden but present elements (e.g. flipped card back) from blocking UI. */
+/* Safety: ensure inactive screens (and their children) never receive pointer events. */
 .screen:not(.active),
 .screen:not(.active) * {
   pointer-events: none !important;
@@ -371,19 +370,32 @@ header {
 }
 .prompt-text{ color:var(--muted); font-size:0.95rem; line-height:1.6; margin-bottom:28px; }
 
-/* 3D FLIP CARD */
+/* 3D FLIP CARD (ОПТИМИЗИРОВАНО) */
 .flip-scene{ width:var(--card-w); height:var(--card-h); perspective:2200px; }
-.flip-card{ width:100%; height:100%; position:relative; transform-style:preserve-3d; transition:transform 1.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.flip-card{ 
+  width:100%; height:100%; position:relative; transform-style:preserve-3d; 
+  transition:transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); 
+  will-change: transform; /* Подсказка для GPU */
+}
 .flip-card.flipped{ transform:rotateY(180deg); }
-.flip-face{ position:absolute; inset:0; width: 100%; height: 100%; border-radius:28px; overflow:hidden; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
+.flip-face{ 
+  position:absolute; inset:0; width: 100%; height: 100%; border-radius:28px; 
+  overflow:hidden; backface-visibility:hidden; -webkit-backface-visibility:hidden; 
+  transform: translateZ(0); /* Фикс мерцания на iOS */
+  will-change: opacity;
+}
 .flip-front{
   background:linear-gradient(145deg,rgba(25,18,50,0.96),rgba(10,10,25,0.98)); border:1px solid rgba(185,124,255,0.25);
   display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; cursor:pointer;
   box-shadow:0 8px 48px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.05); z-index: 2; opacity: 1; transition: opacity 0.15s ease;
 }
 .front-pattern{ position:absolute; inset:0; opacity:0.04; background-image:repeating-linear-gradient(45deg,var(--violet) 0,var(--violet) 1px,transparent 0,transparent 50%); background-size:24px 24px; }
-.front-glow{ position:absolute; width:220px; height:220px; background:radial-gradient(circle,rgba(255,255,255,.04) 0%,transparent 55%); filter:blur(40px); top:50%; left:50%; transform:translate(-50%,-50%); border-radius:50%; }
-.front-icon{ font-size:4.5rem; filter:drop-shadow(0 0 25px rgba(185,124,255,0.5)); position:relative; z-index:1; }
+.front-glow{ 
+  position:absolute; width:220px; height:220px; 
+  background:radial-gradient(circle,rgba(255,255,255,0.08) 0%,transparent 60%); /* Замена тяжелого filter:blur */
+  top:50%; left:50%; transform:translate(-50%,-50%); border-radius:50%; 
+}
+.front-icon{ font-size:4.5rem; text-shadow: 0 0 25px rgba(185,124,255,0.5); position:relative; z-index:1; }
 .front-label{ color:var(--muted); font-size:0.8rem; letter-spacing:3px; text-transform:uppercase; position:relative; z-index:1; font-weight: 600; }
 .flip-back{ transform:rotateY(180deg); display:flex; flex-direction:column; box-shadow:0 10px 50px rgba(0,0,0,0.7); z-index: 1; opacity: 0; pointer-events: none; transition: opacity 0.15s ease; }
 .flip-card.flipped .flip-front { opacity: 0; pointer-events: none; }
@@ -396,7 +408,7 @@ header {
 .card-img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; display: block; transition: opacity 0.7s; border-radius: 16px; background: rgba(255,255,255,0.04); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
 .card-img.loading { opacity: 0; }
 .card-img-overlay { position: absolute; inset: 14px; background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(15,10,34,0.95) 100%); pointer-events: none; border-radius: 16px; }
-.card-img-placeholder { position: absolute; inset: 14px; display: flex; align-items: center; justify-content: center; font-size: 6rem; background: rgba(255,255,255,0.03); border-radius: 16px; }
+.card-img-placeholder { position: absolute; inset: 14px; display: flex; align-items: center; justify-content: center; font-size: 6rem; background: rgba(255,255,255,0.03); border-radius: 16px; text-shadow: 0 4px 10px rgba(0,0,0,0.2); }
 .img-loader { position: absolute; inset: 14px; display: flex; align-items: center; justify-content: center; background: rgba(7,7,14,0.4); border-radius: 16px; }
 .spinner { width: 32px; height: 32px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--cyan); border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -409,7 +421,7 @@ header {
 
 /* SPY CONTENT */
 .spy-content{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:24px; background:radial-gradient(circle,rgba(255,60,92,0.12) 0%,transparent 70%); }
-.spy-emoji{ font-size:5.5rem; filter:drop-shadow(0 0 30px rgba(255,60,92,0.55)); animation:spyPulse 2.5s ease-in-out infinite; }
+.spy-emoji{ font-size:5.5rem; text-shadow: 0 0 30px rgba(255,60,92,0.55); animation:spyPulse 2.5s ease-in-out infinite; }
 @keyframes spyPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 .spy-title{ font-family:'Unbounded',sans-serif; font-size:clamp(1.5rem, 6.5vw, 2.1rem); font-weight:900; background:linear-gradient(135deg,var(--red),var(--pink),var(--violet)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; text-align:center; line-height:1.2; filter:drop-shadow(0 0 15px rgba(255,60,92,0.3)); }
 .spy-sub{ color:rgba(255,100,140,0.6); font-size:0.78rem; letter-spacing:2.5px; text-transform:uppercase; text-align:center; line-height: 1.5; font-weight: 600; }
@@ -569,11 +581,10 @@ header {
 .card-cell.eliminated { opacity: 0.25; filter: grayscale(100%); cursor: not-allowed; }
 .card-cell.locked { cursor: not-allowed; opacity: 0.6; pointer-events: none;}
 
-/* ОНОВЛЕНО: Переносимо відступи на обгортку для створення ідеально рівних рамок */
 .card-cell .card-img-wrap { width: 100%; height: 100%; position: relative; overflow: hidden; border-radius: 14px 14px 0 0; padding: 8px; }
 .card-cell .card-img { border-radius: 10px; }
 .card-cell .card-img-overlay { inset: 8px; border-radius: 10px; }
-.card-cell .card-img-placeholder { inset: 8px; border-radius: 10px; font-size: min(5vw, 2.5rem); }
+.card-cell .card-img-placeholder { inset: 8px; border-radius: 10px; font-size: min(5vw, 2.5rem); text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
 .card-cell .img-loader { inset: 8px; border-radius: 10px; }
 
 .card-cell .secret-card-info { width: 100%; padding: 4px 6px 6px; display: flex; flex-direction: column; gap: 0px; align-items: flex-start; }
@@ -585,7 +596,7 @@ header {
 
 @keyframes pulseRed { from { box-shadow: 0 0 5px rgba(255,60,92,0.4); } to { box-shadow: 0 0 20px rgba(255,60,92,0.8); } }
 
-.cell-emoji { font-size: min(6vh, 2.8rem); line-height: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); }
+.cell-emoji { font-size: min(6vh, 2.8rem); line-height: 1; text-shadow: 0 4px 6px rgba(0,0,0,0.4); }
 .cell-name { font-size: min(2vh, 0.75rem); line-height: 1.1; margin-top: 6px; font-weight: 600; color: rgba(255,255,255,0.85); text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
 
 .turn-indicator { font-size: 0.85rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--cyan); text-align: center; background: rgba(0,245,212,0.1); padding: 8px; border-radius: 10px; }
@@ -622,7 +633,6 @@ header {
   color: var(--cyan); font-size: 1rem; font-weight: 700; cursor: pointer;
 }
 
-/* Зображення в сайдбарі та на екрані результатів Таємниці */
 .sidebar-img-circle {
   width: 70px; height: 70px; border-radius: 50%; object-fit: cover;
   background: rgba(255,255,255,0.05); border: 2px solid var(--cyan);
@@ -1597,8 +1607,6 @@ async function fetchWikiImage(slug, displayName=''){
 
   let url = null;
 
-  // Ограничиваем реальное сетевое поведение семафором, чтобы не делать десятки
-  // одновременных запросов (браузер/сервер может вернуть 429).
   await _withSemaphore(async () => {
     for (const domain of domains) {
       if (url) break;
@@ -1634,7 +1642,6 @@ async function fetchWikiImage(slug, displayName=''){
   return url;
 }
 
-// Префетч изображений с контролем конкурентности
 async function prefetchImages(items = [], concurrency = 3) {
   const queue = items.slice();
   const workers = new Array(Math.max(1, concurrency)).fill(0).map(async () => {
@@ -1804,7 +1811,6 @@ function backToMenu() {
   document.getElementById('header-title').textContent = '🕵️‍♂️ PartyBox';
   document.querySelector('header').style.display = 'flex';
   cancelSecretLobby();
-  // Reset Spy deal state to avoid invisible flipped card stealing pointer-events
   try {
     state.currentPlayer = 0;
     state.cardOpen = false;
@@ -1942,25 +1948,37 @@ function openCard() {
   
   document.getElementById('deal-prompt').style.display = 'none';
   document.getElementById('flip-scene').style.display = 'block';
+  
+  /* Фикс производительности: вызываем reflow для подготовки CSS Transition */
+  void document.getElementById('flip-scene').offsetWidth;
+
+  document.getElementById('flip-card').classList.add('flipped');
+
+  // Ждем точные 600ms окончания новой ускоренной CSS-трансформации
   setTimeout(() => {
-    document.getElementById('flip-card').classList.add('flipped');
-    setTimeout(() => {
-      document.getElementById('btn-close-card').textContent = state.currentPlayer >= state.playerCount - 1 ? t.finishHandoutBtn : t.closeCardBtn;
-      document.getElementById('deal-actions').style.display = 'flex';
-    }, 400);
-  }, 50);
+    document.getElementById('btn-close-card').textContent = state.currentPlayer >= state.playerCount - 1 ? t.finishHandoutBtn : t.closeCardBtn;
+    document.getElementById('deal-actions').style.display = 'flex';
+  }, 600);
 }
 
 function closeCard() {
-  document.getElementById('flip-card').classList.remove('flipped');
+  // Прячем кнопки моментально для предотвращения мискликов
   document.getElementById('deal-actions').style.display = 'none';
+  
+  // Возвращаем карточку назад
+  document.getElementById('flip-card').classList.remove('flipped');
   state.cardOpen = false;
+
+  // Ожидаем завершения CSS-анимации ровно 600ms (переворот обратно)
   setTimeout(() => {
     document.getElementById('flip-scene').style.display = 'none';
     state.currentPlayer++;
-    if (state.currentPlayer >= state.playerCount) switchScreen('screen-final');
-    else showDealPrompt(false);
-  }, 400);
+    if (state.currentPlayer >= state.playerCount) {
+      switchScreen('screen-final');
+    } else {
+      showDealPrompt(false);
+    }
+  }, 600);
 }
 
 function confirmAbort() { openModal('confirmModal'); }
