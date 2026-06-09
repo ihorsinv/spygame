@@ -428,6 +428,7 @@ header {
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(4, 4, 8, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
 .modal-overlay.active { opacity: 1; pointer-events: auto; }
 .modal-content { width: 90%; max-width: 420px; padding: 30px 24px; position: relative; transform: scale(0.92); transition: transform 1.25s cubic-bezier(0.16, 1, 0.3, 1); max-height: 85vh; overflow-y: auto; }
+#infoModal .modal-content { width: min(92vw, 640px); max-width: 92vw; }
 .modal-overlay.active .modal-content { transform: scale(1); }
 .close-modal-btn { position: absolute; top: 18px; right: 18px; font-size: 1.8rem; color: var(--muted); background: none; border: none; cursor: pointer; transition: color 0.2s; line-height: 1; }
 .close-modal-btn:hover { color: var(--text); }
@@ -461,41 +462,32 @@ header {
 /* SECRET (ТАЄМНИЦЯ) GAME STYLES              */
 /* ════════════════════════════════════════════ */
 
-/* ORIENTATION TIP BAR */
-.orientation-tip {
+/* ORIENTATION TIP MODAL */
+.orientation-tip-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 4, 8, 0.85);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
   display: none;
-  background: rgba(15, 10, 34, 0.95);
-  border: 1px solid rgba(0, 245, 212, 0.3);
-  box-shadow: 0 8px 32px rgba(0, 245, 212, 0.15);
-  color: #f0f0f8;
-  padding: 10px 14px;
-  border-radius: 16px;
+  justify-content: center;
   align-items: center;
-  gap: 12px;
-  font-size: 0.80rem;
-  font-weight: 600;
-  width: calc(100% - 20px);
-  max-width: 480px;
-  margin: 8px auto 0;
-  z-index: 1001;
-  position: relative;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  animation: slideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  flex-shrink: 0;
+  z-index: 2000;
 }
-.orientation-tip.dismissed {
+.orientation-tip-overlay.dismissed {
   display: none !important;
 }
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 @media (orientation: portrait) {
-  #screen-secret-game.active .orientation-tip:not(.dismissed) {
+  #screen-secret-game.active .orientation-tip-overlay:not(.dismissed) {
     display: flex;
+    animation: tipFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  #screen-secret-game.active .orientation-tip-overlay:not(.dismissed) .modal-content {
+    animation: tipScaleUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 }
+@keyframes tipFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes tipScaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
 .huge-code { font-family: 'Unbounded', sans-serif; font-size: clamp(2.1rem, 8vw, 3.5rem); letter-spacing: 0.35em; text-align: center; color: var(--cyan); }
 .input-code { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 16px; padding: 16px 18px; color: var(--text); font-size: 1.2rem; font-family: 'Unbounded', sans-serif; text-transform: uppercase; letter-spacing: 0.25em; text-align:center; }
@@ -678,7 +670,7 @@ header {
 
 @media (orientation: landscape) and (max-height: 600px) {
   #screen-secret-game { padding-top: env(safe-area-inset-top, 4px) !important; }
-  .orientation-tip { display: none !important; }
+  .orientation-tip-overlay { display: none !important; }
   .mystery-layout { gap: 8px; padding: 8px; }
   .mystery-grid-wrap { grid-template-columns: repeat(4, 1fr); grid-auto-rows: 85px; gap: 6px; padding: 8px; max-height: 100%; overflow-y: auto; }
   .card-cell { border-radius: 12px; }
@@ -886,7 +878,8 @@ header {
       <div class="status-dot"></div>
       <span id="label-waiting-players">Очікування підключення...</span>
     </div>
-    <div id="host-connected-group" style="display:none;text-align:center;font-size:0.85rem;color:var(--cyan);font-weight:bold;margin-bottom:20px;">
+    <!-- Виправлено колір var(--cyan) на var(--green) -->
+    <div id="host-connected-group" style="display:none;text-align:center;font-size:0.85rem;color:var(--green);font-weight:bold;margin-bottom:20px;">
       ✓ Гравець підключився!
     </div>
     
@@ -904,20 +897,22 @@ header {
     <div class="section-label" style="text-align: center;" id="label-guest-code">Введіть код кімнати</div>
     <input type="text" class="input-code mt16" id="room-code-input" placeholder="000000" maxlength="6">
     <button class="btn-primary mt24" onclick="joinGame()" id="btn-join-game">Підключитися</button>
-    <div id="join-status" style="color: var(--cyan); text-align: center; margin-top: 15px; font-size: 0.9rem; font-weight: bold;"></div>
+    <!-- Виправлено колір var(--cyan) на var(--green) -->
+    <div id="join-status" style="color: var(--green); text-align: center; margin-top: 15px; font-size: 0.9rem; font-weight: bold;"></div>
   </div>
 </div>
 
 <!-- SECRET GAMEPLAY -->
 <div id="screen-secret-game" class="screen" style="padding: env(safe-area-inset-top, 0) 0 0 0;">
-  <!-- ORIENTATION RECOMENDATION BANNER -->
-  <div id="orientation-tip" class="orientation-tip">
-    <span style="font-size: 1.5rem;">📱🔄</span>
-    <div style="flex: 1; text-align: left;">
-      <div style="color: var(--cyan); font-weight: 800; font-family: 'Unbounded', sans-serif; font-size: 0.8rem;">Рекомендовано горизонтально!</div>
-      <div style="font-size: 0.72rem; color: var(--muted); margin-top: 2px;">Поверніть пристрій горизонтально для зручнішого перегляду карток.</div>
+  
+  <!-- ORIENTATION RECOMENDATION MODAL -->
+  <div id="orientation-tip" class="orientation-tip-overlay">
+    <div class="modal-content glass" style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 40px 24px; gap: 12px; margin: 0 16px;">
+      <span style="font-size: 4rem; display: block; animation: pulse 2.5s infinite; margin-bottom: 8px;">📱🔄</span>
+      <div style="color: var(--cyan); font-weight: 800; font-family: 'Unbounded', sans-serif; font-size: 1.3rem; line-height: 1.3;">Рекомендовано горизонтально!</div>
+      <div style="font-size: 0.95rem; color: var(--muted); line-height: 1.5; margin-bottom: 8px;">Поверніть пристрій горизонтально для зручнішого перегляду карток.</div>
+      <button class="btn-primary mt16" onclick="dismissOrientationTip()">Зрозуміло</button>
     </div>
-    <button onclick="dismissOrientationTip()" style="background: none; border: none; color: var(--muted); font-size: 1.4rem; cursor: pointer; padding: 0 4px; line-height: 1;">&times;</button>
   </div>
 
   <div class="mystery-layout">
@@ -1290,48 +1285,37 @@ function showToast(msg) {
 function openModal(id) { document.getElementById(id).classList.add('active'); }
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-function openInfoModal(charData) {
-  const t = TRANSLATIONS.ua;
-  const name = charData.nameUA;
-  const description = charData.descUA;
-  const cardTitle = t.characterYour || 'Персонаж';
-  const cardNote = t.characterWarn || 'Не кажи ім’я вголос';
+function openInfoModal(charData, options = {}, event) {
+  if (event) event.stopPropagation();
+  const name = charData.nameUA || charData.nameRU || 'Персонаж';
+  const description = charData.descUA || charData.descRU || 'Опис відсутній.';
+  const enlargeImage = options.enlargeImage === true;
 
   document.getElementById('modal-info-title').textContent = name;
-  document.getElementById('modal-info-body').innerHTML = `
-    <div class="info-modal-card">
-      <div class="card-img-wrap" style="min-height:260px; border-radius: 24px; overflow:hidden; background: rgba(0,0,0,0.08);">
-        <div class="card-img-placeholder">${charData.emoji}</div>
-        <div class="img-loader"><div class="spinner"></div></div>
-        <img class="card-img loading" id="modal-char-photo" alt="${name}" />
-        <div class="card-img-overlay"></div>
-      </div>
-      <div class="card-info" style="padding: 18px 18px 14px; position: static;">
-        <div class="card-top-label">${cardTitle}</div>
-        <div class="card-name">${name}</div>
-        <div class="card-bot-label">${cardNote}</div>
-      </div>
-      <p style="font-size: 1rem; line-height: 1.6; color: var(--text); margin-top: 14px;">${description}</p>
+  document.getElementById('modal-info-body').innerHTML = enlargeImage ? `
+    <div style="display:flex; justify-content:center; width:100%; margin-bottom: 18px;">
+      <img class="card-img loading" id="modal-char-photo" alt="${name}" style="width:auto; height:auto; max-width: calc(100vw - 56px); max-height: calc(100vh - 220px); border-radius: 20px; object-fit: contain; display:block;" />
     </div>
+    <p style="font-size: 1rem; line-height: 1.6; color: var(--text);">${description}</p>
+  ` : `
+    <div style="font-size: 4.5rem; margin-bottom: 14px; text-shadow: 0 4px 12px rgba(0,0,0,0.45);">${charData.emoji || '🔍'}</div>
+    <p style="font-size: 1.05rem; line-height: 1.6; color: var(--text); font-weight: 500;">${description}</p>
   `;
 
-  const modalImg = document.getElementById('modal-char-photo');
-  const modalLoader = modalImg.closest('.card-img-wrap').querySelector('.img-loader');
-  const modalPlaceholder = modalImg.closest('.card-img-wrap').querySelector('.card-img-placeholder');
-
-  fetchWikiImage(charData.wiki || name, name).then(url => {
-    if (url) {
-      modalImg.src = url;
-      modalImg.onload = () => {
-        modalImg.classList.remove('loading');
-        modalLoader.style.display = 'none';
-        modalPlaceholder.style.display = 'none';
-      };
-      modalImg.onerror = () => { modalLoader.style.display = 'none'; };
-    } else {
-      modalLoader.style.display = 'none';
+  if (enlargeImage) {
+    const modalImg = document.getElementById('modal-char-photo');
+    if (modalImg) {
+      fetchWikiImage(charData.wiki || name, name).then(url => {
+        if (url) {
+          modalImg.src = url;
+          modalImg.onload = () => modalImg.classList.remove('loading');
+          modalImg.onerror = () => modalImg.style.display = 'none';
+        } else {
+          modalImg.style.display = 'none';
+        }
+      });
     }
-  });
+  }
 
   openModal('infoModal');
 }
@@ -1469,7 +1453,7 @@ function openCard() {
     
     document.getElementById('spy-info-btn').onclick = (e) => {
       e.stopPropagation();
-      openInfoModal(state.chosenChar);
+      openInfoModal(state.chosenChar, {}, e);
     };
 
     const imgEl = back.querySelector('#card-photo');
@@ -1607,7 +1591,10 @@ function joinGame() {
   secretState.peer.on('open', () => {
     const conn = secretState.peer.connect('pb-secret-' + code, { reliable: true });
     secretState.conn = conn;
-    conn.on('open', () => showToast(TRANSLATIONS.ua.secretConnectedMsg));
+    // Оновлена логіка успішного підключення гостя (зелений текст замість червоного Toast)
+    conn.on('open', () => {
+      document.getElementById('join-status').textContent = TRANSLATIONS.ua.secretConnectedMsg;
+    });
     conn.on('data', handleNetworkData);
     conn.on('close', cancelSecretLobby);
   });
@@ -1713,7 +1700,7 @@ function renderSecretGame() {
     const loader = cell.querySelector('.img-loader');
     const placeholder = cell.querySelector('.card-img-placeholder');
     const infoBtn = cell.querySelector('.info-trigger-btn');
-    infoBtn.onclick = (e) => { e.stopPropagation(); openInfoModal(char); };
+    infoBtn.onclick = (e) => { e.stopPropagation(); openInfoModal(char, { enlargeImage: true }, e); };
 
     fetchWikiImage(char.wiki || charName, charName).then(url => {
       if (url) {
@@ -1793,7 +1780,7 @@ function sendMysteryReady() {
   document.getElementById('mystery-my-char-emoji').style.display = 'block';
   
   const infoBtn = document.getElementById('btn-myst-info');
-  infoBtn.onclick = (e) => { e.stopPropagation(); openInfoModal(myChar); };
+  infoBtn.onclick = (e) => { e.stopPropagation(); openInfoModal(myChar, { enlargeImage: true }, e); };
   
   fetchWikiImage(myChar.wiki, charName).then(url => {
     if(url) {
