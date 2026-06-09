@@ -17,7 +17,7 @@
 :root {
   /* — Кольорова палітра — */
   --bg:              #07070e;
-  --surface-1:       rgba(255, 255, 255, 0.03);   /* базовий glass */
+  --surface-1:       rgba(255, 255, 255, 0.07);   /* базовий glass */
   --surface-2:       rgba(255, 255, 255, 0.07);   /* inputs, stepper, toggle */
   --surface-deep:    rgba(10, 10, 22, 0.96);      /* сайдбар, result-card */
 
@@ -458,6 +458,28 @@ header {
 .game-mode-title { font-family: 'Unbounded', sans-serif; font-size: 1.4rem; font-weight: 800; text-align: center; }
 .game-mode-desc { font-size: 0.85rem; color: var(--muted); text-align: center; line-height: 1.5; }
 
+/* WIFI NOTE */
+.wifi-note {
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: var(--surface-1);
+  border: 1px solid var(--border-1);
+  border-radius: 14px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.wifi-note .wifi-icon {
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
 /* ════════════════════════════════════════════ */
 /* SECRET (ТАЄМНИЦЯ) GAME STYLES              */
 /* ════════════════════════════════════════════ */
@@ -737,6 +759,12 @@ header {
       <div class="game-mode-icon">👤</div>
       <div class="game-mode-title" id="role-guest-title">Підключитися (Гість)</div>
     </div>
+    
+    <!-- ДОДАНА ПРИМІТКА ПРО WI-FI -->
+    <div class="wifi-note">
+      <span class="wifi-icon">🛜</span>
+      <span id="role-wifi-note">Для з'єднання потрібно бути в одній Wi-Fi мережі</span>
+    </div>
   </div>
 </div>
 
@@ -1000,6 +1028,7 @@ const TRANSLATIONS = {
     menuSecretTitle: "Таємниця", menuSecretDesc: "Мережева гра 1 на 1. Відгадай персонажа супротивника",
     roleTitle: "Оберіть роль", roleSubtitle: "Створіть кімнату або підключіться",
     roleHost: "Створити гру (Хост)", roleGuest: "Підключитися (Гість)",
+    secretWifiNote: "Для з'єднання потрібно бути в одній Wi-Fi мережі",
     setupPlayers: "Кількість гравців", setupSpyHint: "Шпигунів: <strong>{N}</strong> &nbsp;(1 на кожні 3 гравці)",
     setupCategories: "Категорії", selectAll: "Обрати всі", deselectAll: "Зняти всі",
     startBtn: "Почати роздачу ролей", playerBadge: "Гравець {N}",
@@ -1622,6 +1651,7 @@ function updateStaticTexts() {
   document.getElementById('role-subtitle').textContent = tg.roleSubtitle;
   document.getElementById('role-host-title').textContent = tg.roleHost;
   document.getElementById('role-guest-title').textContent = tg.roleGuest;
+  document.getElementById('role-wifi-note').textContent = tg.secretWifiNote;
 
   document.getElementById('setup-label-players').textContent = t.setupPlayers;
   document.getElementById('setup-spy-hint').innerHTML = t.setupSpyHint.replace('{N}', Math.floor(state.playerCount / 3));
