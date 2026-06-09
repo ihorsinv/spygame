@@ -250,7 +250,7 @@ header {
   #screen-secret-result .result-message { font-size: 0.95rem; }
   :root { --card-w: 94vw; }
   .mystery-layout { gap: 8px; padding: 8px; }
-  .mystery-grid-wrap { grid-auto-rows: 75px; gap: 6px; padding: 8px; max-height: 35vh; }
+  .mystery-grid-wrap { grid-auto-rows: 90px; gap: 8px; padding: 8px; max-height: 35vh; }
   .mystery-sidebar { padding: 10px; max-height: 35vh; }
   .mystery-actions { gap: 6px; }
   .mystery-actions button { font-size: 0.7rem; padding: 8px 6px; }
@@ -507,8 +507,8 @@ header {
 }
 .mystery-grid-wrap {
   flex: 1 1 0; min-width: 0;
-  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 85px; gap: 8px;
-  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 10px;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(240px, auto); gap: 16px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 18px;
   max-height: 100%; overflow-y: auto; overscroll-behavior: contain;
   scrollbar-width: thin; scrollbar-color: rgba(0,245,212,0.35) transparent;
 }
@@ -622,8 +622,9 @@ header {
   .mystery-grid-wrap {
     max-width: calc(100% - 300px);
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-    padding: 12px;
+    grid-auto-rows: minmax(180px, auto);
+    gap: 14px;
+    padding: 16px;
     max-height: calc(100vh - 150px);
   }
   .mystery-sidebar {
@@ -642,7 +643,7 @@ header {
 
 @media (max-width: 760px) {
   .mystery-layout { flex-direction: column; gap: 10px; padding: 10px; }
-  .mystery-grid-wrap { grid-template-columns: 1fr 1fr; grid-auto-rows: 90px; max-width: 100%; max-height: 45vh; gap: 8px; }
+  .mystery-grid-wrap { grid-template-columns: 1fr 1fr; grid-auto-rows: minmax(160px, auto); max-width: 100%; max-height: 45vh; gap: 12px; }
   .mystery-sidebar { width: 100%; min-width: 0; flex: 0 0 auto; max-height: 35vh; padding: 12px; }
   .my-target-wrap { margin: 0 auto; }
   .my-target-wrap .mystery-card { max-width: 130px; padding: 8px; }
@@ -652,7 +653,7 @@ header {
 
 @media (max-width: 640px) {
   .mystery-layout { flex-direction: column; gap: 8px; padding: 8px; }
-  .mystery-grid-wrap { grid-template-columns: 1fr 1fr; grid-auto-rows: 80px; gap: 6px; padding: 8px; max-height: 40vh; overflow-y: auto; }
+  .mystery-grid-wrap { grid-template-columns: 1fr 1fr; grid-auto-rows: minmax(150px, auto); gap: 12px; padding: 12px; max-height: 40vh; overflow-y: auto; }
   .card-cell { border-radius: 12px; }
   .card-cell .info-trigger-btn { bottom: 6px; right: 6px; width: 22px; height: 22px; font-size: 10px; }
   .mystery-sidebar { padding: 10px; max-height: 36vh; flex: 0 0 auto; gap: 10px; }
@@ -671,22 +672,22 @@ header {
 @media (orientation: landscape) and (max-height: 600px) {
   #screen-secret-game { padding-top: env(safe-area-inset-top, 4px) !important; }
   .orientation-tip-overlay { display: none !important; }
-  .mystery-layout { gap: 8px; padding: 8px; }
-  .mystery-grid-wrap { grid-template-columns: repeat(4, 1fr); grid-auto-rows: 85px; gap: 6px; padding: 8px; max-height: 100%; overflow-y: auto; }
-  .card-cell { border-radius: 12px; }
-  .card-cell .card-img-wrap { border-radius: 10px; }
-  .card-cell .secret-card-info { padding: 4px 5px 5px; }
-  .card-cell .secret-card-info .card-top-label { font-size: 0.6rem; }
-  .card-cell .info-trigger-btn { bottom: 4px; right: 4px; width: 20px; height: 20px; font-size: 9px; }
-  .mystery-sidebar { max-height: 100%; padding: 8px; flex: 0 0 220px; gap: 8px; }
-  .mystery-card { gap: 4px; padding: 6px; }
-  .mystery-card-img-wrap { min-height: 90px; }
-  .mystery-card-name { font-size: 0.8rem; }
-  .mystery-card-emoji { font-size: 2.5rem; }
-  .turn-indicator { font-size: 0.65rem; padding: 3px 6px; }
+  .mystery-layout { gap: 10px; padding: 10px; }
+  .mystery-grid-wrap { grid-template-columns: repeat(4, 1fr); grid-auto-rows: minmax(200px, auto); gap: 10px; padding: 10px; max-height: 100%; overflow-y: auto; }
+  .card-cell { border-radius: 14px; }
+  .card-cell .card-img-wrap { border-radius: 12px; }
+  .card-cell .secret-card-info { padding: 8px 10px 10px; }
+  .card-cell .secret-card-info .card-top-label { font-size: 0.75rem; }
+  .card-cell .info-trigger-btn { bottom: 6px; right: 6px; width: 26px; height: 26px; font-size: 11px; }
+  .mystery-sidebar { max-height: 100%; padding: 10px; flex: 0 0 240px; gap: 10px; }
+  .mystery-card { gap: 8px; padding: 10px; }
+  .mystery-card-img-wrap { min-height: 160px; }
+  .mystery-card-name { font-size: 1rem; }
+  .mystery-card-emoji { font-size: 3.5rem; }
+  .turn-indicator { font-size: 0.75rem; padding: 5px 8px; }
   .my-target-wrap { margin: 0 auto; }
-  .my-target-wrap .mystery-card { max-width: 110px; padding: 5px; gap: 3px; }
-  .my-target-wrap .mystery-card-img-wrap { min-height: 80px; }
+  .my-target-wrap .mystery-card { max-width: 130px; padding: 8px; gap: 6px; }
+  .my-target-wrap .mystery-card-img-wrap { min-height: 110px; }
   .my-target-wrap .mystery-card-name { font-size: 0.7rem; }
   .mystery-sidebar-body { font-size: 0.6rem; padding: 4px 0; }
   .mystery-actions { gap: 4px; }
@@ -704,7 +705,6 @@ header {
 <div id="screen-main-menu" class="screen active">
   <div class="main-menu-container">
     <div style="text-align: center; margin-bottom: 20px;">
-      <div style="font-family: 'Unbounded', sans-serif; font-size: 2.2rem; font-weight: 900; background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px;">🕵️‍♂️ PartyBox</div>
       <div style="font-size: 0.85rem; color: var(--muted); letter-spacing: 1px;" id="menu-subtitle">Оберіть гру</div>
     </div>
     
@@ -1937,7 +1937,7 @@ function buildSecretCatsUI() {
     const displayName = cat.nameUA;
     const el = document.createElement('div');
     el.className = 'cat-toggle' + (active ? ' active' : '');
-    el.innerHTML = `<div class="ct-icon">${cat.icon}</div><div style="flex:1;"><div class="ct-name">${displayName}</div></div><div class="ct-check">${active ? '✓' : ''}</div>`;
+    el.innerHTML = `<div class="ct-icon">${cat.icon}</div><div style="flex:1;"><div class="ct-name">${displayName}</div><div class="ct-count">${cat.chars.length} персонажів</div></div><div class="ct-check">${active ? '✓' : ''}</div>`;
     el.addEventListener('click', () => {
       if (active && secretState.selectedCats.size === 1) return;
       active ? secretState.selectedCats.delete(cat.id) : secretState.selectedCats.add(cat.id);
