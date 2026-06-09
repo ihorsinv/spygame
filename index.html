@@ -1065,6 +1065,10 @@ header {
 <header>
   <div class="header-logo" style="flex: 1;"><span id="header-title">🕵️‍♂️ PartyBox</span></div>
   <div class="header-actions">
+    <button class="header-btn" id="btn-fullscreen" onclick="toggleFullScreen()" title="На весь екран" style="display: flex; align-items: center; justify-content: center; padding: 8px;">
+      <svg id="icon-fs-enter" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+      <svg id="icon-fs-exit" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path></svg>
+    </button>
     <button class="header-btn" id="btn-back-menu" style="display: none;" onclick="backToMenu()">← Меню</button>
     <button class="header-btn" onclick="openModal('rulesModal')" id="btn-rules" style="display: none;">Правила</button>
   </div>
@@ -2758,6 +2762,47 @@ function showSecretResult(iWon, myCharIdx, oppCharIdx) {
   document.querySelector('header').style.display = 'none';
   switchScreen('screen-secret-result');
 }
+
+// ════════════════════════════════════════════
+//  FULLSCREEN API LOGIC
+// ════════════════════════════════════════════
+function toggleFullScreen() {
+  const doc = window.document;
+  const docEl = doc.documentElement;
+
+  const requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+  const cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+
+  if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+    if (requestFullScreen) {
+      requestFullScreen.call(docEl).catch(err => {
+        showToast("Повноекранний режим заблоковано на цьому пристрої.");
+      });
+    } else {
+      showToast("iOS Safari не підтримує це. Додайте гру на Головний екран.");
+    }
+  } else {
+    if (cancelFullScreen) {
+      cancelFullScreen.call(doc);
+    }
+  }
+}
+
+function updateFullscreenIcon() {
+  const isFullscreen = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+  const iconEnter = document.getElementById('icon-fs-enter');
+  const iconExit = document.getElementById('icon-fs-exit');
+  
+  if(iconEnter && iconExit) {
+      iconEnter.style.display = isFullscreen ? 'none' : 'block';
+      iconExit.style.display = isFullscreen ? 'block' : 'none';
+  }
+}
+
+document.addEventListener('fullscreenchange', updateFullscreenIcon);
+document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
+document.addEventListener('mozfullscreenchange', updateFullscreenIcon);
+document.addEventListener('MSFullscreenChange', updateFullscreenIcon);
 
 // ════════════════════════════════════════════
 //  INITIALIZATION
