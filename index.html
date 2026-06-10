@@ -107,7 +107,7 @@
   --screen-pb: max(env(safe-area-inset-bottom, 0px), 24px);
 
   /* — Glass — */
-  --glass-blur: blur(30px) saturate(190%);
+  --glass-blur: blur(0px) saturate(190%);
 
   /* — Переходы — */
   --ease:        cubic-bezier(0.16, 1, 0.3, 1);
@@ -214,7 +214,7 @@ header {
 .screen-center{justify-content:center;}
 
 /* ══════════════════════════════════════════════════════════════════
-   ОНОВЛЕНИЙ ЕКРАН РЕЗУЛЬТАТІВ (RESULT SCREEN) - 100dvh RUBBER LAYOUT
+   ОНОВЛЕНИЙ ЕКРАН РЕЗУЛЬТАТІВ (RESULT SCREEN)
    ══════════════════════════════════════════════════════════════════ */
 #screen-secret-result {
   height: 100vh; /* fallback */
@@ -282,12 +282,12 @@ header {
 
 #screen-secret-result .result-grid {
   display: flex;
-  flex-direction: row; /* Завжди в рядок для економії висоти */
+  flex-direction: row; 
   gap: 10px;
   justify-content: center;
   align-items: stretch;
-  flex: 1 1 0; /* Займає весь вільний простір */
-  min-height: 0; /* Дозволяє стискатися */
+  flex: 1 1 0; 
+  min-height: 0; 
   width: 100%;
 }
 
@@ -323,8 +323,8 @@ header {
 
 #screen-secret-result .result-panel-img {
   width: 100%;
-  max-width: 180px; /* Обмеження ширини на великих екранах */
-  aspect-ratio: 1 / 1; /* Квадрат */
+  max-width: 180px; 
+  aspect-ratio: 1 / 1; 
   border-radius: 14px;
   overflow: hidden;
   background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.6) 100%);
@@ -332,7 +332,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 1 1 0; /* Ефект гуми */
+  flex: 1 1 0; 
   min-height: 0;
 }
 
@@ -425,9 +425,9 @@ header {
 .cats{ display:flex; flex-direction: column; gap: 6px; height:100%; overflow-y: auto; padding-right: 4px; }
 .cat-toggle{
   display:flex; flex-direction: row; align-items: center; gap:16px; 
-  padding:12px 16px; /* ВІДКОРИГОВАНО */
+  padding:12px 16px; 
   flex:1; 
-  min-height:52px; /* ВІДКОРИГОВАНО */
+  min-height:52px; 
   max-height:80px; 
   background:var(--surface-2);
   border:1px solid var(--border-1); border-radius:18px; cursor:pointer;
@@ -446,10 +446,10 @@ header {
 /* BUTTONS */
 .btn-primary{
   width:100%; 
-  padding:14px 20px; /* ВІДКОРИГОВАНО */
-  min-height: 48px; /* ВІДКОРИГОВАНО */
-  font-size: clamp(0.85rem, 2.5vw, 0.95rem); /* ВІДКОРИГОВАНО */
-  line-height: 1.3; /* ВІДКОРИГОВАНО */
+  padding:14px 20px; 
+  min-height: 48px; 
+  font-size: clamp(0.85rem, 2.5vw, 0.95rem); 
+  line-height: 1.3; 
   background:linear-gradient(135deg,var(--cyan),var(--violet));
   border:none; border-radius:18px; color:#07070e; font-family:'Unbounded',sans-serif;
   font-weight:700; letter-spacing:0.5px; cursor:pointer;
@@ -461,10 +461,10 @@ header {
 .btn-ghost{
   background:var(--surface-2); border:1px solid var(--border-2); border-radius:16px;
   color:var(--text); 
-  font-size: clamp(0.85rem, 2.5vw, 0.95rem); /* ВІДКОРИГОВАНО */
-  line-height: 1.3; /* ВІДКОРИГОВАНО */
-  padding:14px 20px; /* ВІДКОРИГОВАНО */
-  min-height: 48px; /* ВІДКОРИГОВАНО */
+  font-size: clamp(0.85rem, 2.5vw, 0.95rem); 
+  line-height: 1.3; 
+  padding:14px 20px; 
+  min-height: 48px; 
   cursor:pointer;
   transition:all 0.2s; width:100%; font-weight: 600; 
 }
@@ -475,7 +475,6 @@ header {
 }
 .btn-danger:hover { box-shadow: 0 10px 36px rgba(255,60,92,0.35); }
 
-/* SPECIFIC BUTTON ADJUSTMENTS */
 #btn-myst-ready {
   padding: 16px 24px;
   font-size: clamp(0.9rem, 3vw, 1rem);
@@ -638,7 +637,7 @@ header {
 /* SECRET (ТАЄМНИЦЯ) GAME STYLES              */
 /* ════════════════════════════════════════════ */
 
-/* ORIENTATION TIP MODAL */
+/* ORIENTATION TIP MODAL (FOR GAME - REQUIRES LANDSCAPE) */
 .orientation-tip-overlay {
   position: absolute;
   inset: 0;
@@ -651,7 +650,7 @@ header {
   z-index: 2000;
 }
 .orientation-tip-overlay.dismissed {
-  display: none;
+  display: none !important;
 }
 @media (orientation: portrait) {
   #screen-secret-game.active .orientation-tip-overlay:not(.dismissed) {
@@ -662,6 +661,33 @@ header {
     animation: tipScaleUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 }
+
+/* NEW: PORTRAIT TIP MODAL (FOR MENU AFTER GAME - REQUIRES PORTRAIT) */
+.portrait-tip-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 4, 8, 0.85);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+}
+.portrait-tip-overlay.active {
+  display: flex;
+  animation: tipFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.portrait-tip-overlay.active .modal-content {
+  animation: tipScaleUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+/* Auto hide when correctly rotated */
+@media (orientation: portrait) {
+  .portrait-tip-overlay {
+    display: none !important;
+  }
+}
+
 @keyframes tipFadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes tipScaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
@@ -701,9 +727,6 @@ header {
   box-shadow: 0 20px 50px rgba(0,0,0,0.28);
   overflow: hidden;
 }
-.mystery-sidebar-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
-.mystery-sidebar-body::-webkit-scrollbar { width: 4px; }
-.mystery-sidebar-body::-webkit-scrollbar-thumb { background: rgba(185,124,255,0.25); border-radius: 999px; }
 .mystery-actions { display: flex; flex-direction: column; gap: 12px; margin-top: auto; }
 .mystery-actions .btn-primary,
 .mystery-actions .btn-ghost,
@@ -926,7 +949,6 @@ header {
 }
 .mystery-card-note { display: none; }
 
-/* Идентичная кнопка информации в сайдбаре */
 .mystery-info-btn {
   position: absolute; 
   top: 8px; 
@@ -987,8 +1009,6 @@ header {
     max-width: 300px;
     padding: 16px;
   }
-  #mystery-instruction-wrap { margin-bottom: 10px; }
-  .mystery-sidebar-body { flex: 1 1 auto; min-height: 0; }
 }
 
 @media (max-width: 760px) {
@@ -998,7 +1018,6 @@ header {
   .my-target-wrap { margin: 0 auto; }
   .my-target-wrap .mystery-card { max-width: 120px; }
   .mystery-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-  /* ВІДКОРИГОВАНО МЕДІАЗАПИТ ДЛЯ КНОПОК САЙДБАРУ */
   .mystery-actions button { 
     flex: 1 1 calc(50% - 4px); 
     min-width: 0; 
@@ -1017,7 +1036,6 @@ header {
   .my-target-wrap { margin: 0 auto; }
   .my-target-wrap .mystery-card { max-width: 110px; }
   .mystery-actions { display: flex; gap: 6px; flex-wrap: wrap; }
-  /* ВІДКОРИГОВАНО МЕДІАЗАПИТ ДЛЯ КНОПОК САЙДБАРУ НА МАЛИХ ЕКРАНАХ */
   .mystery-actions button { 
     flex: 1 1 calc(50% - 3px); 
     min-width: 0; 
@@ -1040,7 +1058,6 @@ header {
   .turn-indicator { font-size: 0.75rem; padding: 5px 8px; }
   .my-target-wrap { margin: 0 auto; }
   .my-target-wrap .mystery-card { max-width: 120px; }
-  .mystery-sidebar-body { font-size: 0.6rem; padding: 4px 0; }
   .mystery-actions { gap: 4px; }
   .mystery-actions button { font-size: 0.6rem; padding: 5px 6px; }
 }
@@ -1116,7 +1133,6 @@ header {
     <div class="mt24" id="cats-section">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-shrink:0;">
         <div class="section-label" id="setup-label-categories" style="margin-bottom:0">Категорії</div>
-        <!-- ВІДКОРИГОВАНО ДЛЯ БЕЗПЕКИ ХЕДЕРУ (додано min-height: 32px) -->
         <button class="btn-ghost" id="btn-select-all" style="padding:6px 14px; font-size:0.75rem; width:auto; border-radius:10px; min-height: 32px;" onclick="toggleAll()">Обрати всі</button>
       </div>
       <div class="cats-wrapper">
@@ -1208,7 +1224,6 @@ header {
     <div id="secret-cats-section">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-shrink:0;">
         <div class="section-label" style="margin-bottom:0" id="label-host-cats">Категорії</div>
-        <!-- ВІДКОРИГОВАНО ДЛЯ БЕЗПЕКИ ХЕДЕРУ (додано min-height: 32px) -->
         <button class="btn-ghost" style="padding:6px 14px; font-size:0.75rem; width: auto; border-radius:10px; min-height: 32px;" onclick="toggleAllMysteryCats()" id="btn-host-all">Обрати всі</button>
       </div>
       <div class="cats-wrapper">
@@ -1285,12 +1300,6 @@ header {
         </div>
       </div>
 
-      <div class="mystery-sidebar-body">
-        <p style="color: var(--text); font-size: 0.9rem; line-height: 1.4; text-align:center;" id="mystery-instruction-wrap">
-          Оберіть персонажа на полі, якого будете загадувати.
-        </p>
-      </div>
-
       <div class="mystery-actions">
         <button class="btn-primary" id="btn-myst-ready" onclick="sendMysteryReady()">Я ГОТОВИЙ</button>
         <button class="btn-ghost" id="btn-myst-end-turn" style="display:none;" onclick="endSecretTurn()">Завершити хід</button>
@@ -1333,6 +1342,16 @@ header {
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- ГЛОБАЛЬНА МОДАЛКА ДЛЯ ПОВЕРНЕННЯ В ПОРТРЕТНИЙ РЕЖИМ -->
+<div id="portrait-tip" class="portrait-tip-overlay">
+  <div class="modal-content glass" style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 40px 24px; gap: 12px; margin: 0 16px;">
+    <span style="font-size: 4rem; display: block; animation: pulse 2.5s infinite; margin-bottom: 8px;">📱🔄</span>
+    <div style="color: var(--cyan); font-weight: 800; font-family: 'Unbounded', sans-serif; font-size: 1.3rem; line-height: 1.3;">Поверніть пристрій</div>
+    <div style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 8px;">Для зручного використання головного меню поверніть пристрій у вертикальне положення.</div>
+    <button class="btn-primary mt16" onclick="dismissPortraitTip()">Зрозуміло</button>
+  </div>
+</div>
 
 <script>
 const firebaseConfig = {
@@ -1467,8 +1486,6 @@ const TRANSLATIONS = {
     secretConnectBtn: "Підключитися", secretGenerateBtn: "Згенерувати кімнату", secretStartBtn: "Почати гру",
     secretReadyBtn: "Я ГОТОВИЙ", secretEndTurnBtn: "Завершити хід", secretAccuseBtn: "ОБВИНУВАТИ", secretCancelAccuseBtn: "СКАСУВАТИ ОБВИНУВАЧЕННЯ",
     secretSurrenderBtn: "Здатися", secretBackMenuBtn: "В головне меню",
-    secretInstrPick: "Оберіть персонажа на полі, якого будете загадувати.",
-    secretInstrAccuseMode: "Режим обвинувачення! Оберіть персонажа, якого загадав супротивник.",
     turnWait: "ОЧІКУВАННЯ...", turnMine: "ТВІЙ ХІД", turnEnemy: "ХІД СУПРОТИВНИКА",
     resWinTitle: "ВИ ПЕРЕМОГЛИ!", resLoseTitle: "ВИ ПРОГРАЛИ!",
     resMyChoice: "Ваш вибір", resOppChoice: "Вибір ворога",
@@ -2023,7 +2040,6 @@ async function fetchWikiImage(slug, displayName=''){
       try {
         let signal;
         let timeoutId;
-        // Безпечний фоллбек для старого iOS Safari
         if (window.AbortController) {
             const controller = new AbortController();
             timeoutId = setTimeout(() => controller.abort(), 5000);
@@ -2172,10 +2188,25 @@ function showToast(msg) {
 function closeAllModals() {
   document.querySelectorAll('.modal-overlay.active').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.orientation-tip-overlay:not(.dismissed)').forEach(el => el.classList.add('dismissed'));
+  dismissPortraitTip();
 }
 
 function openModal(id) { document.getElementById(id).classList.add('active'); }
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+function dismissPortraitTip() {
+  const tip = document.getElementById('portrait-tip');
+  if (tip) {
+    tip.classList.remove('active');
+  }
+}
+
+// Авто-приховування підказки якщо користувач повернув телефон правильно
+window.addEventListener('resize', () => {
+  if (window.innerHeight > window.innerWidth) {
+      dismissPortraitTip();
+  }
+});
 
 function openInfoModal(charData, options = {}, event) {
   if (event) event.stopPropagation();
@@ -2229,12 +2260,15 @@ function selectGame(game) {
     document.body.classList.add('is-secret-mode');
     document.getElementById('btn-rules').style.display = 'block';
     document.getElementById('btn-back-menu').style.display = 'block';
-    document.getElementById('header-title').textContent = 'ТАЄМНИЦЯ';
+    document.getElementById('header-title').textContent = '🎭 MYST';
     switchScreen('screen-secret-role-choice');
   }
 }
 
 function backToMenu() {
+  const needsPortraitTip = document.getElementById('screen-secret-result').classList.contains('active') || 
+                           document.getElementById('screen-secret-game').classList.contains('active');
+
   closeAllModals();
   currentGame = null;
   document.body.classList.remove('is-secret-mode');
@@ -2243,6 +2277,7 @@ function backToMenu() {
   document.getElementById('header-title').textContent = '🕵️‍♂️ PartyBox';
   document.querySelector('header').style.display = 'flex'; // Повертаємо хедер в меню
   cancelSecretLobby();
+  
   try {
     state.currentPlayer = 0;
     state.cardOpen = false;
@@ -2257,6 +2292,13 @@ function backToMenu() {
   } catch (e) { /* ignore DOM errors */ }
 
   switchScreen('screen-main-menu');
+
+  // Активуємо глобальну підказку для повернення в портретний режим, якщо треба
+  // Показуємо тільки якщо ми дійсно виходимо з гри та пристрій у ландшафтному режимі
+  if (needsPortraitTip && window.innerWidth > window.innerHeight) {
+    const tip = document.getElementById('portrait-tip');
+    if (tip) tip.classList.add('active');
+  }
 }
 
 // ════════════════════════════════════════════
@@ -2655,11 +2697,9 @@ function renderSecretGame() {
   const readyBtn = document.getElementById('btn-myst-ready');
   const endBtn = document.getElementById('btn-myst-end-turn');
   const accBtn = document.getElementById('btn-myst-accuse');
-  const instr = document.getElementById('mystery-instruction-wrap');
   const turnInd = document.getElementById('turn-indicator');
   
   if (secretState.stage === 'selection') {
-    instr.textContent = secretState.myReady ? t.secretInstrWaitReady : t.secretInstrPick;
     readyBtn.style.display = 'block'; endBtn.style.display = 'none'; accBtn.style.display = 'none';
     readyBtn.disabled = secretState.myReady;
     turnInd.textContent = t.turnWait; turnInd.className = 'turn-indicator blink';
@@ -2668,9 +2708,6 @@ function renderSecretGame() {
     endBtn.style.display = secretState.isMyTurn ? 'block' : 'none';
     accBtn.style.display = secretState.isMyTurn ? 'block' : 'none';
     accBtn.textContent = secretState.accuseMode ? t.secretCancelAccuseBtn : t.secretAccuseBtn;
-    
-    if (secretState.accuseMode) instr.textContent = t.secretInstrAccuseMode;
-    else instr.textContent = secretState.isMyTurn ? t.secretInstrMyTurn : t.secretInstrEnemyTurn;
     
     turnInd.textContent = secretState.isMyTurn ? t.turnMine : t.turnEnemy;
     turnInd.className = 'turn-indicator ' + (secretState.isMyTurn ? '' : 'enemy');
