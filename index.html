@@ -204,6 +204,10 @@
       pointer-events: none !important;
     }
 
+    .hidden {
+      display: none !important;
+    }
+
     #screen-setup {
       overflow-y: hidden;
     }
@@ -2038,6 +2042,7 @@
     }
   </style>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 </head>
 
@@ -2054,13 +2059,13 @@
         </div>
       </div>
 
-      <div class="game-mode-card spy-mode" onclick="selectGame('spy')">
+      <div class="game-mode-card spy-mode" id="menu-spy-card">
         <div class="game-mode-icon">🕵️‍♂️</div>
         <div class="game-mode-title" id="menu-spy-title">Шпигун</div>
         <div class="game-mode-desc" id="menu-spy-desc">Локальна гра для компанії на одному пристрої</div>
       </div>
 
-      <div class="game-mode-card secret-mode" onclick="selectGame('secret')">
+      <div class="game-mode-card secret-mode" id="menu-secret-card">
         <div class="game-mode-icon">🎭</div>
         <div class="game-mode-title" id="menu-secret-title">Таємниця</div>
         <div class="game-mode-desc" id="menu-secret-desc">Мережева гра 1 на 1</div>
@@ -2077,11 +2082,11 @@
         <div style="font-size: 0.85rem; color: var(--text-muted); letter-spacing: 1px;" id="role-subtitle">Створіть
           кімнату або підключіться</div>
       </div>
-      <div class="game-mode-card spy-mode" onclick="chooseSecretHost()">
+      <div class="game-mode-card spy-mode" id="secret-host-card">
         <div class="game-mode-icon">🏠</div>
         <div class="game-mode-title" id="role-host-title">Створити гру (Хост)</div>
       </div>
-      <div class="game-mode-card secret-mode" onclick="chooseSecretGuest()">
+      <div class="game-mode-card secret-mode" id="secret-guest-card">
         <div class="game-mode-icon">👤</div>
         <div class="game-mode-title" id="role-guest-title">Підключитися (Гість)</div>
       </div>
@@ -2091,20 +2096,21 @@
   <header>
     <div class="header-logo" style="flex: 1;"><span id="header-title">🕵️‍♂️ PartyBox</span></div>
     <div class="header-actions">
-      <button class="header-btn" id="btn-back-menu" style="display: none;" onclick="backToMenu()">Меню</button>
-      <button class="header-btn" onclick="openModal('rulesModal')" id="btn-rules"
-        style="display: none;">Правила</button>
-      <button class="header-btn" id="btn-fullscreen" onclick="toggleFullScreen()" title="На весь екран"
+      <button class="header-btn hidden" id="btn-back-menu">Меню</button>
+      <button class="header-btn hidden" id="btn-rules">Правила</button>
+      <button class="header-btn" id="btn-fullscreen" title="На весь екран"
         style="display: flex; align-items: center; justify-content: center; padding: 8px;">
         <svg id="icon-fs-enter" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          stroke-width="2">
           <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3">
           </path>
         </svg>
-        <svg id="icon-fs-exit" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
-          <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3">
-          </path>
+        <svg id="icon-fs-exit" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="4 10 10 10 10 4"></polyline>
+          <polyline points="20 10 14 10 14 4"></polyline>
+          <polyline points="4 14 10 14 10 20"></polyline>
+          <polyline points="20 14 14 14 14 20"></polyline>
         </svg>
       </button>
     </div>
@@ -2114,9 +2120,9 @@
     <div class="glass setup-card">
       <div class="section-label" id="setup-label-players">Кількість гравців</div>
       <div class="stepper">
-        <button onclick="changeCount(-1)">−</button>
+        <button id="btn-count-decrease">−</button>
         <div class="val" id="player-count">5</div>
-        <button onclick="changeCount(1)">+</button>
+        <button id="btn-count-increase">+</button>
       </div>
       <div class="spy-hint mt8" id="setup-spy-hint">Шпигунів: <strong id="spy-count-hint">1</strong> &nbsp;(1 на кожні 3
         гравці)</div>
@@ -2125,8 +2131,8 @@
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-shrink:0;">
           <div class="section-label" id="setup-label-categories" style="margin-bottom:0">Категорії</div>
           <button class="btn-ghost" id="btn-select-all"
-            style="padding:6px 14px; font-size:0.75rem; width:auto; border-radius:10px; min-height: 32px;"
-            onclick="toggleAll()">Обрати всі</button>
+            style="padding:6px 14px; font-size:0.75rem; width:auto; border-radius:10px; min-height: 32px;">
+            Обрати всі</button>
         </div>
         <div class="cats-wrapper">
           <div class="cats" id="cats-container"></div>
@@ -2134,7 +2140,7 @@
       </div>
 
       <div class="mt24" style="flex-shrink:0">
-        <button class="btn-primary" id="btn-start-deal" onclick="startGame()">Почати роздачу ролей</button>
+        <button class="btn-primary" id="btn-start-deal">Почати роздачу ролей</button>
       </div>
     </div>
   </div>
@@ -2144,12 +2150,12 @@
       <div class="glass prompt-box" id="deal-prompt">
         <div class="player-badge" id="deal-player-name">Гравець 1</div>
         <div class="prompt-text" id="deal-prompt-text">Візьми пристрій, інші відверніться</div>
-        <button class="btn-primary" id="btn-open-card-init" onclick="openCard()">Відкрити карту</button>
+        <button class="btn-primary" id="btn-open-card-init">Відкрити карту</button>
       </div>
 
-      <div class="flip-scene" id="flip-scene" style="display:none">
+      <div class="flip-scene hidden" id="flip-scene">
         <div class="flip-card" id="flip-card">
-          <div class="flip-face flip-front" onclick="openCard()">
+          <div class="flip-face flip-front" id="flip-front-cover">
             <div class="front-pattern"></div>
             <div class="front-glow"></div>
             <div class="front-icon"></div>
@@ -2159,11 +2165,11 @@
         </div>
       </div>
 
-      <div class="deal-actions" id="deal-actions" style="display:none">
-        <button class="btn-ghost" id="btn-close-card" onclick="closeCard()">Закрити карту</button>
+      <div class="deal-actions hidden" id="deal-actions">
+        <button class="btn-ghost" id="btn-close-card">Закрити карту</button>
         <button class="btn-primary"
           style="background:rgba(255,255,255,0.06);color:var(--text-muted);border:1px solid var(--border-2);box-shadow:none;"
-          onclick="confirmAbort()" id="btn-restart-action">Почати заново</button>
+          id="btn-restart-action">Почати заново</button>
       </div>
     </div>
   </div>
@@ -2177,7 +2183,7 @@
         <div class="stat-chip"><strong id="final-spies">1</strong><span id="label-stat-spies">Шпигунів</span></div>
       </div>
       <div class="final-sub" id="final-description">Обговорюйте та знайдіть шпигуна.</div>
-      <button class="btn-primary" id="btn-new-game-restart" onclick="resetGame()">Нова гра</button>
+      <button class="btn-primary" id="btn-new-game-restart">Нова гра</button>
     </div>
   </div>
 
@@ -2187,15 +2193,28 @@
       <div style="color: var(--text-muted); margin-bottom: 28px; font-size: 0.95rem;" id="confirm-desc">Всі ролі будут
         скинуті.</div>
       <div style="display: flex; gap: 12px;">
-        <button class="btn-ghost" onclick="closeModal('confirmModal')" id="btn-cancel">Скасувати</button>
-        <button class="btn-primary btn-danger" onclick="executeRestart()" id="btn-confirm">Так</button>
+        <button class="btn-ghost" id="btn-cancel">Скасувати</button>
+        <button class="btn-primary btn-danger" id="btn-confirm">Так</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модалка-підтвердження для звинувачення -->
+  <div class="modal-overlay" id="accuseModal">
+    <div class="modal-content glass" style="text-align: center;">
+      <div class="modal-title" id="accuse-title">Звинуватити?</div>
+      <div style="color: var(--text-muted); margin-bottom: 28px; font-size: 0.95rem;" id="accuse-desc">Це фінальна
+        відповідь.</div>
+      <div style="display: flex; gap: 12px; justify-content:center;">
+        <button class="btn-ghost" id="btn-accuse-cancel">Скасувати</button>
+        <button class="btn-primary btn-danger" id="btn-accuse-confirm">Звинуватити</button>
       </div>
     </div>
   </div>
 
   <div class="modal-overlay" id="rulesModal">
     <div class="modal-content glass">
-      <button class="close-modal-btn" onclick="closeModal('rulesModal')">×</button>
+      <button class="close-modal-btn" id="btn-close-rules">×</button>
       <div class="modal-title" id="modal-rules-title">Правила гри</div>
       <div class="rules-scroll" id="modal-rules-body"></div>
     </div>
@@ -2203,7 +2222,7 @@
 
   <div class="modal-overlay" id="infoModal">
     <div class="modal-content glass">
-      <button class="close-modal-btn" onclick="closeModal('infoModal')">×</button>
+      <button class="close-modal-btn" id="btn-close-info">×</button>
       <div class="modal-title" id="modal-info-title">Опис персонажа</div>
       <div class="rules-scroll" style="text-align:center;" id="modal-info-body"></div>
     </div>
@@ -2212,7 +2231,7 @@
   <div id="screen-secret-lobby-host" class="screen">
     <div class="glass setup-card" id="host-setup-view">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <button class="header-btn" onclick="switchScreen('screen-secret-role-choice')"
+        <button class="header-btn" id="btn-secret-back-host"
           style="padding: 4px 10px; border: none; background: rgba(255,255,255,0.1)">Назад</button>
         <div class="section-label" style="margin: 0;" id="label-host-setup">Створити гру</div>
       </div>
@@ -2225,7 +2244,7 @@
           <div class="section-label" style="margin-bottom:0" id="label-host-cats">Категорії</div>
           <button class="btn-ghost"
             style="padding:6px 14px; font-size:0.75rem; width: auto; border-radius:10px; min-height: 32px;"
-            onclick="toggleAllMysteryCats()" id="btn-host-all">Обрати всі</button>
+            id="btn-host-all">Обрати всі</button>
         </div>
         <div class="cats-wrapper">
           <div class="cats" id="secret-cats-container"></div>
@@ -2233,13 +2252,13 @@
       </div>
 
       <div class="mt24" style="flex-shrink: 0;">
-        <button class="btn-primary" onclick="generateSecretRoomCode()" id="btn-generate-room">Згенерувати
+        <button class="btn-primary" id="btn-generate-room">Згенерувати
           кімнату</button>
       </div>
     </div>
 
-    <div class="glass setup-card auto-height-card screen-center" id="host-lobby-view"
-      style="display: none; padding: 40px 24px;">
+    <div class="glass setup-card auto-height-card screen-center hidden" id="host-lobby-view"
+      style="padding: 40px 24px;">
       <div class="section-label" style="text-align: center;" id="label-host-code">Код кімнати:</div>
       <div class="huge-code" id="room-code-display">------</div>
       <p style="color: var(--text-muted); text-align: center; margin-bottom: 20px; line-height: 1.5;"
@@ -2250,26 +2269,25 @@
         <div class="status-dot"></div>
         <span id="label-waiting-players">Очікування підключення...</span>
       </div>
-      <div id="host-connected-group"
-        style="display:none;text-align:center;font-size:0.85rem;color:var(--green);font-weight:bold;margin-bottom:20px;">
+      <div id="host-connected-group" class="hidden"
+        style="text-align:center;font-size:0.85rem;color:var(--green);font-weight:bold;margin-bottom:20px;">
         ✓ Гравець підключився!
       </div>
 
-      <button class="btn-primary" id="btn-start-secret-game" style="display:none; width:100%;"
-        onclick="startSecretGame()">Почати гру</button>
-      <button class="btn-ghost mt24" onclick="cancelSecretLobby()" id="btn-host-cancel">Скасувати</button>
+      <button class="btn-primary hidden" id="btn-start-secret-game" style="width:100%;">Почати гру</button>
+      <button class="btn-ghost mt24" id="btn-host-cancel">Скасувати</button>
     </div>
   </div>
 
   <div id="screen-secret-lobby-guest" class="screen screen-center">
     <div class="glass setup-card auto-height-card" style="padding: 40px 24px;">
       <div style="display: flex; justify-content: flex-start; margin-bottom: 20px;">
-        <button class="header-btn" onclick="switchScreen('screen-secret-role-choice')"
+        <button class="header-btn" id="btn-secret-back-guest"
           style="padding: 4px 10px; border: none; background: rgba(255,255,255,0.1)">Назад</button>
       </div>
       <div class="section-label" style="text-align: center;" id="label-guest-code">Введіть код кімнати</div>
       <input type="text" class="input-code mt16" id="room-code-input" placeholder="000000" maxlength="6">
-      <button class="btn-primary mt24" onclick="joinGame()" id="btn-join-game">Підключитися</button>
+      <button class="btn-primary mt24" id="btn-join-game">Підключитися</button>
       <div id="join-status"
         style="color: var(--green); text-align: center; margin-top: 15px; font-size: 0.9rem; font-weight: bold;"></div>
     </div>
@@ -2285,7 +2303,7 @@
           Рекомендовано горизонтально!</div>
         <div style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 8px;">Поверніть
           пристрій горизонтально для зручнішого перегляду карток.</div>
-        <button class="btn-primary mt16" onclick="dismissOrientationTip()">Зрозуміло</button>
+        <button class="btn-primary mt16" id="btn-dismiss-orientation">Зрозуміло</button>
       </div>
     </div>
 
@@ -2295,7 +2313,7 @@
       <div class="mystery-sidebar">
         <div class="turn-indicator blink" id="turn-indicator">ОЧІКУВАННЯ...</div>
 
-        <div class="my-target-wrap" id="mystery-my-char-wrap" style="display:none;">
+        <div class="my-target-wrap hidden" id="mystery-my-char-wrap">
           <div class="mystery-card">
             <div class="mystery-card-img-wrap">
               <img src="" id="mystery-my-char-img" class="mystery-card-img" alt="">
@@ -2312,14 +2330,13 @@
         </div>
 
         <div class="mystery-actions">
-          <button class="btn-primary" id="btn-myst-ready" onclick="sendMysteryReady()">Я ГОТОВИЙ</button>
-          <button class="btn-ghost" id="btn-myst-end-turn" style="display:none;" onclick="endSecretTurn()">Завершити
+          <button class="btn-primary" id="btn-myst-ready">Я ГОТОВИЙ</button>
+          <button class="btn-ghost hidden" id="btn-myst-end-turn">Завершити
             хід</button>
-          <button class="btn-danger btn-primary" id="btn-myst-accuse" style="display:none;"
-            onclick="toggleAccuseMode()">ЗВИНУВАТИ</button>
+          <button class="btn-danger btn-primary hidden" id="btn-myst-accuse">ЗВИНУВАТИ</button>
           <button class="btn-ghost"
             style="padding: 8px; font-size: 0.75rem; border:none; background: transparent; color:var(--text-muted);"
-            onclick="surrenderSecretGame()" id="btn-myst-surrender">Здатися</button>
+            id="btn-myst-surrender">Здатися</button>
         </div>
       </div>
     </div>
@@ -2352,11 +2369,11 @@
         </div>
       </div>
 
-      <button class="btn-primary result-button" onclick="backToMenu()" id="btn-res-menu">В головне меню</button>
+      <button class="btn-primary result-button" id="btn-res-menu">В головне меню</button>
     </div>
   </div>
 
-  <div class="toast" id="toast"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
   <!-- ГЛОБАЛЬНА МОДАЛКА ДЛЯ ПОВЕРНЕННЯ В ПОРТРЕТНИЙ РЕЖИМ -->
   <div id="portrait-tip" class="portrait-tip-overlay">
@@ -2368,7 +2385,7 @@
         Поверніть пристрій</div>
       <div style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 8px;">Для зручного
         використання головного меню поверніть пристрій у вертикальне положення.</div>
-      <button class="btn-primary mt16" onclick="dismissPortraitTip()">Зрозуміло</button>
+      <button class="btn-primary mt16" id="btn-dismiss-portrait">Зрозуміло</button>
     </div>
   </div>
 
@@ -2383,99 +2400,178 @@
       appId: "1:693748041380:web:2595063bb9a47621c20831",
       measurementId: "G-F35L57EYZP"
     };
+    const CONFIG = {
+      SECRET_GRID_SIZE: 16,
+      ROOM_CODE_LENGTH: 6,
+      SPIES_PER_PLAYERS: 3,
+      MAX_PLAYERS_SPY: 12,
+      MAX_ROOM_CODE_ATTEMPTS: 5
+    };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    async function ensureFirebaseAuth() {
+      return;
+    }
+
+    function isValidRoomCode(code) {
+      const pattern = new RegExp(`^[0-9]{${CONFIG.ROOM_CODE_LENGTH}}$`);
+      return pattern.test(code);
+    }
+
+    async function generateUniqueRoomCode() {
+      const minCode = 10 ** (CONFIG.ROOM_CODE_LENGTH - 1);
+      const maxCode = 10 ** CONFIG.ROOM_CODE_LENGTH;
+      for (let attempt = 0; attempt < CONFIG.MAX_ROOM_CODE_ATTEMPTS; attempt++) {
+        const code = String(minCode + Math.floor(Math.random() * (maxCode - minCode)));
+        const snap = await db.ref('rooms/' + code).once('value');
+        if (!snap.exists()) return code;
+      }
+      throw new Error('roomcode-collision');
+    }
+
     const Network = {
       _roomRef: null,
-      _msgListener: null,
-      _lastMsgKey: null,
-      _onMsgCallback: null,
       _onDisconnectCallback: null,
-      _myRole: null,
+      _stateListener: false,
 
       async createRoom(code, grid) {
+        if (!isValidRoomCode(code)) throw new Error('invalid-room-code');
         const roomRef = db.ref('rooms/' + code);
-        await roomRef.remove();
-        await roomRef.set({
+        const snap = await roomRef.once('value');
+        if (snap.exists()) throw new Error('roomcode-collision');
+
+        const roomData = {
           grid: grid,
+          host: { selection: null, eliminated: [], ready: false, guess: null },
+          guest: { selection: null, eliminated: [], ready: false, guess: null },
+          currentTurn: 'host',
+          status: 'lobby',
+          winner: null,
           createdAt: firebase.database.ServerValue.TIMESTAMP,
           hostOnline: true,
           guestOnline: false
-        });
+        };
+
+        await roomRef.set(roomData);
         await roomRef.onDisconnect().remove();
         this._roomRef = roomRef;
-        this._myRole = 'host';
+        secretState.role = 'host';
         return roomRef;
       },
 
       async joinRoom(code) {
+        if (!isValidRoomCode(code)) throw new Error('invalid-room-code');
         const roomRef = db.ref('rooms/' + code);
         const snap = await roomRef.once('value');
         if (!snap.exists()) throw new Error('room-not-found');
+
+        const roomData = snap.val();
+        if (roomData.status !== 'lobby') throw new Error('game-already-started');
+        if (roomData.guestOnline === true) throw new Error('guest-already-joined');
+        if (roomData.hostOnline !== true) throw new Error('host-offline');
+
         await roomRef.child('guestOnline').set(true);
         await roomRef.child('guestOnline').onDisconnect().set(false);
         this._roomRef = roomRef;
-        this._myRole = 'guest';
-        return snap.val();
+        secretState.role = 'guest';
+        return roomData;
       },
 
       listenForGuest(onConnected) {
         if (!this._roomRef) return;
-        this._roomRef.child('guestOnline').on('value', snap => {
+        const guestRef = this._roomRef.child('guestOnline');
+        guestRef.off('value');
+        guestRef.on('value', snap => {
           if (snap.val() === true) onConnected();
         });
+        guestRef.once('value').then(snap => {
+          if (snap.val() === true) onConnected();
+        }).catch(() => { });
       },
 
       listenForDisconnect(callback) {
-        if (!this._roomRef || this._onDisconnectCallback) return;
-        const field = this._myRole === 'host' ? 'guestOnline' : 'hostOnline';
-        this._roomRef.child(field).on('value', snap => {
+        if (!this._roomRef) return;
+        const field = secretState.role === 'host' ? 'guestOnline' : 'hostOnline';
+        const statusRef = this._roomRef.child(field);
+        statusRef.off('value');
+
+        let firstSnapshot = true;
+        statusRef.on('value', snap => {
+          if (firstSnapshot) {
+            firstSnapshot = false;
+            return;
+          }
           if (snap.val() === false && secretState.gameActive) {
             callback();
           }
         });
+
         this._onDisconnectCallback = callback;
       },
 
-      send(type, payload = {}) {
+      listenState(callback) {
         if (!this._roomRef) return;
-        this._roomRef.child('messages').push({
-          from: this._myRole,
-          type: type,
-          payload: payload,
-          ts: firebase.database.ServerValue.TIMESTAMP
+        if (this._stateListener) {
+          this._roomRef.off('value');
+        }
+        this._roomRef.on('value', snap => {
+          if (!snap.exists()) {
+            callback(null);
+            return;
+          }
+          callback(snap.val());
         });
+        this._stateListener = true;
       },
 
-      listenMessages(callback) {
-        if (!this._roomRef || this._msgListener) return;
-        this._onMsgCallback = callback;
-        this._roomRef.child('messages').limitToLast(1).once('value', snap => {
-          snap.forEach(child => { this._lastMsgKey = child.key; });
-          this._roomRef.child('messages').orderByKey().on('child_added', snap => {
-            if (this._lastMsgKey && snap.key <= this._lastMsgKey) return;
-            const data = snap.val();
-            if (data.from !== this._myRole) {
-              callback({ type: data.type, ...data.payload });
-            }
-          });
-          this._msgListener = true;
-        });
+      async updateState(path, value) {
+        if (!this._roomRef) return;
+        await this._roomRef.child(path).set(value);
+      },
+
+      async updateStates(values) {
+        if (!this._roomRef) return;
+        await this._roomRef.update(values);
       },
 
       async disconnect() {
         if (!this._roomRef) return;
-        if (this._myRole === 'host') {
+        try {
+          await this._roomRef.onDisconnect().cancel();
+        } catch (e) { }
+        if (secretState.role === 'host') {
           await this._roomRef.remove();
         } else {
-          await this._roomRef.child('guestOnline').set(false);
+          const snap = await this._roomRef.once('value');
+          if (snap.exists()) {
+            await this._roomRef.child('guestOnline').set(false);
+          }
         }
-        this._roomRef.off();
+        try {
+          this._roomRef.child('guestOnline').off();
+          this._roomRef.child('hostOnline').off();
+          this._roomRef.off();
+        } catch (e) { }
         this._roomRef = null;
-        this._myRole = null;
-        this._msgListener = null;
-        this._lastMsgKey = null;
+        this._stateListener = false;
+      },
+
+      async reset() {
+        if (this._roomRef) {
+          try { await this.disconnect(); } catch (e) { }
+          try {
+            this._roomRef.child('guestOnline').off();
+            this._roomRef.child('hostOnline').off();
+            this._roomRef.off();
+          } catch (e) { }
+        }
+        this._stateListener = false;
+        this._onDisconnectCallback = null;
+        this._roomRef = null;
+        if (typeof secretState !== 'undefined') {
+          secretState.role = null;
+        }
       }
     };
 
@@ -2498,12 +2594,23 @@
         finalDesc: "Обговорюйте та знайдіть шпигуна серед вас.", newGameBtn: "Нова гра",
         noCategoryError: "Обери хоча б одну категорію!", rulesModalTitle: "Правила гри", characterYour: "Твій персонаж", characterWarn: "Не кажи ім'я вголос",
         secretHostSetup: "Створити гру", secretHostCats: "Категорії", secretHostCode: "Код кімнати:", secretHostShare: "Передайте цей код другові.",
-        secretWaitMsg: "Очікування підключення...", secretConnectedMsg: "✓ Гравець підключений!", secretGuestCode: "Введіть код кімнати",
+        secretWaitMsg: "Очікування підключення...", secretConnectedMsg: "✓ Підключенно", secretGuestCode: "Введіть код кімнати",
         secretConnectBtn: "Підключитися", secretGenerateBtn: "Згенерувати кімнату", secretStartBtn: "Почати гру",
         secretReadyBtn: "Я ГОТОВИЙ", secretEndTurnBtn: "Завершити хід", secretAccuseBtn: "ОБВИНУВАТИ", secretCancelAccuseBtn: "СКАСУВАТИ ОБВИНУВАЧЕННЯ",
         secretSurrenderBtn: "Здатися", secretBackMenuBtn: "В головне меню",
         turnWait: "ОЧІКУВАННЯ...", turnMine: "ТВІЙ ХІД", turnEnemy: "ХІД СУПРОТИВНИКА",
         resWinTitle: "ВИ ПЕРЕМОГЛИ!", resLoseTitle: "ВИ ПРОГРАЛИ!",
+        resWinMsg: "Вам вдалося виявити суперника першим і здобути перемогу.",
+        resLoseMsg: "Суперник був швидшим — але гра ще може продовжитись наступного разу.",
+        resWinByAccuseCorrect: "Ви вгадали персонажа!",
+        resLoseByAccuseCorrect: "Вас розкрито. Гра завершена.",
+        resWinByAccuseMissed: "Суперник помилився!",
+        resLoseByAccuseMissedHost: "Невірно. Гра завершена.",
+        resLoseByAccuseMissedGuest: "Ви дали не вірну відповідь. Гра завершена.",
+        resWinBySurrender: "Суперник здався.",
+        resLoseBySurrender: "Ви здалися. Гра завершена.",
+        resWinByEliminatedOpponentCard: "Суперник виключив свого персонажа. Перемога!",
+        resLoseByEliminatedOpponentCard: "Ви дали не вірну відповідь. Гра завершена.",
         resMyChoice: "Ваш вибір", resOppChoice: "Вибір ворога",
         spyrulesContent: `
       <h4>🎯 Мета</h4>
@@ -3024,137 +3131,62 @@
           { nameUA: 'Marques Brownlee', imgUrl: "images/bloggers/Marques_Brownlee.webp", emoji: '📸', descUA: 'Світовий еталон техноблогінгу, чий рівень експертизи є орієнтиром для креаторів.' },
           { nameUA: 'Dude Perfect', imgUrl: "images/bloggers/Dude_Perfect.webp", emoji: '🏀', descUA: 'Американська команда відеоблогерів, які створюють неймовірні спортивні трюки.' },
           { nameUA: 'Ray William Johnson', imgUrl: "images/bloggers/Ray_William_Johnson.webp", emoji: '👀', descUA: 'Творець культового формату огляду вірусних відео, який скопіювало багато локальних блогерів.' },
-          { nameUA: 'Анатолій Боцюн', imgUrl: "images/bloggers/Анатолій_Боцюн.webp", emoji: '🚁', descUA: 'Український техноблогер та волонтер, відомий масштабними зборами на FPV-дрони для Сил оборони' }
+          { nameUA: 'Анатолій Боцюн', imgUrl: "images/bloggers/Анатолій_Боцюн.webp", emoji: '🟢', descUA: 'Український техноблогер та волонтер, відомий масштабними зборами на FPV-дрони для Сил оборони' }
         ]
       }
     ];
 
     let state = {
-      lang: 'ua', playerCount: 5, selectedCats: new Set(CATEGORIES.map(c => c.id)),
+      lang: 'ua', playerCount: 5, selectedCats: new Set(),
       currentPlayer: 0, spySet: new Set(), usedChars: [], chosenChar: null, cardOpen: false
     };
 
     let currentGame = null;
 
     let secretState = {
-      lang: 'ua', playerCount: 2, selectedCats: new Set(CATEGORIES.map(c => c.id)),
+      lang: 'ua', playerCount: 2, selectedCats: new Set(),
       role: null, roomCode: null,
-      grid: [], mySelected: null, opponentSelectedimgUrl: null, myEliminated: new Set(),
+      grid: [], mySelected: null, opponentSelection: null, opponentSelectedimgUrl: null, myEliminated: new Set(),
       isMyTurn: false, gameActive: false, stage: 'lobby',
-      myReady: false, opponentReady: false, accuseMode: false
+      myReady: false, opponentReady: false, accuseMode: false,
+      status: 'selection', currentTurn: 'host', winner: null, resultShown: false
     };
 
-    // ════════════════════════════════════════════
-    //  IMAGE FETCH & CACHE (УМНЫЙ ГИБРИД)
-    // ════════════════════════════════════════════
-    const imgCache = {};
-    const _fetchSemaphore = { max: 3, current: 0, queue: [] };
-
-    async function _withSemaphore(fn) {
-      if (_fetchSemaphore.current >= _fetchSemaphore.max) await new Promise(res => _fetchSemaphore.queue.push(res));
-      _fetchSemaphore.current++;
-      try { return await fn(); }
-      finally {
-        _fetchSemaphore.current--;
-        const r = _fetchSemaphore.queue.shift(); if (r) r();
-      }
+    function resetSecretState() {
+      secretState.role = null;
+      secretState.roomCode = null;
+      secretState.grid = [];
+      secretState.mySelected = null;
+      secretState.opponentSelection = null;
+      secretState.opponentSelectedimgUrl = null;
+      secretState.myEliminated = new Set();
+      secretState.isMyTurn = false;
+      secretState.gameActive = false;
+      secretState.stage = 'lobby';
+      secretState.myReady = false;
+      secretState.opponentReady = false;
+      secretState.accuseMode = false;
+      secretState.status = 'selection';
+      secretState.currentTurn = 'host';
+      secretState.winner = null;
+      secretState.resultShown = false;
     }
 
-    /** * Умная функция: если у персонажа есть imgUrl, моментально отдает локальную картинку.
-     * Если imgUrl нет, берет wiki slug и ищет в Википедии (чтобы не сломать старые категории).
-     */
-    async function getCharImage(charObj) {
-      if (!charObj) return null;
-
-      // 1. Идеальный сценарий: локальная картинка уже есть
-      if (charObj.imgUrl) {
-        return charObj.imgUrl;
-      }
-
-      // 2. Резервный сценарий: используем старый механизм Википедии
-      const query = (charObj.wiki || charObj.nameUA || '').trim();
-      if (!query) return null;
-      if (imgCache[query] !== undefined) return imgCache[query];
-
-      const title = query.replace(/\s+/g, '_');
-      const isCyrillic = /[\u0400-\u04FF]/.test(title);
-
-      const domains = isCyrillic
-        ? ['uk.wikipedia.org', 'ru.wikipedia.org', 'en.wikipedia.org']
-        : ['en.wikipedia.org', 'uk.wikipedia.org', 'ru.wikipedia.org'];
-
-      let url = null;
-
-      await _withSemaphore(async () => {
-        for (const domain of domains) {
-          if (url) break;
-          try {
-            let signal, timeoutId;
-            if (window.AbortController) {
-              const controller = new AbortController();
-              timeoutId = setTimeout(() => controller.abort(), 5000);
-              signal = controller.signal;
-            }
-            const fetchOpts = signal ? { signal } : {};
-            const res = await fetch(`https://${domain}/api/rest_v1/page/summary/${encodeURIComponent(title)}`, fetchOpts);
-            if (timeoutId) clearTimeout(timeoutId);
-
-            if (res.ok) {
-              const d = await res.json();
-              url = d?.originalimage?.source || d?.thumbnail?.source || null;
-            }
-          } catch (e) { }
-        }
-
-        if (!url) {
-          for (const domain of domains) {
-            if (url) break;
-            try {
-              let signal, timeoutId;
-              if (window.AbortController) {
-                const controller = new AbortController();
-                timeoutId = setTimeout(() => controller.abort(), 5000);
-                signal = controller.signal;
-              }
-              const fetchOpts = signal ? { signal } : {};
-              const res = await fetch(`https://${domain}/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=pageimages&format=json&pithumbsize=500&origin=*`, fetchOpts);
-              if (timeoutId) clearTimeout(timeoutId);
-
-              if (res.ok) {
-                const d = await res.json();
-                const pages = d?.query?.pages || {};
-                for (const k in pages) {
-                  const p = pages[k];
-                  if (p?.original?.source) { url = p.original.source; break; }
-                  if (p?.thumbnail?.source) { url = p.thumbnail.source; break; }
-                }
-              }
-            } catch (e) { }
-          }
-        }
-      });
-
-      imgCache[query] = url || '';
-      return url;
+    // ══════════════════════════════════════════════════════════════════════════
+    //  IMAGE FETCH
+    // ══════════════════════════════════════════════════════════════════════════
+    function getCharImage(charObj) {
+      return charObj ? (charObj.imgUrl || null) : null;
     }
 
-    // Предзагрузка оптимизирована для локальных и удаленных файлов
-    async function prefetchImages(charItems = [], concurrency = 3) {
-      const queue = charItems.slice();
-      const workers = new Array(Math.max(1, concurrency)).fill(0).map(async () => {
-        while (queue.length) {
-          const charObj = queue.shift();
-          if (!charObj) continue;
-          try {
-            const url = await getCharImage(charObj);
-            if (url) {
-              const img = new Image();
-              img.src = url;
-            }
-          } catch (e) { /* ignore */ }
-        }
-      });
-      await Promise.all(workers);
+    function prefetchImages(charItems = []) {
+      return Promise.all(charItems.map(charObj => new Promise(resolve => {
+        if (!charObj || !charObj.imgUrl) return resolve();
+        const img = new Image();
+        img.onload = resolve;
+        img.onerror = resolve;
+        img.src = charObj.imgUrl;
+      })));
     }
 
     // ════════════════════════════════════════════
@@ -3248,6 +3280,30 @@
     function openModal(id) { document.getElementById(id).classList.add('active'); }
     function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
+    function getElement(target) {
+      if (!target) return null;
+      if (typeof target === 'string') {
+        if (target.startsWith('#')) return document.getElementById(target.slice(1));
+        const byId = document.getElementById(target);
+        if (byId) return byId;
+        return document.querySelector(target);
+      }
+      return target;
+    }
+
+    function setVisible(target, visible) {
+      const el = getElement(target);
+      if (!el) return;
+      if (visible) {
+        el.classList.remove('hidden');
+      } else {
+        el.classList.add('hidden');
+      }
+    }
+
+    function show(target) { setVisible(target, true); }
+    function hide(target) { setVisible(target, false); }
+
     function dismissPortraitTip() {
       const tip = document.getElementById('portrait-tip');
       if (tip) {
@@ -3281,15 +3337,14 @@
       if (enlargeImage) {
         const modalImg = document.getElementById('modal-char-photo');
         if (modalImg) {
-          getCharImage(charData).then(url => {
-            if (url) {
-              modalImg.src = url;
-              modalImg.onload = () => modalImg.classList.remove('loading');
-              modalImg.onerror = () => modalImg.style.display = 'none';
-            } else {
-              modalImg.style.display = 'none';
-            }
-          });
+          const url = getCharImage(charData);
+          if (url) {
+            modalImg.src = url;
+            modalImg.onload = () => modalImg.classList.remove('loading');
+            modalImg.onerror = () => hide(modalImg);
+          } else {
+            hide(modalImg);
+          }
         }
       }
 
@@ -3304,44 +3359,45 @@
       currentGame = game;
       if (game === 'spy') {
         document.body.classList.remove('is-secret-mode');
-        document.getElementById('btn-rules').style.display = 'block';
-        document.getElementById('btn-back-menu').style.display = 'block';
+        show('btn-rules');
+        show('btn-back-menu');
         document.getElementById('header-title').textContent = '🕵️‍♂️ SPY';
         buildCatsUI();
         switchScreen('screen-setup');
       } else if (game === 'secret') {
         document.body.classList.add('is-secret-mode');
-        document.getElementById('btn-rules').style.display = 'block';
-        document.getElementById('btn-back-menu').style.display = 'block';
+        show('btn-rules');
+        show('btn-back-menu');
         document.getElementById('header-title').textContent = '🎭 MYST';
         switchScreen('screen-secret-role-choice');
       }
     }
 
-    function backToMenu() {
+    async function backToMenu() {
       const needsPortraitTip = document.getElementById('screen-secret-result').classList.contains('active') ||
         document.getElementById('screen-secret-game').classList.contains('active');
 
       closeAllModals();
       currentGame = null;
       document.body.classList.remove('is-secret-mode');
-      document.getElementById('btn-rules').style.display = 'none';
-      document.getElementById('btn-back-menu').style.display = 'none';
+      hide('btn-rules');
+      hide('btn-back-menu');
       document.getElementById('header-title').textContent = '🕵️‍♂️ PartyBox';
-      document.querySelector('header').style.display = 'flex';
-      cancelSecretLobby();
+      show(document.querySelector('header'));
+      await cancelSecretLobby();
+      await Network.reset();
+      resetSecretState();
+      const joinBtn = document.getElementById('btn-join-game');
+      if (joinBtn) joinBtn.disabled = false;
 
       try {
         state.currentPlayer = 0;
         state.cardOpen = false;
         const flipCard = document.getElementById('flip-card');
         if (flipCard) flipCard.classList.remove('flipped');
-        const flipScene = document.getElementById('flip-scene');
-        if (flipScene) flipScene.style.display = 'none';
-        const dealActions = document.getElementById('deal-actions');
-        if (dealActions) dealActions.style.display = 'none';
-        const dealPrompt = document.getElementById('deal-prompt');
-        if (dealPrompt) dealPrompt.style.display = 'block';
+        hide('flip-scene');
+        hide('deal-actions');
+        show('deal-prompt');
       } catch (e) { /* ignore DOM errors */ }
 
       switchScreen('screen-main-menu');
@@ -3355,33 +3411,55 @@
     // ════════════════════════════════════════════
     //  SPY GAME LOGIC
     // ════════════════════════════════════════════
-    function buildCatsUI() {
-      const container = document.getElementById('cats-container');
+    function renderCategoryList(containerId, selectedSet, onToggle) {
+      const container = document.getElementById(containerId);
       container.innerHTML = '';
       CATEGORIES.forEach(cat => {
-        const active = state.selectedCats.has(cat.id);
+        const active = selectedSet.has(cat.id);
         const displayName = cat.nameUA;
         const el = document.createElement('div');
         el.className = 'cat-toggle' + (active ? ' active' : '');
         el.innerHTML = `<div class="ct-icon">${cat.icon}</div><div style="flex:1;"><div class="ct-name">${displayName}</div><div class="ct-count">${cat.chars.length} персонажів</div></div><div class="ct-check">${active ? '✓' : ''}</div>`;
-        el.addEventListener('click', () => toggleCategory(cat.id));
+        el.addEventListener('click', () => onToggle(cat.id));
         container.appendChild(el);
       });
     }
+
+    function buildCatsUI() {
+      renderCategoryList('cats-container', state.selectedCats, toggleCategory);
+    }
+
+    function buildSecretCatsUI() {
+      renderCategoryList('secret-cats-container', secretState.selectedCats, toggleSecretCategory);
+    }
+
     function toggleCategory(id) {
       if (state.selectedCats.has(id)) {
         if (state.selectedCats.size === 1) { showToast(TRANSLATIONS.ua.noCategoryError); return; }
         state.selectedCats.delete(id);
-      } else state.selectedCats.add(id);
+      } else {
+        state.selectedCats.add(id);
+      }
       buildCatsUI(); updateStaticTexts();
     }
+
+    function toggleSecretCategory(id) {
+      if (secretState.selectedCats.has(id)) {
+        if (secretState.selectedCats.size === 1) { showToast(TRANSLATIONS.ua.noCategoryError); return; }
+        secretState.selectedCats.delete(id);
+      } else {
+        secretState.selectedCats.add(id);
+      }
+      buildSecretCatsUI(); updateStaticTexts();
+    }
+
     function toggleAll() {
-      state.selectedCats = state.selectedCats.size === CATEGORIES.length ? new Set([CATEGORIES[0].id]) : new Set(CATEGORIES.map(c => c.id));
+      state.selectedCats = state.selectedCats.size === CATEGORIES.length ? new Set() : new Set(CATEGORIES.map(c => c.id));
       buildCatsUI(); updateStaticTexts();
     }
     function changeCount(delta) {
       const next = state.playerCount + delta;
-      if (next < 3 || next > 12) return;
+      if (next < CONFIG.SPIES_PER_PLAYERS || next > CONFIG.MAX_PLAYERS_SPY) return;
       state.playerCount = next;
       document.getElementById('player-count').textContent = next;
       updateStaticTexts();
@@ -3403,7 +3481,7 @@
       const chosen = pool[secureRandomInt(pool.length)];
       state.chosenChar = chosen;
 
-      const spiesCount = Math.max(1, Math.floor(state.playerCount / 3));
+      const spiesCount = Math.max(1, Math.floor(state.playerCount / CONFIG.SPIES_PER_PLAYERS));
       const roleIndices = secureShuffle([...Array(state.playerCount).keys()]);
       state.spySet = new Set(roleIndices.slice(0, spiesCount));
       state.currentPlayer = 0;
@@ -3417,9 +3495,9 @@
 
     function showDealPrompt(isFirst) {
       updateStaticTexts();
-      document.getElementById('deal-prompt').style.display = 'block';
-      document.getElementById('flip-scene').style.display = 'none';
-      document.getElementById('deal-actions').style.display = 'none';
+      show('deal-prompt');
+      hide('flip-scene');
+      hide('deal-actions');
       document.getElementById('flip-card').classList.remove('flipped');
     }
 
@@ -3461,36 +3539,37 @@
         const ldr = back.querySelector('#img-ldr');
         const ph = back.querySelector('#card-ph');
 
-        getCharImage(state.chosenChar).then(url => {
+        {
+          const url = getCharImage(state.chosenChar);
           if (url) {
-            imgEl.onload = () => { imgEl.classList.remove('loading'); ldr.style.display = 'none'; ph.style.display = 'none'; };
-            imgEl.onerror = () => { imgEl.style.display = 'none'; ldr.style.display = 'none'; ph.style.display = 'flex'; };
+            imgEl.onload = () => { imgEl.classList.remove('loading'); hide(ldr); hide(ph); };
+            imgEl.onerror = () => { hide(imgEl); hide(ldr); show(ph); };
             imgEl.src = url;
           } else {
-            ldr.style.display = 'none'; ph.style.display = 'flex';
+            hide(ldr); show(ph);
           }
-        });
+        }
       }
 
-      document.getElementById('deal-prompt').style.display = 'none';
-      document.getElementById('flip-scene').style.display = 'block';
+      hide('deal-prompt');
+      show('flip-scene');
 
       void document.getElementById('flip-scene').offsetWidth;
       document.getElementById('flip-card').classList.add('flipped');
 
       setTimeout(() => {
         document.getElementById('btn-close-card').textContent = state.currentPlayer >= state.playerCount - 1 ? t.finishHandoutBtn : t.closeCardBtn;
-        document.getElementById('deal-actions').style.display = 'flex';
+        show('deal-actions');
       }, 600);
     }
 
     function closeCard() {
-      document.getElementById('deal-actions').style.display = 'none';
+      hide('deal-actions');
       document.getElementById('flip-card').classList.remove('flipped');
       state.cardOpen = false;
 
       setTimeout(() => {
-        document.getElementById('flip-scene').style.display = 'none';
+        hide('flip-scene');
         state.currentPlayer++;
         if (state.currentPlayer >= state.playerCount) {
           switchScreen('screen-final');
@@ -3507,8 +3586,8 @@
     function executeRestart() { closeModal('confirmModal'); resetGame(); }
     function resetGame() {
       state.currentPlayer = 0; state.cardOpen = false;
-      document.getElementById('deal-actions').style.display = 'none';
-      document.getElementById('flip-scene').style.display = 'none';
+      hide('deal-actions');
+      hide('flip-scene');
       switchScreen('screen-setup');
     }
 
@@ -3518,8 +3597,8 @@
     function chooseSecretHost() {
       secretState.role = 'host';
       buildSecretCatsUI();
-      document.getElementById('host-setup-view').style.display = 'flex';
-      document.getElementById('host-lobby-view').style.display = 'none';
+      show('host-setup-view');
+      hide('host-lobby-view');
       switchScreen('screen-secret-lobby-host');
     }
 
@@ -3527,59 +3606,48 @@
       secretState.role = 'guest';
       document.getElementById('room-code-input').value = '';
       document.getElementById('join-status').textContent = '';
+      const joinBtn = document.getElementById('btn-join-game');
+      if (joinBtn) joinBtn.disabled = false;
       switchScreen('screen-secret-lobby-guest');
     }
 
-    function buildSecretCatsUI() {
-      const container = document.getElementById('secret-cats-container');
-      container.innerHTML = '';
-      CATEGORIES.forEach(cat => {
-        const active = secretState.selectedCats.has(cat.id);
-        const displayName = cat.nameUA;
-        const el = document.createElement('div');
-        el.className = 'cat-toggle' + (active ? ' active' : '');
-        el.innerHTML = `<div class="ct-icon">${cat.icon}</div><div style="flex:1;"><div class="ct-name">${displayName}</div><div class="ct-count">${cat.chars.length} персонажів</div></div><div class="ct-check">${active ? '✓' : ''}</div>`;
-        el.addEventListener('click', () => {
-          if (active && secretState.selectedCats.size === 1) return;
-          active ? secretState.selectedCats.delete(cat.id) : secretState.selectedCats.add(cat.id);
-          buildSecretCatsUI(); updateStaticTexts();
-        });
-        container.appendChild(el);
-      });
-    }
-
     function toggleAllMysteryCats() {
-      secretState.selectedCats = secretState.selectedCats.size === CATEGORIES.length ? new Set([CATEGORIES[0].id]) : new Set(CATEGORIES.map(c => c.id));
+      secretState.selectedCats = secretState.selectedCats.size === CATEGORIES.length ? new Set() : new Set(CATEGORIES.map(c => c.id));
       buildSecretCatsUI(); updateStaticTexts();
     }
 
     async function generateSecretRoomCode() {
       const pool = [];
       CATEGORIES.forEach(cat => { if (secretState.selectedCats.has(cat.id)) pool.push(...cat.chars); });
-      if (pool.length < 16) { showToast(TRANSLATIONS.ua.noCategoryError); return; }
-      secretState.grid = secureShuffle(pool).slice(0, 16);
+      if (pool.length < CONFIG.SECRET_GRID_SIZE) { showToast(TRANSLATIONS.ua.noCategoryError); return; }
+      secretState.grid = secureShuffle(pool).slice(0, CONFIG.SECRET_GRID_SIZE);
 
-      const code = Math.floor(100000 + Math.random() * 900000).toString();
+      let code;
+      try {
+        code = await generateUniqueRoomCode();
+      } catch (error) {
+        showToast('Не вдалося згенерувати код. Спробуйте ще раз.');
+        return;
+      }
       secretState.roomCode = code;
 
       try {
         document.getElementById('btn-generate-room').disabled = true;
 
-        // ВАЖНО: передаем и imgUrl, и wiki, чтобы на клиенте работал fallback
         await Network.createRoom(code, secretState.grid.map(c => ({
-          nameUA: c.nameUA, emoji: c.emoji, imgUrl: c.imgUrl || '', wiki: c.wiki || '', descUA: c.descUA || ''
+          nameUA: c.nameUA, emoji: c.emoji, imgUrl: c.imgUrl || '', descUA: c.descUA || ''
         })));
 
         document.getElementById('room-code-display').textContent = code;
-        document.getElementById('host-setup-view').style.display = 'none';
-        document.getElementById('host-lobby-view').style.display = 'flex';
+        hide('host-setup-view');
+        show('host-lobby-view');
         document.getElementById('label-waiting-players').textContent = TRANSLATIONS.ua.secretWaitMsg;
 
         Network.listenForGuest(() => {
-          document.getElementById('host-wait-group').style.display = 'none';
-          document.getElementById('host-connected-group').style.display = 'block';
+          hide('host-wait-group');
+          show('host-connected-group');
           document.getElementById('host-connected-group').textContent = TRANSLATIONS.ua.secretConnectedMsg;
-          document.getElementById('btn-start-secret-game').style.display = 'block';
+          show('btn-start-secret-game');
         });
 
         prefetchImages(secretState.grid, 3).catch(() => { });
@@ -3591,7 +3659,10 @@
 
     async function joinGame() {
       const code = document.getElementById('room-code-input').value.trim().replace(/\s/g, '');
-      if (code.length !== 6) { showToast('Введіть 6 цифр'); return; }
+      if (code.length !== CONFIG.ROOM_CODE_LENGTH) { showToast(`Введіть ${CONFIG.ROOM_CODE_LENGTH} цифр`); return; }
+
+      // Ensure previous network listeners/state are fully cleared before joining
+      await Network.reset();
 
       const joinBtn = document.getElementById('btn-join-game');
       joinBtn.disabled = true;
@@ -3599,10 +3670,12 @@
 
       try {
         const roomData = await Network.joinRoom(code);
+        const grid = ensureArray(roomData.grid);
+        if (grid.length !== CONFIG.SECRET_GRID_SIZE) throw new Error('invalid-room-data');
         secretState.roomCode = code;
-        secretState.grid = roomData.grid;
-        Network.listenMessages(handleNetworkData);
+        secretState.grid = grid;
         document.getElementById('join-status').textContent = TRANSLATIONS.ua.secretConnectedMsg;
+        initSecretGameState();
         prefetchImages(secretState.grid, 3).catch(() => { });
       } catch (e) {
         const msg = e.message === 'room-not-found'
@@ -3614,101 +3687,161 @@
       }
     }
 
-    function cancelSecretLobby() {
-      Network.disconnect().catch(() => { });
-      document.getElementById('host-setup-view').style.display = 'flex';
-      document.getElementById('host-lobby-view').style.display = 'none';
-      document.getElementById('host-wait-group').style.display = 'flex';
-      document.getElementById('host-connected-group').style.display = 'none';
-      document.getElementById('btn-start-secret-game').style.display = 'none';
+    async function cancelSecretLobby() {
+      await Network.disconnect().catch(() => { });
+      await Network.reset();
+      show('host-setup-view');
+      hide('host-lobby-view');
+      show('host-wait-group');
+      hide('host-connected-group');
+      hide('btn-start-secret-game');
       document.getElementById('btn-generate-room').disabled = false;
     }
 
     function startSecretGame() {
-      Network.send('init', {
-        grid: secretState.grid.map(c => ({
-          nameUA: c.nameUA, emoji: c.emoji, imgUrl: c.imgUrl || '', wiki: c.wiki || '', descUA: c.descUA || ''
-        }))
-      });
       initSecretGameState();
+      Network.updateState('status', 'selection');
     }
 
-    function handleNetworkData(data) {
-      if (data.type === 'init') {
-        secretState.grid = data.grid;
-        (async () => {
-          try { await prefetchImages(secretState.grid, 3); } catch (e) { /* ignore */ }
-          initSecretGameState();
-        })();
-      } else if (data.type === 'ready') {
-        secretState.opponentReady = true;
-        checkBothReady();
-      } else if (data.type === 'end_turn') {
-        secretState.isMyTurn = true;
-        renderSecretGame();
-      } else if (data.type === 'guess') {
-        const isCorrect = secretState.mySelected === data.idx;
-        Network.send('guess_res', { correct: isCorrect, oppChar: secretState.mySelected });
-        showSecretResult(!isCorrect, data.idx, secretState.mySelected);
-      } else if (data.type === 'guess_res') {
-        showSecretResult(data.correct, secretState.mySelected, data.oppChar);
-      } else if (data.type === 'surrender') {
-        showToast('Супротивник здався.');
-        setTimeout(backToMenu, 2000);
+    function ensureArray(value) {
+      if (Array.isArray(value)) return value;
+      if (value && typeof value === 'object') {
+        const keys = Object.keys(value).sort((a, b) => Number(a) - Number(b));
+        if (keys.every((key, index) => String(index) === key)) {
+          return keys.map(key => value[key]);
+        }
       }
+      return [];
+    }
+
+    function syncGameState(roomData) {
+      if (!roomData) {
+        if (secretState.gameActive) {
+          showToast('Кімната закрита або втрачено з\'єднання.');
+          secretState.gameActive = false;
+          setTimeout(async () => { await backToMenu(); }, 2500);
+        }
+        return;
+      }
+
+      // Синхронізуємо grid (постійний) — тільки якщо локальна колода порожня
+      if (roomData.grid !== undefined && roomData.grid !== null) {
+        const gridArray = ensureArray(roomData.grid);
+        const hasLocal = Array.isArray(secretState.grid) && secretState.grid.length > 0;
+        if (!hasLocal) {
+          if (gridArray.length > 0) {
+            secretState.grid = gridArray;
+          }
+        } else {
+        }
+      }
+
+      // Синхронізуємо дані поточної ролі (хоста або гостя)
+      const myRoleData = roomData[secretState.role] || {};
+      secretState.mySelected = myRoleData.selection !== null ? myRoleData.selection : null;
+      secretState.myReady = myRoleData.ready === true;
+      secretState.myEliminated = new Set(myRoleData.eliminated || []);
+
+      // Синхронізуємо дані супротивника
+      const oppRole = secretState.role === 'host' ? 'guest' : 'host';
+      const oppRoleData = roomData[oppRole] || {};
+      secretState.opponentReady = oppRoleData.ready === true;
+      secretState.opponentSelection = oppRoleData.selection !== null ? oppRoleData.selection : null;
+
+      // Синхронізуємо глобальний стан гри
+      secretState.status = roomData.status || 'lobby';
+      secretState.currentTurn = roomData.currentTurn || 'host';
+      secretState.isMyTurn = secretState.currentTurn === secretState.role;
+      secretState.winner = roomData.winner || null;
+
+      const shouldRenderGrid = roomData.status === 'selection' || roomData.status === 'playing';
+      if (shouldRenderGrid) {
+        initSecretGrid();
+        // Navigate to the secret game screen only when the room
+        // is in selection/playing. This prevents guests from
+        // seeing the cards while waiting for the host.
+        const gameScreen = document.getElementById('screen-secret-game');
+        if (gameScreen && !gameScreen.classList.contains('active')) {
+          try { hide(document.querySelector('header')); } catch (e) { }
+          hide('mystery-my-char-wrap');
+          switchScreen('screen-secret-game');
+          const tip = document.getElementById('orientation-tip');
+          if (tip) tip.classList.remove('dismissed');
+        }
+      }
+
+      // Логіка переходу між етапами
+      if (roomData.status === 'lobby') {
+        secretState.stage = 'lobby';
+      } else if (roomData.status === 'selection') {
+        secretState.stage = 'selection';
+        if (secretState.myReady && secretState.opponentReady) {
+          Network.updateState('status', 'playing');
+        }
+      } else if (roomData.status === 'playing') {
+        secretState.stage = 'playing';
+      } else if (roomData.status === 'ended' || roomData.winner !== null) {
+        secretState.stage = 'ended';
+        if (roomData.winner != null && roomData.resultReason != null && !secretState.resultShown) {
+          secretState.resultShown = true;
+          const iWon = roomData.winner === secretState.role;
+          const myCharIdx = myRoleData.selection;
+          const oppCharIdx = oppRoleData.selection;
+          const reason = roomData.resultReason;
+          showSecretResult(iWon, myCharIdx, oppCharIdx, reason);
+        }
+      }
+
+      // Оновлюємо UI
+      updateSecretGridUI();
     }
 
     function initSecretGameState() {
-      secretState.stage = 'selection';
+      secretState.stage = 'lobby';
       secretState.mySelected = null;
+      secretState.opponentSelection = null;
       secretState.myEliminated = new Set();
       secretState.myReady = false;
       secretState.opponentReady = false;
       secretState.accuseMode = false;
       secretState.isMyTurn = false;
       secretState.gameActive = true;
-      Network.listenMessages(handleNetworkData);
+      secretState.currentTurn = 'host';
+      secretState.winner = null;
+      secretState.resultShown = false;
+
+      Network.listenState(syncGameState);
       Network.listenForDisconnect(() => {
         showToast('З\'єднання з суперником перервано 💔');
         secretState.gameActive = false;
-        setTimeout(backToMenu, 2500);
+        setTimeout(async () => { await backToMenu(); }, 2500);
       });
 
       document.getElementById('orientation-tip').classList.remove('dismissed');
 
-      document.getElementById('mystery-my-char-wrap').style.display = 'none';
-      document.querySelector('header').style.display = 'none';
-      switchScreen('screen-secret-game');
-      renderSecretGame();
+      // Do not initialize grid or switch to game screen here.
+      // The grid and game screen will be initialized and shown
+      // by `syncGameState()` when the room status becomes
+      // 'selection' or 'playing'. This prevents guests from
+      // seeing the cards while still waiting in the lobby.
+      hide('mystery-my-char-wrap');
     }
 
     function dismissOrientationTip() {
       document.getElementById('orientation-tip').classList.add('dismissed');
     }
 
-    function checkBothReady() {
-      if (secretState.myReady && secretState.opponentReady) {
-        secretState.stage = 'playing';
-        secretState.isMyTurn = secretState.role === 'host';
-        renderSecretGame();
-      }
-    }
-
-    function renderSecretGame() {
+    function initSecretGrid() {
       const gridEl = document.getElementById('cards-grid');
       gridEl.innerHTML = '';
       const t = TRANSLATIONS.ua;
 
       secretState.grid.forEach((char, idx) => {
         const cell = document.createElement('div');
+        cell.id = `card-cell-${idx}`;
         cell.className = 'card-cell';
         cell.dataset.idx = idx;
         const charName = char.nameUA;
-
-        if (secretState.myEliminated.has(idx)) cell.classList.add('eliminated');
-        if (secretState.stage === 'selection' && secretState.mySelected === idx) cell.classList.add('selected');
-        if (secretState.stage === 'playing' && !secretState.isMyTurn) cell.classList.add('locked');
-        if (secretState.accuseMode) cell.classList.add('accuse-target');
 
         cell.innerHTML = `
       <div class="card-img-wrap">
@@ -3730,71 +3863,154 @@
         const infoBtn = cell.querySelector('.info-trigger-btn');
         infoBtn.onclick = (e) => { e.stopPropagation(); openInfoModal(char, { enlargeImage: true }, e); };
 
-        getCharImage(char).then(url => {
+        {
+          const url = getCharImage(char);
           if (url) {
             imgEl.src = url;
             imgEl.onload = () => {
               imgEl.classList.remove('loading');
-              loader.style.display = 'none';
-              placeholder.style.display = 'none';
+              hide(loader);
+              hide(placeholder);
             };
-            imgEl.onerror = () => { loader.style.display = 'none'; };
+            imgEl.onerror = () => { hide(loader); };
           } else {
-            loader.style.display = 'none';
+            hide(loader);
           }
-        });
+        }
 
         cell.onclick = () => handleCardClick(idx);
         gridEl.appendChild(cell);
       });
+    }
+
+    function updateSecretGridUI() {
+      const t = TRANSLATIONS.ua;
+
+      for (let idx = 0; idx < CONFIG.SECRET_GRID_SIZE; idx++) {
+        const cell = document.getElementById(`card-cell-${idx}`);
+        if (!cell) continue;
+
+        cell.classList.toggle('eliminated', secretState.myEliminated.has(idx));
+        cell.classList.toggle('selected', secretState.stage === 'selection' && secretState.mySelected === idx);
+        cell.classList.toggle('locked', secretState.stage === 'playing' && !secretState.isMyTurn);
+        cell.classList.toggle('accuse-target', secretState.accuseMode);
+      }
 
       const readyBtn = document.getElementById('btn-myst-ready');
       const endBtn = document.getElementById('btn-myst-end-turn');
       const accBtn = document.getElementById('btn-myst-accuse');
       const turnInd = document.getElementById('turn-indicator');
 
-      if (secretState.stage === 'selection') {
-        readyBtn.style.display = 'block'; endBtn.style.display = 'none'; accBtn.style.display = 'none';
+      if (secretState.stage === 'lobby') {
+        hide(readyBtn);
+        hide(endBtn);
+        hide(accBtn);
+        turnInd.textContent = secretState.role === 'guest'
+          ? 'Очікування початку гри хостом...'
+          : 'Очікування підключення суперника...';
+        turnInd.className = 'turn-indicator blink';
+      } else if (secretState.stage === 'selection') {
+        show(readyBtn);
+        hide(endBtn);
+        hide(accBtn);
         readyBtn.disabled = secretState.myReady;
-        turnInd.textContent = t.turnWait; turnInd.className = 'turn-indicator blink';
+        turnInd.textContent = t.turnWait;
+        turnInd.className = 'turn-indicator blink';
       } else if (secretState.stage === 'playing') {
-        readyBtn.style.display = 'none';
-        endBtn.style.display = secretState.isMyTurn ? 'block' : 'none';
-        accBtn.style.display = secretState.isMyTurn ? 'block' : 'none';
+        hide(readyBtn);
+        if (secretState.isMyTurn) {
+          show(endBtn);
+          show(accBtn);
+        } else {
+          hide(endBtn);
+          hide(accBtn);
+        }
         accBtn.textContent = secretState.accuseMode ? t.secretCancelAccuseBtn : t.secretAccuseBtn;
-
         turnInd.textContent = secretState.isMyTurn ? t.turnMine : t.turnEnemy;
         turnInd.className = 'turn-indicator ' + (secretState.isMyTurn ? '' : 'enemy');
       }
     }
 
-    function handleCardClick(idx) {
+    async function handleCardClick(idx) {
       if (secretState.stage === 'selection') {
-        if (!secretState.myReady) { secretState.mySelected = idx; renderSecretGame(); }
+        if (!secretState.myReady) {
+          Network.updateState(`${secretState.role}/selection`, idx);
+        }
       } else if (secretState.stage === 'playing' && secretState.isMyTurn) {
         if (secretState.accuseMode) {
-          secretState.accuseMode = false;
-          Network.send('guess', { idx: idx });
-          showToast('Обвинувачення відправлено...');
-          secretState.stage = 'ended';
-          renderSecretGame();
+          // Показываем модалку подтверждения обвинения вместо немедленной отправки
+          showAccuseConfirm(idx);
         } else {
-          const cardEl = document.querySelector(`.card-cell[data-idx="${idx}"]`);
-          if (secretState.myEliminated.has(idx)) {
-            secretState.myEliminated.delete(idx);
-            if (cardEl) cardEl.classList.remove('eliminated');
-          } else {
-            secretState.myEliminated.add(idx);
-            if (cardEl) cardEl.classList.add('eliminated');
+          const newEliminated = [...secretState.myEliminated];
+          const idx_pos = newEliminated.indexOf(idx);
+          const isEliminating = idx_pos < 0;
+          const isOpponentSelectedCard = idx === secretState.opponentSelection;
+          if (isEliminating && isOpponentSelectedCard) {
+            const winner = secretState.role;
+            try {
+              await Network.updateStates({
+                status: 'ended',
+                winner,
+                resultReason: 'eliminate_opponent_char'
+              });
+            } catch (err) {
+              showToast('Помилка мережі. Спробуйте ще раз.');
+            }
+            return;
           }
+
+          if (idx_pos >= 0) {
+            newEliminated.splice(idx_pos, 1);
+          } else {
+            newEliminated.push(idx);
+          }
+          Network.updateState(`${secretState.role}/eliminated`, newEliminated);
         }
+      }
+    }
+
+    // pending accuse index хранит выбранную карточку до подтверждения
+    let pendingAccuseIndex = null;
+
+    function showAccuseConfirm(idx) {
+      pendingAccuseIndex = idx;
+      const char = Array.isArray(secretState.grid) && secretState.grid[idx] ? secretState.grid[idx] : null;
+      const name = char ? (char.nameUA || char.nameRU || 'Персонаж') : 'Персонаж';
+      const titleEl = document.getElementById('accuse-title');
+      const descEl = document.getElementById('accuse-desc');
+      const confirmBtn = document.getElementById('btn-accuse-confirm');
+      if (titleEl) titleEl.textContent = `Звинуватити ${name}?`;
+      if (descEl) descEl.textContent = 'Це фінальна відповідь.';
+      if (confirmBtn) confirmBtn.disabled = false;
+      openModal('accuseModal');
+    }
+
+    async function performAccuse() {
+      if (pendingAccuseIndex === null) { closeModal('accuseModal'); return; }
+      const idx = pendingAccuseIndex; pendingAccuseIndex = null;
+      closeModal('accuseModal');
+      const oppRole = secretState.role === 'host' ? 'guest' : 'host';
+      const isCorrect = idx === secretState.opponentSelection;
+      const winner = isCorrect ? secretState.role : oppRole;
+      const confirmBtn = document.getElementById('btn-accuse-confirm');
+      if (confirmBtn) confirmBtn.disabled = true;
+      try {
+        await Network.updateStates({
+          status: 'ended',
+          winner,
+          resultReason: isCorrect ? 'accuse_correct' : 'accuse_missed'
+        });
+        showToast('Обвинувачення відправлено...');
+      } catch (err) {
+        showToast('Помилка мережі. Спробуйте ще раз.');
+      } finally {
+        if (confirmBtn) confirmBtn.disabled = false;
       }
     }
 
     function sendMysteryReady() {
       if (secretState.mySelected === null) { showToast('Оберіть персонажа!'); return; }
-      secretState.myReady = true;
-      Network.send('ready');
+      Network.updateState(`${secretState.role}/ready`, true);
 
       const myChar = secretState.grid[secretState.mySelected];
       const charName = myChar.nameUA;
@@ -3803,65 +4019,84 @@
       document.getElementById('mystery-my-char-name').textContent = charName;
 
       const imgEl = document.getElementById('mystery-my-char-img');
-      imgEl.src = ''; imgEl.style.display = 'none';
-      document.getElementById('mystery-my-char-emoji').style.display = 'block';
+      imgEl.src = ''; hide(imgEl); show('mystery-my-char-emoji');
 
       const infoBtn = document.getElementById('btn-myst-info');
       infoBtn.onclick = (e) => { e.stopPropagation(); openInfoModal(myChar, { enlargeImage: true }, e); };
 
-      getCharImage(myChar).then(url => {
+      {
+        const url = getCharImage(myChar);
         if (url) {
           imgEl.src = url;
-          imgEl.style.display = 'block';
-          document.getElementById('mystery-my-char-emoji').style.display = 'none';
+          show(imgEl);
+          hide('mystery-my-char-emoji');
         }
-      });
+      }
 
-      document.getElementById('mystery-my-char-wrap').style.display = 'flex';
-
-      checkBothReady();
-      renderSecretGame();
+      show('mystery-my-char-wrap');
     }
 
     function endSecretTurn() {
-      secretState.isMyTurn = false;
-      secretState.accuseMode = false;
-      Network.send('end_turn');
-      renderSecretGame();
+      // Переміщуємо хід іншому гравцю
+      const nextTurn = secretState.role === 'host' ? 'guest' : 'host';
+      Network.updateState('currentTurn', nextTurn);
     }
 
     function toggleAccuseMode() {
       secretState.accuseMode = !secretState.accuseMode;
-      renderSecretGame();
+      updateSecretGridUI();
     }
 
-    function surrenderSecretGame() {
-      Network.send('surrender');
-      secretState.gameActive = false;
-      Network.disconnect().catch(() => { });
-      backToMenu();
+    async function surrenderSecretGame() {
+      const oppRole = secretState.role === 'host' ? 'guest' : 'host';
+      try {
+        await Network.updateStates({
+          status: 'ended',
+          winner: oppRole,
+          resultReason: 'surrender'
+        });
+      } catch (e) { /* ignore */ }
     }
 
-    function showSecretResult(iWon, myCharIdx, oppCharIdx) {
+    async function showSecretResult(iWon, myCharIdx, oppCharIdx, reason) {
       const t = TRANSLATIONS.ua;
       const resultTitle = document.getElementById('result-title');
       resultTitle.textContent = iWon ? t.resWinTitle : t.resLoseTitle;
       resultTitle.classList.toggle('win', iWon);
       resultTitle.classList.toggle('lose', !iWon);
       document.getElementById('result-icon').textContent = iWon ? '🎉' : '💔';
-      document.getElementById('result-message').textContent = iWon ? t.resWinMsg : t.resLoseMsg;
+
+      let message;
+      const isHost = secretState.role === 'host';
+      if (reason === 'accuse_correct') {
+        message = iWon ? t.resWinByAccuseCorrect : t.resLoseByAccuseCorrect;
+      } else if (reason === 'accuse_missed') {
+        if (iWon) {
+          message = t.resWinByAccuseMissed;
+        } else {
+          message = isHost ? t.resLoseByAccuseMissedHost : t.resLoseByAccuseMissedGuest;
+        }
+      } else if (reason === 'surrender') {
+        message = iWon ? t.resWinBySurrender : t.resLoseBySurrender;
+      } else if (reason === 'eliminate_opponent_char') {
+        message = iWon ? t.resWinByEliminatedOpponentCard : t.resLoseByEliminatedOpponentCard;
+      } else {
+        message = iWon ? t.resWinMsg : t.resLoseMsg;
+      }
+
+      document.getElementById('result-message').textContent = message;
       resultTitle.style.background = '';
 
-      const mChar = secretState.grid[myCharIdx];
-      const oChar = secretState.grid[oppCharIdx];
+      const mChar = Number.isInteger(myCharIdx) && secretState.grid[myCharIdx] ? secretState.grid[myCharIdx] : null;
+      const oChar = Number.isInteger(oppCharIdx) && secretState.grid[oppCharIdx] ? secretState.grid[oppCharIdx] : null;
 
       const setupResultImage = (charObj, prefix) => {
         const emojiEl = document.getElementById(`${prefix}-emoji`);
         const imgEl = document.getElementById(`${prefix}-img`);
         const nameEl = document.getElementById(`${prefix}-name`);
 
-        emojiEl.style.display = 'block';
-        imgEl.style.display = 'none';
+        show(emojiEl);
+        hide(imgEl);
         imgEl.src = '';
 
         if (charObj) {
@@ -3869,14 +4104,12 @@
           emojiEl.textContent = charObj.emoji;
           nameEl.textContent = charName;
 
-          // ИСПРАВЛЕНО: Заменен устаревший вызов fetchWikiImage на getCharImage
-          getCharImage(charObj).then(url => {
-            if (url) {
-              imgEl.src = url;
-              imgEl.style.display = 'block';
-              emojiEl.style.display = 'none';
-            }
-          });
+          const url = getCharImage(charObj);
+          if (url) {
+            imgEl.src = url;
+            show(imgEl);
+            hide(emojiEl);
+          }
         } else {
           emojiEl.textContent = '❓';
           nameEl.textContent = '-';
@@ -3887,9 +4120,10 @@
       setupResultImage(oChar, 'res-opp');
 
       secretState.gameActive = false;
-      Network.disconnect().catch(() => { });
+      await Network.disconnect().catch(() => { });
+      await Network.reset();
 
-      document.querySelector('header').style.display = 'none';
+      hide(document.querySelector('header'));
       switchScreen('screen-secret-result');
     }
 
@@ -3931,8 +4165,8 @@
       const iconExit = document.getElementById('icon-fs-exit');
 
       if (iconEnter && iconExit) {
-        iconEnter.style.display = isFullscreen ? 'none' : 'block';
-        iconExit.style.display = isFullscreen ? 'block' : 'none';
+        isFullscreen ? hide(iconEnter) : show(iconEnter);
+        isFullscreen ? show(iconExit) : hide(iconExit);
       }
     }
 
@@ -3941,9 +4175,52 @@
     document.addEventListener('mozfullscreenchange', updateFullscreenIcon);
     document.addEventListener('MSFullscreenChange', updateFullscreenIcon);
 
+    function bindUIActions() {
+      const $ = id => document.getElementById(id);
+      const on = (id, fn) => { const el = $(id); if (el) el.addEventListener('click', fn); };
+
+      on('menu-spy-card', () => selectGame('spy'));
+      on('menu-secret-card', () => selectGame('secret'));
+      on('secret-host-card', chooseSecretHost);
+      on('secret-guest-card', chooseSecretGuest);
+      on('btn-back-menu', backToMenu);
+      on('btn-rules', () => openModal('rulesModal'));
+      on('btn-fullscreen', toggleFullScreen);
+      on('btn-count-decrease', () => changeCount(-1));
+      on('btn-count-increase', () => changeCount(1));
+      on('btn-select-all', toggleAll);
+      on('btn-start-deal', startGame);
+      on('btn-open-card-init', openCard);
+      on('flip-front-cover', openCard);
+      on('btn-close-card', closeCard);
+      on('btn-restart-action', confirmAbort);
+      on('btn-new-game-restart', resetGame);
+      on('btn-cancel', () => closeModal('confirmModal'));
+      on('btn-confirm', executeRestart);
+      on('btn-close-rules', () => closeModal('rulesModal'));
+      on('btn-close-info', () => closeModal('infoModal'));
+      on('btn-secret-back-host', () => switchScreen('screen-secret-role-choice'));
+      on('btn-secret-back-guest', () => switchScreen('screen-secret-role-choice'));
+      on('btn-host-all', toggleAllMysteryCats);
+      on('btn-generate-room', generateSecretRoomCode);
+      on('btn-start-secret-game', startSecretGame);
+      on('btn-host-cancel', cancelSecretLobby);
+      on('btn-join-game', joinGame);
+      on('btn-dismiss-orientation', dismissOrientationTip);
+      on('btn-myst-ready', sendMysteryReady);
+      on('btn-myst-end-turn', endSecretTurn);
+      on('btn-myst-accuse', toggleAccuseMode);
+      on('btn-myst-surrender', surrenderSecretGame);
+      on('btn-accuse-cancel', () => closeModal('accuseModal'));
+      on('btn-accuse-confirm', performAccuse);
+      on('btn-res-menu', backToMenu);
+      on('btn-dismiss-portrait', dismissPortraitTip);
+    }
+
     // ════════════════════════════════════════════
     //  INITIALIZATION
     // ════════════════════════════════════════════
+    bindUIActions();
     buildCatsUI();
     updateStaticTexts();
   </script>
