@@ -2443,10 +2443,18 @@
           guestOnline: false
         };
 
-        await roomRef.set(roomData);
-        await roomRef.onDisconnect().remove();
         this._roomRef = roomRef;
         secretState.role = 'host';
+        try {
+          await roomRef.onDisconnect().remove();
+          await roomRef.set(roomData);
+        } catch (err) {
+          try { await roomRef.onDisconnect().cancel(); } catch (e) { }
+          this._roomRef = null;
+          secretState.role = null;
+          throw err;
+        }
+
         return roomRef;
       },
 
@@ -3138,13 +3146,15 @@
       grid: [], mySelected: null, opponentSelection: null, opponentSelectedimgUrl: null, myEliminated: new Set(),
       isMyTurn: false, gameActive: false, stage: 'lobby',
       myReady: false, opponentReady: false, accuseMode: false,
-      status: 'selection', currentTurn: 'host', winner: null, resultShown: false
+      status: 'selection', currentTurn: 'host', winner: null, resultShown: false,
+      gridBuilt: false
     };
 
     function resetSecretState() {
       secretState.role = null;
       secretState.roomCode = null;
       secretState.grid = [];
+      secretState.gridBuilt = false;
       secretState.mySelected = null;
       secretState.opponentSelection = null;
       secretState.opponentSelectedimgUrl = null;
@@ -3303,6 +3313,14 @@
     window.addEventListener('resize', () => {
       if (window.innerHeight > window.innerWidth) {
         dismissPortraitTip();
+      }
+    });
+
+    window.addEventListener('beforeunload', () => {
+      if (Network._roomRef && secretState.role === 'host') {
+        try {
+          Network._roomRef.onDisconnect().remove();
+        } catch (e) { }
       }
     });
 
@@ -3713,15 +3731,25 @@
         return;
       }
 
-      // Синхронізуємо grid (постійний) — тільки якщо локальна колода порожня
+      // Синхронізуємо grid (постійний) — тільки якщо локальна колода порожня або змінилась
+      let gridArray = [];
       if (roomData.grid !== undefined && roomData.grid !== null) {
-        const gridArray = ensureArray(roomData.grid);
+        gridArray = ensureArray(roomData.grid);
         const hasLocal = Array.isArray(secretState.grid) && secretState.grid.length > 0;
-        if (!hasLocal) {
-          if (gridArray.length > 0) {
-            secretState.grid = gridArray;
-          }
-        } else {
+        const gridChanged = !secretState.gridBuilt ||
+          secretState.grid.length !== gridArray.length ||
+          secretState.grid.some((item, idx) => {
+            const other = gridArray[idx] || {};
+            return item.name !== other.name || item.imgUrl !== other.imgUrl;
+          });
+
+        if (!hasLocal && gridArray.length > 0) {
+          secretState.grid = gridArray;
+        }
+
+        if (gridArray.length > 0 && gridChanged) {
+          secretState.grid = gridArray;
+          secretState.gridBuilt = false;
         }
       }
 
@@ -3745,10 +3773,11 @@
 
       const shouldRenderGrid = roomData.status === 'selection' || roomData.status === 'playing';
       if (shouldRenderGrid) {
-        initSecretGrid();
-        // Navigate to the secret game screen only when the room
-        // is in selection/playing. This prevents guests from
-        // seeing the cards while waiting for the host.
+        if (!secretState.gridBuilt) {
+          initSecretGrid();
+          secretState.gridBuilt = true;
+        }
+
         const gameScreen = document.getElementById('screen-secret-game');
         if (gameScreen && !gameScreen.classList.contains('active')) {
           try { hide(document.querySelector('header')); } catch (e) { }
