@@ -8,9 +8,26 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
-    /* ══════════════════════════════════════════════════════════════════
-   PARTYBOX · ТАЄМНИЦЯ — UNIFIED DESIGN SYSTEM v2.0
-   ══════════════════════════════════════════════════════════════════ */
+    :root {
+      --bg: #07070e;
+      --surface-2: rgba(255, 255, 255, 0.07);
+      --border-1: rgba(255, 255, 255, 0.08);
+      --border-2: rgba(255, 255, 255, 0.16);
+      --cyan: #00f5d4;
+      --violet: #b97cff;
+      --pink: #ff4daa;
+      --red: #ff3a5c;
+      --green: #00e07a;
+      --text: #f0f0f8;
+      --text-muted: rgba(240, 240, 248, 0.45);
+      --card-w: min(390px, 92vw);
+      --card-h: min(460px, calc(100dvh - 250px));
+      --screen-pt: max(calc(env(safe-area-inset-top, 0px) + 66px), 100px);
+      --screen-pb: max(env(safe-area-inset-bottom, 0px), 24px);
+      --muted: var(--text-muted);
+      --surface2: var(--surface-2);
+      --border2: var(--border-2);
+    }
 
     *,
     *::before,
@@ -18,42 +35,6 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-    }
-
-    :root {
-      /* — Цветовая палитра — */
-      --bg: #07070e;
-      --surface-2: rgba(255, 255, 255, 0.07);
-      /* базовый glass / inputs, stepper, toggle */
-
-      /* — Границы — */
-      --border-1: rgba(255, 255, 255, 0.08);
-      /* тонкая/стандартная */
-      --border-2: rgba(255, 255, 255, 0.16);
-
-      /* — Акцентные цвета — */
-      --cyan: #00f5d4;
-      --violet: #b97cff;
-      --pink: #ff4daa;
-      --red: #ff3a5c;
-      --green: #00e07a;
-
-      /* — Текст — */
-      --text: #f0f0f8;
-      --text-muted: rgba(240, 240, 248, 0.45);
-
-      /* — Раскладка — */
-      --card-w: min(390px, 92vw);
-      --card-h: min(460px, calc(100vh - 250px));
-      /* fallback */
-      --card-h: min(460px, calc(100dvh - 250px));
-      --screen-pt: max(calc(env(safe-area-inset-top, 0px) + 66px), 100px);
-      --screen-pb: max(env(safe-area-inset-bottom, 0px), 24px);
-
-      /* ── Backward-compat aliases ── */
-      --muted: var(--text-muted);
-      --surface2: var(--surface-2);
-      --border2: var(--border-2);
     }
 
     html,
@@ -67,7 +48,6 @@
       overflow-x: hidden;
     }
 
-    /* ОПТИМИЗАЦИЯ GPU: Вместо filter: blur используем радиальные градиенты */
     .orb {
       position: fixed;
       border-radius: 50%;
@@ -106,15 +86,14 @@
 
     @keyframes drift {
       from {
-        transform: translate(0, 0) scale(1)
+        transform: translate(0, 0) scale(1);
       }
 
       to {
-        transform: translate(50px, 40px) scale(1.15)
+        transform: translate(50px, 40px) scale(1.15);
       }
     }
 
-    /* HEADER */
     header {
       position: absolute;
       top: 0;
@@ -125,10 +104,9 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: max(env(safe-area-inset-top, 10px), 16px) 16px 12px 16px;
+      padding: max(env(safe-area-inset-top, 10px), 16px) 16px 12px;
       z-index: 100;
       background: transparent;
-      border-bottom: none;
     }
 
     .header-logo {
@@ -165,7 +143,6 @@
       border-color: var(--border2);
     }
 
-    /* SCREENS */
     .screen {
       position: fixed;
       inset: 0;
@@ -174,7 +151,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      padding: var(--screen-pt) 16px var(--screen-pb) 16px;
+      padding: var(--screen-pt) 16px var(--screen-pb);
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.15s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
@@ -213,9 +190,7 @@
     }
 
     #screen-secret-result {
-      height: 100vh;
       height: 100dvh;
-      min-height: 100vh;
       min-height: 100dvh;
       padding: env(safe-area-inset-top, 10px) 12px env(safe-area-inset-bottom, 10px) 12px;
       display: flex;
@@ -370,7 +345,6 @@
       flex-shrink: 0;
     }
 
-    /* ОПТИМИЗАЦИЯ GPU: Снижено размытие и сделан более плотный фон */
     .glass {
       background: rgba(20, 20, 30, 0.65);
       border: 1px solid rgba(255, 255, 255, 0.08);
@@ -380,7 +354,6 @@
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
     }
 
-    /* CARDS & CONTAINERS */
     .setup-card {
       width: var(--card-w);
       padding: 20px 22px;
@@ -388,7 +361,6 @@
       margin-bottom: 20px;
       display: flex;
       flex-direction: column;
-      height: calc(100vh - var(--screen-pt) - var(--screen-pb) - 34px);
       height: calc(100dvh - var(--screen-pt) - var(--screen-pb) - 34px);
       overflow: hidden;
     }
@@ -406,7 +378,6 @@
       font-weight: 700;
     }
 
-    /* STEPPER */
     .stepper {
       display: flex;
       align-items: center;
@@ -454,7 +425,6 @@
       color: var(--violet);
     }
 
-    /* VERTICAL CATEGORY SELECTOR */
     .cats-wrapper {
       width: 100%;
       margin-top: 8px;
@@ -541,7 +511,6 @@
       margin-top: 3px;
     }
 
-    /* BUTTONS */
     .btn-primary {
       width: 100%;
       padding: 14px 20px;
@@ -614,7 +583,6 @@
       letter-spacing: 0.5px;
     }
 
-    /* DEAL SCREEN SPY */
     .deal-wrap {
       width: var(--card-w);
       display: flex;
@@ -647,7 +615,6 @@
       margin-bottom: 28px;
     }
 
-    /* 3D FLIP CARD */
     .flip-scene {
       width: var(--card-w);
       height: var(--card-h);
@@ -762,7 +729,6 @@
       border: 1px solid rgba(255, 60, 92, 0.3);
     }
 
-    /* CARD IMAGES SETUP (SPY ROLE WINDOW) */
     .card-img-wrap {
       width: 100%;
       flex: 1;
@@ -896,7 +862,6 @@
       box-shadow: 0 0 12px rgba(0, 245, 212, 0.4);
     }
 
-    /* SPY CONTENT */
     .spy-content {
       flex: 1;
       display: flex;
@@ -918,11 +883,11 @@
 
       0%,
       100% {
-        transform: scale(1)
+        transform: scale(1);
       }
 
       50% {
-        transform: scale(1.06)
+        transform: scale(1.06);
       }
     }
 
@@ -973,11 +938,11 @@
 
       0%,
       100% {
-        opacity: 1
+        opacity: 1;
       }
 
       50% {
-        opacity: 0.3
+        opacity: 0.3;
       }
     }
 
@@ -996,7 +961,6 @@
       gap: 12px;
     }
 
-    /* FINAL SCREEN */
     .final-card {
       width: var(--card-w);
       padding: 40px 28px;
@@ -1014,11 +978,11 @@
 
       0%,
       100% {
-        transform: scale(1)
+        transform: scale(1);
       }
 
       50% {
-        transform: scale(1.08)
+        transform: scale(1.08);
       }
     }
 
@@ -1066,7 +1030,6 @@
       margin-bottom: 4px;
     }
 
-    /* MODALS */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -1177,7 +1140,6 @@
       background: rgba(185, 124, 255, 0.45);
     }
 
-    /* TOAST */
     .toast {
       position: fixed;
       bottom: 32px;
@@ -1206,26 +1168,25 @@
     }
 
     .mt8 {
-      margin-top: 8px
+      margin-top: 8px;
     }
 
     .mt16 {
-      margin-top: 16px
+      margin-top: 16px;
     }
 
     .mt20 {
-      margin-top: 20px
+      margin-top: 20px;
     }
 
     .mt22 {
-      margin-top: 22px
+      margin-top: 22px;
     }
 
     .mt24 {
-      margin-top: 24px
+      margin-top: 24px;
     }
 
-    /* MAIN MENU */
     .main-menu-container {
       display: flex;
       flex-direction: column;
@@ -1281,10 +1242,6 @@
       text-align: center;
       line-height: 1.5;
     }
-
-    /* ════════════════════════════════════════════ */
-    /* SECRET (ТАЄМНИЦЯ) GAME STYLES              */
-    /* ════════════════════════════════════════════ */
 
     .orientation-tip-overlay {
       position: absolute;
@@ -1390,11 +1347,9 @@
       box-shadow: 0 0 12px rgba(0, 245, 212, 0.15);
     }
 
-    /* HORIZONTAL PREMIUM LAYOUT FOR MYSTERY GAME */
     #screen-secret-game {
       display: flex;
       flex-direction: column;
-      height: 100vh;
       height: 100dvh;
       padding-top: env(safe-area-inset-top, 16px);
       padding-bottom: env(safe-area-inset-bottom, 0);
@@ -1472,7 +1427,6 @@
       width: 100%;
     }
 
-    /* ОПТИМИЗИРОВАННЫЕ КАРТОЧКИ ДЛЯ СЕТКИ (SECRET GRID) */
     .card-cell {
       position: relative;
       cursor: pointer;
@@ -1628,21 +1582,6 @@
       }
     }
 
-    .cell-emoji {
-      font-size: min(6vh, 2.8rem);
-      line-height: 1;
-      text-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
-    }
-
-    .cell-name {
-      font-size: min(2vh, 0.75rem);
-      line-height: 1.1;
-      margin-top: 6px;
-      font-weight: 600;
-      color: rgba(255, 255, 255, 0.85);
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-    }
-
     .turn-indicator {
       font-size: 0.85rem;
       font-weight: 800;
@@ -1676,7 +1615,6 @@
       }
     }
 
-    /* САЙДБАР КАРТОЧКА «ВИ ЗАГАДАЛИ» */
     .my-target-wrap {
       display: flex;
       justify-content: center;
@@ -1832,7 +1770,7 @@
         flex-direction: row;
         gap: 14px;
         padding: 14px;
-        min-height: calc(100vh - var(--screen-pt) - var(--screen-pb) - 20px);
+        min-height: calc(100dvh - var(--screen-pt) - var(--screen-pb) - 20px);
       }
 
       .mystery-grid-wrap {
@@ -1841,7 +1779,7 @@
         grid-auto-rows: minmax(130px, 150px);
         gap: 12px;
         padding: 16px;
-        max-height: calc(100vh - 150px);
+        max-height: calc(100dvh - 150px);
       }
 
       .mystery-sidebar {
@@ -1934,18 +1872,8 @@
         gap: 10px;
       }
 
-      .my-target-wrap {
-        margin: 0 auto;
-      }
-
       .my-target-wrap .mystery-card {
         max-width: 110px;
-      }
-
-      .mystery-actions {
-        display: flex;
-        gap: 6px;
-        flex-wrap: wrap;
       }
 
       .mystery-actions button {
@@ -2013,10 +1941,6 @@
         padding: 5px 8px;
       }
 
-      .my-target-wrap {
-        margin: 0 auto;
-      }
-
       .my-target-wrap .mystery-card {
         max-width: 120px;
       }
@@ -2037,7 +1961,6 @@
 </head>
 
 <body>
-
   <div class="orb orb1"></div>
   <div class="orb orb2"></div>
   <div class="orb orb3"></div>
@@ -2048,13 +1971,11 @@
         <div style="font-size: 0.85rem; color: var(--text-muted); letter-spacing: 1px;" id="menu-subtitle">Оберіть гру
         </div>
       </div>
-
       <div class="game-mode-card spy-mode" id="menu-spy-card">
         <div class="game-mode-icon">🕵️‍♂️</div>
         <div class="game-mode-title" id="menu-spy-title">Шпигун</div>
         <div class="game-mode-desc" id="menu-spy-desc">Локальна гра для компанії на одному пристрої</div>
       </div>
-
       <div class="game-mode-card secret-mode" id="menu-secret-card">
         <div class="game-mode-icon">🎭</div>
         <div class="game-mode-title" id="menu-secret-title">Таємниця</div>
@@ -2116,19 +2037,17 @@
       </div>
       <div class="spy-hint mt8" id="setup-spy-hint">Шпигунів: <strong id="spy-count-hint">1</strong> &nbsp;(1 на кожні 3
         гравці)</div>
-
       <div class="mt24" id="cats-section">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-shrink:0;">
           <div class="section-label" id="setup-label-categories" style="margin-bottom:0">Категорії</div>
           <button class="btn-ghost" id="btn-select-all"
-            style="padding:6px 14px; font-size:0.75rem; width:auto; border-radius:10px; min-height: 32px;">
-            Обрати всі</button>
+            style="padding:6px 14px; font-size:0.75rem; width:auto; border-radius:10px; min-height: 32px;">Обрати
+            всі</button>
         </div>
         <div class="cats-wrapper">
           <div class="cats" id="cats-container"></div>
         </div>
       </div>
-
       <div class="mt24" style="flex-shrink:0">
         <button class="btn-primary" id="btn-start-deal">Почати роздачу ролей</button>
       </div>
@@ -2142,7 +2061,6 @@
         <div class="prompt-text" id="deal-prompt-text">Візьми пристрій, інші відверніться</div>
         <button class="btn-primary" id="btn-open-card-init">Відкрити карту</button>
       </div>
-
       <div class="flip-scene hidden" id="flip-scene">
         <div class="flip-card" id="flip-card">
           <div class="flip-face flip-front" id="flip-front-cover">
@@ -2154,7 +2072,6 @@
           <div class="flip-face flip-back" id="flip-back"></div>
         </div>
       </div>
-
       <div class="deal-actions hidden" id="deal-actions">
         <button class="btn-ghost" id="btn-close-card">Закрити карту</button>
         <button class="btn-primary"
@@ -2189,7 +2106,6 @@
     </div>
   </div>
 
-  <!-- Модалка-підтвердження для звинувачення -->
   <div class="modal-overlay" id="accuseModal">
     <div class="modal-content glass" style="text-align: center;">
       <div class="modal-title" id="accuse-title">Звинуватити?</div>
@@ -2228,7 +2144,6 @@
       <p id="host-instruction"
         style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 10px; text-align: center;">Оберіть категорії
         (У грі буде 16 карток)</p>
-
       <div id="secret-cats-section">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-shrink:0;">
           <div class="section-label" style="margin-bottom:0" id="label-host-cats">Категорії</div>
@@ -2240,30 +2155,23 @@
           <div class="cats" id="secret-cats-container"></div>
         </div>
       </div>
-
       <div class="mt24" style="flex-shrink: 0;">
-        <button class="btn-primary" id="btn-generate-room">Згенерувати
-          кімнату</button>
+        <button class="btn-primary" id="btn-generate-room">Згенерувати кімнату</button>
       </div>
     </div>
-
     <div class="glass setup-card auto-height-card screen-center hidden" id="host-lobby-view"
       style="padding: 40px 24px;">
       <div class="section-label" style="text-align: center;" id="label-host-code">Код кімнати:</div>
       <div class="huge-code" id="room-code-display">------</div>
       <p style="color: var(--text-muted); text-align: center; margin-bottom: 20px; line-height: 1.5;"
         id="text-host-share">Передайте цей код другому гравцю.</p>
-
       <div id="host-wait-group"
         style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px;">
-        <div class="status-dot"></div>
-        <span id="label-waiting-players">Очікування підключення...</span>
+        <div class="status-dot"></div><span id="label-waiting-players">Очікування підключення...</span>
       </div>
       <div id="host-connected-group" class="hidden"
-        style="text-align:center;font-size:0.85rem;color:var(--green);font-weight:bold;margin-bottom:20px;">
-        ✓ Гравець підключився!
-      </div>
-
+        style="text-align:center;font-size:0.85rem;color:var(--green);font-weight:bold;margin-bottom:20px;">✓ Гравець
+        підключився!</div>
       <button class="btn-primary hidden" id="btn-start-secret-game" style="width:100%;">Почати гру</button>
       <button class="btn-ghost mt24" id="btn-host-cancel">Скасувати</button>
     </div>
@@ -2296,13 +2204,10 @@
         <button class="btn-primary mt16" id="btn-dismiss-orientation">Зрозуміло</button>
       </div>
     </div>
-
     <div class="mystery-layout">
       <div class="mystery-grid-wrap" id="cards-grid"></div>
-
       <div class="mystery-sidebar">
         <div class="turn-indicator blink" id="turn-indicator">ОЧІКУВАННЯ...</div>
-
         <div class="my-target-wrap hidden" id="mystery-my-char-wrap">
           <div class="mystery-card">
             <div class="mystery-card-img-wrap">
@@ -2318,11 +2223,9 @@
             </div>
           </div>
         </div>
-
         <div class="mystery-actions">
           <button class="btn-primary" id="btn-myst-ready">Я ГОТОВИЙ</button>
-          <button class="btn-ghost hidden" id="btn-myst-end-turn">Завершити
-            хід</button>
+          <button class="btn-ghost hidden" id="btn-myst-end-turn">Завершити хід</button>
           <button class="btn-danger btn-primary hidden" id="btn-myst-accuse">ЗВИНУВАТИ</button>
           <button class="btn-ghost"
             style="padding: 8px; font-size: 0.75rem; border:none; background: transparent; color:var(--text-muted);"
@@ -2339,7 +2242,6 @@
         <div id="result-title" class="result-title">Перемога</div>
         <div id="result-message" class="result-message">Ви вгадали правильно персонажа і виграли раунд.</div>
       </div>
-
       <div class="result-grid">
         <div class="result-panel">
           <div id="res-lbl-mine" class="result-panel-label">Ваш вибір</div>
@@ -2358,14 +2260,12 @@
           <div id="res-opp-name" class="result-panel-name">-</div>
         </div>
       </div>
-
       <button class="btn-primary result-button" id="btn-res-menu">В головне меню</button>
     </div>
   </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
-  <!-- ГЛОБАЛЬНА МОДАЛКА ДЛЯ ПОВЕРНЕННЯ В ПОРТРЕТНИЙ РЕЖИМ -->
   <div id="portrait-tip" class="portrait-tip-overlay">
     <div class="modal-content glass"
       style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 40px 24px; gap: 12px; margin: 0 16px;">
@@ -2380,276 +2280,45 @@
   </div>
 
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBXHJoDHeh55JhCmfJgYjWyN--BZVzlM5s",
-      authDomain: "partybox1303.firebaseapp.com",
-      databaseURL: "https://partybox1303-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "partybox1303",
-      storageBucket: "partybox1303.firebasestorage.app",
-      messagingSenderId: "693748041380",
-      appId: "1:693748041380:web:2595063bb9a47621c20831",
-      measurementId: "G-F35L57EYZP"
-    };
-    const CONFIG = {
+    const AppConfig = {
       SECRET_GRID_SIZE: 16,
       ROOM_CODE_LENGTH: 6,
       SPIES_PER_PLAYERS: 3,
       MAX_PLAYERS_SPY: 12,
       MAX_ROOM_CODE_ATTEMPTS: 5
     };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
 
-    async function ensureFirebaseAuth() {
-      return;
-    }
-
-    function isValidRoomCode(code) {
-      const pattern = new RegExp(`^[0-9]{${CONFIG.ROOM_CODE_LENGTH}}$`);
-      return pattern.test(code);
-    }
-
-    async function generateUniqueRoomCode() {
-      const minCode = 10 ** (CONFIG.ROOM_CODE_LENGTH - 1);
-      const maxCode = 10 ** CONFIG.ROOM_CODE_LENGTH;
-      for (let attempt = 0; attempt < CONFIG.MAX_ROOM_CODE_ATTEMPTS; attempt++) {
-        const code = String(minCode + Math.floor(Math.random() * (maxCode - minCode)));
-        const snap = await db.ref('rooms/' + code).once('value');
-        if (!snap.exists()) return code;
-      }
-      throw new Error('roomcode-collision');
-    }
-
-    const Network = {
-      _roomRef: null,
-      _onDisconnectCallback: null,
-      _stateListener: false,
-
-      async createRoom(code, grid) {
-        if (!isValidRoomCode(code)) throw new Error('invalid-room-code');
-        const roomRef = db.ref('rooms/' + code);
-        const snap = await roomRef.once('value');
-        if (snap.exists()) throw new Error('roomcode-collision');
-
-        const roomData = {
-          grid: grid,
-          host: { selection: null, eliminated: [], ready: false, guess: null },
-          guest: { selection: null, eliminated: [], ready: false, guess: null },
-          currentTurn: 'host',
-          status: 'lobby',
-          winner: null,
-          createdAt: firebase.database.ServerValue.TIMESTAMP,
-          hostOnline: true,
-          guestOnline: false
-        };
-
-        this._roomRef = roomRef;
-        secretState.role = 'host';
-        try {
-          await roomRef.onDisconnect().remove();
-          await roomRef.set(roomData);
-        } catch (err) {
-          try { await roomRef.onDisconnect().cancel(); } catch (e) { }
-          this._roomRef = null;
-          secretState.role = null;
-          throw err;
-        }
-
-        return roomRef;
-      },
-
-      async joinRoom(code) {
-        if (!isValidRoomCode(code)) throw new Error('invalid-room-code');
-        const roomRef = db.ref('rooms/' + code);
-        const snap = await roomRef.once('value');
-        if (!snap.exists()) throw new Error('room-not-found');
-
-        const roomData = snap.val();
-        if (roomData.status !== 'lobby') throw new Error('game-already-started');
-        if (roomData.guestOnline === true) throw new Error('guest-already-joined');
-        if (roomData.hostOnline !== true) throw new Error('host-offline');
-
-        await roomRef.child('guestOnline').set(true);
-        await roomRef.child('guestOnline').onDisconnect().set(false);
-        this._roomRef = roomRef;
-        secretState.role = 'guest';
-        return roomData;
-      },
-
-      listenForGuest(onConnected) {
-        if (!this._roomRef) return;
-        const guestRef = this._roomRef.child('guestOnline');
-        guestRef.off('value');
-        guestRef.on('value', snap => {
-          if (snap.val() === true) onConnected();
-        });
-        guestRef.once('value').then(snap => {
-          if (snap.val() === true) onConnected();
-        }).catch(() => { });
-      },
-
-      listenForDisconnect(callback) {
-        if (!this._roomRef) return;
-        const field = secretState.role === 'host' ? 'guestOnline' : 'hostOnline';
-        const statusRef = this._roomRef.child(field);
-        statusRef.off('value');
-
-        let firstSnapshot = true;
-        statusRef.on('value', snap => {
-          if (firstSnapshot) {
-            firstSnapshot = false;
-            return;
-          }
-          if (snap.val() === false && secretState.gameActive) {
-            callback();
-          }
-        });
-
-        this._onDisconnectCallback = callback;
-      },
-
-      listenState(callback) {
-        if (!this._roomRef) return;
-        if (this._stateListener) {
-          this._roomRef.off('value');
-        }
-        this._roomRef.on('value', snap => {
-          if (!snap.exists()) {
-            callback(null);
-            return;
-          }
-          callback(snap.val());
-        });
-        this._stateListener = true;
-      },
-
-      async updateState(path, value) {
-        if (!this._roomRef) return;
-        await this._roomRef.child(path).set(value);
-      },
-
-      async updateStates(values) {
-        if (!this._roomRef) return;
-        await this._roomRef.update(values);
-      },
-
-      async disconnect() {
-        if (!this._roomRef) return;
-        try {
-          await this._roomRef.onDisconnect().cancel();
-        } catch (e) { }
-        if (secretState.role === 'host') {
-          await this._roomRef.remove();
-        } else {
-          const snap = await this._roomRef.once('value');
-          if (snap.exists()) {
-            await this._roomRef.child('guestOnline').set(false);
-          }
-        }
-        try {
-          this._roomRef.child('guestOnline').off();
-          this._roomRef.child('hostOnline').off();
-          this._roomRef.off();
-        } catch (e) { }
-        this._roomRef = null;
-        this._stateListener = false;
-      },
-
-      async reset() {
-        if (this._roomRef) {
-          try { await this.disconnect(); } catch (e) { }
-          try {
-            this._roomRef.child('guestOnline').off();
-            this._roomRef.child('hostOnline').off();
-            this._roomRef.off();
-          } catch (e) { }
-        }
-        this._stateListener = false;
-        this._onDisconnectCallback = null;
-        this._roomRef = null;
-        if (typeof secretState !== 'undefined') {
-          secretState.role = null;
-        }
-      }
+    const AppText = {
+      rulesBtn: "Правила", menuSubtitle: "Оберіть гру", menuSpyTitle: "Шпигун", menuSpyDesc: "Локальна гра для компанії на одному пристрої",
+      menuSecretTitle: "Таємниця", menuSecretDesc: "Мережева гра 1 на 1", roleTitle: "Оберіть роль", roleSubtitle: "Створіть кімнату або підключіться",
+      roleHost: "Створити гру (Хост)", roleGuest: "Підключитися (Гість)", setupPlayers: "Кількість гравців",
+      setupSpyHint: "Шпигунів: <strong>{N}</strong> &nbsp;(1 на кожні 3 гравці)", setupCategories: "Категорії", selectAll: "Обрати всі", deselectAll: "Зняти всі",
+      startBtn: "Почати роздачу ролей", playerBadge: "Гравець {N}", promptTake: "Візьми пристрій, інші відверніться", promptPass: "Передай пристрій наступному",
+      openCardBtn: "Відкрити карту", tapToOpen: "", closeCardBtn: "Закрити карту", finishHandoutBtn: "Завершити роздачу", restartBtn: "Почати заново",
+      abortConfirmTitle: "Почати заново?", abortConfirmDesc: "Всі ролі будут скинуті.", cancelBtn: "Скасувати", confirmBtn: "Так",
+      youAreSpy: "Ти Шпигун!", spyTask: "Відгадай персонажа за підказками", spyBadge: "Таємний агент",
+      finalTitle: "Всі ролі роздані.<br>Гру розпочато!", finalPlayers: "Гравців", finalSpies: "Шпигунів",
+      finalDesc: "Обговорюйте та знайдіть шпигуна серед вас.", newGameBtn: "Нова гра", noCategoryError: "Обери хоча б одну категорію!",
+      rulesModalTitle: "Правила гри", characterYour: "Твій персонаж", characterWarn: "Не кажи ім'я вголос",
+      secretHostSetup: "Створити гру", secretHostCats: "Категорії", secretHostCode: "Код кімнати:", secretHostShare: "Передайте цей код другові.",
+      secretWaitMsg: "Очікування підключення...", secretConnectedMsg: "✓ Підключенно", secretGuestCode: "Введіть код кімнати",
+      secretConnectBtn: "Підключитися", secretGenerateBtn: "Згенерувати кімнату", secretStartBtn: "Почати гру",
+      secretReadyBtn: "Я ГОТОВИЙ", secretEndTurnBtn: "Завершити хід", secretAccuseBtn: "ОБВИНУВАТИ", secretCancelAccuseBtn: "СКАСУВАТИ ОБВИНУВАЧЕННЯ",
+      secretSurrenderBtn: "Здатися", secretBackMenuBtn: "В головне меню", turnWait: "ОЧІКУВАННЯ...", turnMine: "ТВІЙ ХІД", turnEnemy: "ХІД СУПРОТИВНИКА",
+      resWinTitle: "ВИ ПЕРЕМОГЛИ!", resLoseTitle: "ВИ ПРОГРАЛИ!", resWinMsg: "Вам вдалося виявити суперника першим і здобути перемогу.",
+      resLoseMsg: "Суперник був швидшим — але гра ще може продовжитись наступного разу.", resWinByAccuseCorrect: "Ви вгадали персонажа!",
+      resLoseByAccuseCorrect: "Вас розкрито. Гра завершена.", resWinByAccuseMissed: "Суперник помилився!",
+      resLoseByAccuseMissedHost: "Невірно. Гра завершена.", resLoseByAccuseMissedGuest: "Ви дали не вірну відповідь. Гра завершена.",
+      resWinBySurrender: "Суперник здався.", resLoseBySurrender: "Ви здалися. Гра завершена.",
+      resWinByEliminatedOpponentCard: "Суперник виключив свого персонажа. Перемога!", resLoseByEliminatedOpponentCard: "Ви дали не вірну відповідь. Гра завершена.",
+      resMyChoice: "Ваш вибір", resOppChoice: "Вибір ворога",
+      spyrulesContent: `<h4>🎯 Мета</h4><ul><li><b>Мирним:</b> вирахувати шпигуна.</li><li><b>Шпигуну:</b> не виказати себе та вгадати персонажа.</li></ul><h4>🔄 Хід гри</h4><ul><li>Гравці по черзі називають <b>один факт</b> про персонажа, не розкриваючи імені.</li><li><b>Мирні:</b> формулюйте думки розмито, щоб шпигун не здогадався, хто це.</li><li><b>Шпигун:</b> вдавайте 'свого', підлаштовуючись під відповіді інших.</li></ul><h4>🏁 Фінал</h4><ul><li><b>Голосування:</b> будь-який гравець може почати обговорення. Якщо більшість проголосує за вигнання шпигуна — мирні перемогли.</li><li><b>Здогадка:</b> шпигун може в будь-який момент зупинити гру та назвати персонажа. Вгадав — переміг, помилився — програв. Від 6-ти учасників, тільки голосування</li></ul>`,
+      secretrulesContent: `<h4>🎯 Мета</h4><p>Відгадайте персонажа суперника раніше, ніж він відгадає вашого.</p><h4>🔄 Хід гри</h4><ul><li>Оберіть одного персонажа з 16 карток.</li><li>По черзі ставте питання, на які можна відповісти лише «Так» або «Ні».</li><li>Виключайте персонажів, які не підходять під отримані відповіді.</li></ul><h4>🏁 Фінал</h4><ul><li>У свій хід назвіть персонажа суперника.</li><li><b>Вгадав</b> — переміг.</li><li><b>Помилився</b> — програв.</li></ul>`
     };
 
-    const TEXT = {
-        rulesBtn: "Правила", menuSubtitle: "Оберіть гру",
-        menuSpyTitle: "Шпигун", menuSpyDesc: "Локальна гра для компанії на одному пристрої",
-        menuSecretTitle: "Таємниця", menuSecretDesc: "Мережева гра 1 на 1",
-        roleTitle: "Оберіть роль", roleSubtitle: "Створіть кімнату або підключіться",
-        roleHost: "Створити гру (Хост)", roleGuest: "Підключитися (Гість)",
-        setupPlayers: "Кількість гравців", setupSpyHint: "Шпигунів: <strong>{N}</strong> &nbsp;(1 на кожні 3 гравці)",
-        setupCategories: "Категорії", selectAll: "Обрати всі", deselectAll: "Зняти всі",
-        startBtn: "Почати роздачу ролей", playerBadge: "Гравець {N}",
-        promptTake: "Візьми пристрій, інші відверніться", promptPass: "Передай пристрій наступному",
-        openCardBtn: "Відкрити карту", tapToOpen: "", closeCardBtn: "Закрити карту",
-        finishHandoutBtn: "Завершити роздачу", restartBtn: "Почати заново",
-        abortConfirmTitle: "Почати заново?", abortConfirmDesc: "Всі ролі будут скинуті.", cancelBtn: "Скасувати", confirmBtn: "Так",
-        youAreSpy: "Ти Шпигун!", spyTask: "Відгадай персонажа за підказками", spyBadge: "Таємний агент",
-        finalTitle: "Всі ролі роздані.<br>Гру розпочато!", finalPlayers: "Гравців", finalSpies: "Шпигунів",
-        finalDesc: "Обговорюйте та знайдіть шпигуна серед вас.", newGameBtn: "Нова гра",
-        noCategoryError: "Обери хоча б одну категорію!", rulesModalTitle: "Правила гри", characterYour: "Твій персонаж", characterWarn: "Не кажи ім'я вголос",
-        secretHostSetup: "Створити гру", secretHostCats: "Категорії", secretHostCode: "Код кімнати:", secretHostShare: "Передайте цей код другові.",
-        secretWaitMsg: "Очікування підключення...", secretConnectedMsg: "✓ Підключенно", secretGuestCode: "Введіть код кімнати",
-        secretConnectBtn: "Підключитися", secretGenerateBtn: "Згенерувати кімнату", secretStartBtn: "Почати гру",
-        secretReadyBtn: "Я ГОТОВИЙ", secretEndTurnBtn: "Завершити хід", secretAccuseBtn: "ОБВИНУВАТИ", secretCancelAccuseBtn: "СКАСУВАТИ ОБВИНУВАЧЕННЯ",
-        secretSurrenderBtn: "Здатися", secretBackMenuBtn: "В головне меню",
-        turnWait: "ОЧІКУВАННЯ...", turnMine: "ТВІЙ ХІД", turnEnemy: "ХІД СУПРОТИВНИКА",
-        resWinTitle: "ВИ ПЕРЕМОГЛИ!", resLoseTitle: "ВИ ПРОГРАЛИ!",
-        resWinMsg: "Вам вдалося виявити суперника першим і здобути перемогу.",
-        resLoseMsg: "Суперник був швидшим — але гра ще може продовжитись наступного разу.",
-        resWinByAccuseCorrect: "Ви вгадали персонажа!",
-        resLoseByAccuseCorrect: "Вас розкрито. Гра завершена.",
-        resWinByAccuseMissed: "Суперник помилився!",
-        resLoseByAccuseMissedHost: "Невірно. Гра завершена.",
-        resLoseByAccuseMissedGuest: "Ви дали не вірну відповідь. Гра завершена.",
-        resWinBySurrender: "Суперник здався.",
-        resLoseBySurrender: "Ви здалися. Гра завершена.",
-        resWinByEliminatedOpponentCard: "Суперник виключив свого персонажа. Перемога!",
-        resLoseByEliminatedOpponentCard: "Ви дали не вірну відповідь. Гра завершена.",
-        resMyChoice: "Ваш вибір", resOppChoice: "Вибір ворога",
-        spyrulesContent: `
-      <h4>🎯 Мета</h4>
-      <ul>
-        <li><b>Мирним:</b> вирахувати шпигуна.</li>
-        <li><b>Шпигуну:</b> не виказати себе та вгадати персонажа.</li>
-      </ul>
-      <h4>🔄 Хід гри</h4>
-      <ul>
-        <li>Гравці по черзі називають <b>один факт</b> про персонажа, не розкриваючи імені.</li>
-        <li><b>Мирні:</b> формулюйте думки розмито, щоб шпигун не здогадався, хто це.</li>
-        <li><b>Шпигун:</b> вдавайте 'свого', підлаштовуючись під відповіді інших.</li>
-      </ul>
-      <h4>🏁 Фінал</h4>
-      <ul>
-        <li><b>Голосування:</b> будь-який гравець може почати обговорення. Якщо більшість проголосує за вигнання шпигуна — мирні перемогли.</li>
-        <li><b>Здогадка:</b> шпигун може в будь-який момент зупинити гру та назвати персонажа. Вгадав — переміг, помилився — програв. Від 6-ти учасників, тільки голосування</li>
-      </ul>
-    `,
-        secretrulesContent: `
-      <h4>🎯 Мета</h4>
-      <p>Відгадайте персонажа суперника раніше, ніж він відгадає вашого.</p>
-      <h4>🔄 Хід гри</h4>
-      <ul>
-        <li>Оберіть одного персонажа з 16 карток.</li>
-        <li>По черзі ставте питання, на які можна відповісти лише «Так» або «Ні».</li>
-        <li>Виключайте персонажів, які не підходять під отримані відповіді.</li>
-      </ul>
-      <h4>🏁 Фінал</h4>
-      <ul>
-        <li>У свій хід назвіть персонажа суперника.</li>
-        <li><b>Вгадав</b> — переміг.</li>
-        <li><b>Помилився</b> — програв.</li>
-      </ul>
-    `
-      }
-    ;
-
-    const CATEGORIES = [
+    const AppCategories = [
       {
-        id: 'movies', icon: '🎬', name: 'Герої з екранів',
-        chars: [
+        id: 'movies', icon: '🎬', name: 'Герої з екранів', chars: [
           { name: 'Агент Сміт', imgUrl: "images/movies/Агент_Сміт.webp", emoji: '🕶️', desc: 'Програма-агент, що прагне знищити аномалії в системі. (х/ф "Матриця")' },
           { name: 'Аладдін', imgUrl: "images/movies/Аладдін.webp", emoji: '🧞‍♂️', desc: 'Вуличний юнак, який знаходить магічну лампу з джином. (м/ф "Аладдін")' },
           { name: 'Арья Старк', imgUrl: "images/movies/Арья_Старк.webp", emoji: '🗡️', desc: 'Дівчинка-аристократка, що стала вправною найманою вбивцею. (т/с "Гра престолів")' },
@@ -2790,8 +2459,7 @@
         ]
       },
       {
-        id: 'music', icon: '🎤', name: 'Музика',
-        chars: [
+        id: 'music', icon: '🎤', name: 'Музика', chars: [
           { name: '50 Cent', imgUrl: "images/music/50_Cent.webp", emoji: '🪙', desc: 'Знаменитий репер і бізнесмен, автор культового альбому "Get Rich or Die Tryin\'".' },
           { name: 'Alyona Alyona', imgUrl: "images/music/Alyona_Alyona.webp", emoji: '🎒', desc: 'Українська реп-виконавиця, що підкорила Європу своїм потужним флоу та щирістю.' },
           { name: 'Asap Rocky', imgUrl: "images/music/Asap_Rocky.webp", emoji: '🕶️', desc: 'Впливовий американський репер і фешн-ікона з унікальним психоделічним стилем.' },
@@ -2897,8 +2565,7 @@
         ]
       },
       {
-        id: 'history', icon: '🏛️', name: 'Історія',
-        chars: [
+        id: 'history', icon: '🏛️', name: 'Історія', chars: [
           { name: 'Авраам Лінкольн', imgUrl: "images/history/Авраам_Лінкольн.webp", emoji: '🎩', desc: '16-й президент США, який очолив країну під час Громадянської війни та скасував рабство.' },
           { name: 'Адольф Гітлер', imgUrl: "images/history/Адольф_Гітлер.webp", emoji: '🌑', desc: 'Німецький диктатор, лідер нацистської партії, чия агресивна політика розв\'язала Другу світову війну.' },
           { name: 'Альберт Айнштайн', imgUrl: "images/history/Альберт_Айнштайн.webp", emoji: '⚛️', desc: 'Один із найвизначніших фізиків XX століття, автор теорії відносності та лауреат Нобелівської премії.' },
@@ -3008,8 +2675,7 @@
         ]
       },
       {
-        id: 'sport', icon: '⚽', name: 'Спорт(В розробці)',
-        chars: [
+        id: 'sport', icon: '⚽', name: 'Спорт(В розробці)', chars: [
           { name: 'Віталій Кличко', imgUrl: "images/sport/Віталій_Кличко.webp", emoji: '🥊', desc: 'Легендарний український боксер-важковаговик, чемпіон світу, нині мер Києва.' },
           { name: 'Володимир Кличко', imgUrl: "images/sport/Володимир_Кличко.webp", emoji: '🥊', desc: 'Видатний чемпіон світу з боксу, який довгі роки домінував у надважкій вазі.' },
           { name: 'Андрій Шевченко', imgUrl: "images/sport/Андрій_Шевченко.webp", emoji: '⚽', desc: 'Володар «Золотого м\'яча», легенда київського «Динамо» та італійського «Мілана».' },
@@ -3100,8 +2766,7 @@
         ]
       },
       {
-        id: 'bloggers', icon: '📱', name: 'Блогери(В розробці)',
-        chars: [
+        id: 'bloggers', icon: '📱', name: 'Блогери(В розробці)', chars: [
           { name: 'IShowSpeed', imgUrl: "images/bloggers/IShowSpeed.webp", emoji: '⚽', desc: 'Американський ютубер та стример, відомий експресивними ефірами та фанатичною любов\'ю до Кріштіану Роналду.' },
           { name: 'Джейк Пол', imgUrl: "images/bloggers/Джейк_Пол.webp", emoji: '🥊', desc: 'Американський відеоблогер, який успішно перекваліфікувався у професійного боксера та промоутера.' },
           { name: 'Джеймс Чарльз', imgUrl: "images/bloggers/Джеймс_Чарльз.webp", emoji: '💄', desc: 'Американський б\'юті-блогер та візажист, один із найвідоміших представників індустрії краси на YouTube.' },
@@ -3133,1113 +2798,970 @@
       }
     ];
 
-    let state = {
-      playerCount: 5, selectedCats: new Set(),
-      currentPlayer: 0, spySet: new Set(), usedChars: [], chosenChar: null, cardOpen: false
-    };
-
-    let currentGame = null;
-
-    let secretState = {
-      playerCount: 2, selectedCats: new Set(),
-      role: null, roomCode: null,
-      grid: [], mySelected: null, opponentSelection: null, opponentSelectedimgUrl: null, myEliminated: new Set(),
-      isMyTurn: false, gameActive: false, stage: 'lobby',
-      myReady: false, opponentReady: false, accuseMode: false,
-      status: 'selection', currentTurn: 'host', winner: null, resultShown: false,
-      gridBuilt: false
-    };
-
-    function resetSecretState() {
-      secretState.role = null;
-      secretState.roomCode = null;
-      secretState.grid = [];
-      secretState.gridBuilt = false;
-      secretState.mySelected = null;
-      secretState.opponentSelection = null;
-      secretState.opponentSelectedimgUrl = null;
-      secretState.myEliminated = new Set();
-      secretState.isMyTurn = false;
-      secretState.gameActive = false;
-      secretState.stage = 'lobby';
-      secretState.myReady = false;
-      secretState.opponentReady = false;
-      secretState.accuseMode = false;
-      secretState.status = 'selection';
-      secretState.currentTurn = 'host';
-      secretState.winner = null;
-      secretState.resultShown = false;
-    }
-
-    // ══════════════════════════════════════════════════════════════════════════
-    //  IMAGE FETCH
-    // ══════════════════════════════════════════════════════════════════════════
-    function getCharImage(charObj) {
-      return charObj ? (charObj.imgUrl || null) : null;
-    }
-
-    function prefetchImages(charItems = []) {
-      return Promise.all(charItems.map(charObj => new Promise(resolve => {
-        if (!charObj || !charObj.imgUrl) return resolve();
-        const img = new Image();
-        img.onload = resolve;
-        img.onerror = resolve;
-        img.src = charObj.imgUrl;
-      })));
-    }
-
-    // ════════════════════════════════════════════
-    //  UI & TRANSLATION
-    // ════════════════════════════════════════════
-    function updateStaticTexts() {
-      const t = TEXT;
-
-      document.getElementById('btn-rules').textContent = t.rulesBtn;
-      document.getElementById('modal-rules-title').textContent = t.rulesModalTitle;
-      const rulesContent = currentGame === 'secret' ? t.secretrulesContent : t.spyrulesContent;
-      document.getElementById('modal-rules-body').innerHTML = rulesContent;
-
-      document.getElementById('menu-subtitle').textContent = t.menuSubtitle;
-      document.getElementById('menu-spy-title').textContent = t.menuSpyTitle;
-      document.getElementById('menu-spy-desc').textContent = t.menuSpyDesc;
-      document.getElementById('menu-secret-title').textContent = t.menuSecretTitle;
-      document.getElementById('menu-secret-desc').textContent = t.menuSecretDesc;
-
-      document.getElementById('role-title').textContent = t.roleTitle;
-      document.getElementById('role-subtitle').textContent = t.roleSubtitle;
-      document.getElementById('role-host-title').textContent = t.roleHost;
-      document.getElementById('role-guest-title').textContent = t.roleGuest;
-
-      document.getElementById('setup-label-players').textContent = t.setupPlayers;
-      document.getElementById('setup-spy-hint').innerHTML = t.setupSpyHint.replace('{N}', Math.floor(state.playerCount / 3));
-      document.getElementById('setup-label-categories').textContent = t.setupCategories;
-      document.getElementById('btn-select-all').textContent = state.selectedCats.size === CATEGORIES.length ? t.deselectAll : t.selectAll;
-      document.getElementById('btn-start-deal').textContent = t.startBtn;
-
-      if (document.getElementById('screen-deal').classList.contains('active')) {
-        document.getElementById('deal-player-name').textContent = t.playerBadge.replace('{N}', state.currentPlayer + 1);
-        document.getElementById('deal-prompt-text').textContent = state.currentPlayer === 0 ? t.promptTake : t.promptPass;
-        document.getElementById('btn-open-card-init').textContent = t.openCardBtn;
-        document.getElementById('text-tap-open').textContent = t.tapToOpen;
-        document.getElementById('btn-restart-action').textContent = t.restartBtn;
+    class ImageLoader {
+      static getCharImage(charObj) {
+        return charObj ? (charObj.imgUrl || null) : null;
       }
-      document.getElementById('final-title').innerHTML = t.finalTitle;
-      document.getElementById('label-stat-players').textContent = t.finalPlayers;
-      document.getElementById('label-stat-spies').textContent = t.finalSpies;
-      document.getElementById('final-description').textContent = t.finalDesc;
-      document.getElementById('btn-new-game-restart').textContent = t.newGameBtn;
-      document.getElementById('confirm-title').textContent = t.abortConfirmTitle;
-      document.getElementById('confirm-desc').textContent = t.abortConfirmDesc;
-      document.getElementById('btn-cancel').textContent = t.cancelBtn;
-      document.getElementById('btn-confirm').textContent = t.confirmBtn;
-
-      document.getElementById('label-host-setup').textContent = t.secretHostSetup;
-      document.getElementById('label-host-cats').textContent = t.secretHostCats;
-      document.getElementById('btn-host-all').textContent = secretState.selectedCats.size === CATEGORIES.length ? t.deselectAll : t.selectAll;
-      document.getElementById('btn-generate-room').textContent = t.secretGenerateBtn;
-      document.getElementById('label-host-code').textContent = t.secretHostCode;
-      document.getElementById('text-host-share').textContent = t.secretHostShare;
-      document.getElementById('btn-start-secret-game').textContent = t.secretStartBtn;
-      document.getElementById('btn-host-cancel').textContent = t.cancelBtn;
-      document.getElementById('label-guest-code').textContent = t.secretGuestCode;
-      document.getElementById('btn-join-game').textContent = t.secretConnectBtn;
-
-      const readyBtn = document.getElementById('btn-myst-ready');
-      const endTurnBtn = document.getElementById('btn-myst-end-turn');
-      const accuseBtn = document.getElementById('btn-myst-accuse');
-      if (readyBtn) readyBtn.textContent = t.secretReadyBtn;
-      if (endTurnBtn) endTurnBtn.textContent = t.secretEndTurnBtn;
-      if (accuseBtn) accuseBtn.textContent = secretState.accuseMode ? t.secretCancelAccuseBtn : t.secretAccuseBtn;
-      document.getElementById('btn-myst-surrender').textContent = t.secretSurrenderBtn;
-      document.getElementById('btn-res-menu').textContent = t.secretBackMenuBtn;
-      document.getElementById('res-lbl-mine').textContent = t.resMyChoice;
-      document.getElementById('res-lbl-opp').textContent = t.resOppChoice;
-    }
-
-    function switchScreen(id) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-      updateStaticTexts();
-    }
-
-    let toastTimer;
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg; t.classList.add('show');
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
-    }
-
-    function closeAllModals() {
-      document.querySelectorAll('.modal-overlay.active').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.orientation-tip-overlay:not(.dismissed)').forEach(el => el.classList.add('dismissed'));
-      dismissPortraitTip();
-    }
-
-    function openModal(id) { document.getElementById(id).classList.add('active'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-
-    function getElement(target) {
-      if (!target) return null;
-      if (typeof target === 'string') {
-        if (target.startsWith('#')) return document.getElementById(target.slice(1));
-        const byId = document.getElementById(target);
-        if (byId) return byId;
-        return document.querySelector(target);
-      }
-      return target;
-    }
-
-    function setVisible(target, visible) {
-      const el = getElement(target);
-      if (!el) return;
-      if (visible) {
-        el.classList.remove('hidden');
-      } else {
-        el.classList.add('hidden');
-      }
-    }
-
-    function show(target) { setVisible(target, true); }
-    function hide(target) { setVisible(target, false); }
-
-    function dismissPortraitTip() {
-      const tip = document.getElementById('portrait-tip');
-      if (tip) {
-        tip.classList.remove('active');
-      }
-    }
-
-    window.addEventListener('resize', () => {
-      if (window.innerHeight > window.innerWidth) {
-        dismissPortraitTip();
-      }
-    });
-
-    window.addEventListener('beforeunload', () => {
-      if (Network._roomRef && secretState.role === 'host') {
-        try {
-          Network._roomRef.onDisconnect().remove();
-        } catch (e) { }
-      }
-    });
-
-    function openInfoModal(charData, options = {}, event) {
-      if (event) event.stopPropagation();
-      const name = charData.name || charData.nameRU || 'Персонаж';
-      const description = charData.desc || charData.descRU || 'Опис відсутній.';
-      const enlargeImage = options.enlargeImage === true;
-
-      document.getElementById('modal-info-title').textContent = name;
-      document.getElementById('modal-info-body').innerHTML = enlargeImage ? `
-    <div style="display:flex; justify-content:center; width:100%; margin-bottom: 18px;">
-      <img class="card-img loading" id="modal-char-photo" alt="${name}" style="width:auto; height:auto; max-width: calc(100vw - 56px); max-height: calc(100vh - 220px); border-radius: 20px; object-fit: contain; display:block;" />
-    </div>
-    <p style="font-size: 1rem; line-height: 1.6; color: var(--text);">${description}</p>
-  ` : `
-    <div style="font-size: 4.5rem; margin-bottom: 14px; text-shadow: 0 4px 12px rgba(0,0,0,0.45);">${charData.emoji || '🔍'}</div>
-    <p style="font-size: 1.05rem; line-height: 1.6; color: var(--text); font-weight: 500;">${description}</p>
-  `;
-
-      if (enlargeImage) {
-        const modalImg = document.getElementById('modal-char-photo');
-        if (modalImg) {
-          const url = getCharImage(charData);
-          if (url) {
-            modalImg.src = url;
-            modalImg.onload = () => modalImg.classList.remove('loading');
-            modalImg.onerror = () => hide(modalImg);
-          } else {
-            hide(modalImg);
-          }
-        }
-      }
-
-      openModal('infoModal');
-    }
-
-    // ════════════════════════════════════════════
-    //  MAIN MENU NAVIGATION
-    // ════════════════════════════════════════════
-    function selectGame(game) {
-      closeAllModals();
-      currentGame = game;
-      if (game === 'spy') {
-        document.body.classList.remove('is-secret-mode');
-        show('btn-rules');
-        show('btn-back-menu');
-        document.getElementById('header-title').textContent = '🕵️‍♂️ SPY';
-        buildCatsUI();
-        switchScreen('screen-setup');
-      } else if (game === 'secret') {
-        document.body.classList.add('is-secret-mode');
-        show('btn-rules');
-        show('btn-back-menu');
-        document.getElementById('header-title').textContent = '🎭 MYST';
-        switchScreen('screen-secret-role-choice');
-      }
-    }
-
-    async function backToMenu() {
-      const needsPortraitTip = document.getElementById('screen-secret-result').classList.contains('active') ||
-        document.getElementById('screen-secret-game').classList.contains('active');
-
-      closeAllModals();
-      currentGame = null;
-      document.body.classList.remove('is-secret-mode');
-      hide('btn-rules');
-      hide('btn-back-menu');
-      document.getElementById('header-title').textContent = '🕵️‍♂️ PartyBox';
-      show(document.querySelector('header'));
-      await cancelSecretLobby();
-      await Network.reset();
-      resetSecretState();
-      const joinBtn = document.getElementById('btn-join-game');
-      if (joinBtn) joinBtn.disabled = false;
-
-      try {
-        state.currentPlayer = 0;
-        state.cardOpen = false;
-        const flipCard = document.getElementById('flip-card');
-        if (flipCard) flipCard.classList.remove('flipped');
-        hide('flip-scene');
-        hide('deal-actions');
-        show('deal-prompt');
-      } catch (e) { /* ignore DOM errors */ }
-
-      switchScreen('screen-main-menu');
-
-      if (needsPortraitTip && window.innerWidth > window.innerHeight) {
-        const tip = document.getElementById('portrait-tip');
-        if (tip) tip.classList.add('active');
-      }
-    }
-
-    // ════════════════════════════════════════════
-    //  SPY GAME LOGIC
-    // ════════════════════════════════════════════
-    function renderCategoryList(containerId, selectedSet, onToggle) {
-      const container = document.getElementById(containerId);
-      container.innerHTML = '';
-      CATEGORIES.forEach(cat => {
-        const active = selectedSet.has(cat.id);
-        const displayName = cat.name;
-        const el = document.createElement('div');
-        el.className = 'cat-toggle' + (active ? ' active' : '');
-        el.innerHTML = `<div class="ct-icon">${cat.icon}</div><div style="flex:1;"><div class="ct-name">${displayName}</div><div class="ct-count">${cat.chars.length} персонажів</div></div><div class="ct-check">${active ? '✓' : ''}</div>`;
-        el.addEventListener('click', () => onToggle(cat.id));
-        container.appendChild(el);
-      });
-    }
-
-    function buildCatsUI() {
-      renderCategoryList('cats-container', state.selectedCats, toggleCategory);
-    }
-
-    function buildSecretCatsUI() {
-      renderCategoryList('secret-cats-container', secretState.selectedCats, toggleSecretCategory);
-    }
-
-    function toggleCategory(id) {
-      if (state.selectedCats.has(id)) {
-        if (state.selectedCats.size === 1) { showToast(TEXT.noCategoryError); return; }
-        state.selectedCats.delete(id);
-      } else {
-        state.selectedCats.add(id);
-      }
-      buildCatsUI(); updateStaticTexts();
-    }
-
-    function toggleSecretCategory(id) {
-      if (secretState.selectedCats.has(id)) {
-        if (secretState.selectedCats.size === 1) { showToast(TEXT.noCategoryError); return; }
-        secretState.selectedCats.delete(id);
-      } else {
-        secretState.selectedCats.add(id);
-      }
-      buildSecretCatsUI(); updateStaticTexts();
-    }
-
-    function toggleAll() {
-      state.selectedCats = state.selectedCats.size === CATEGORIES.length ? new Set() : new Set(CATEGORIES.map(c => c.id));
-      buildCatsUI(); updateStaticTexts();
-    }
-    function changeCount(delta) {
-      const next = state.playerCount + delta;
-      if (next < CONFIG.SPIES_PER_PLAYERS || next > CONFIG.MAX_PLAYERS_SPY) return;
-      state.playerCount = next;
-      document.getElementById('player-count').textContent = next;
-      updateStaticTexts();
-    }
-
-    function secureRandomInt(max) { return Math.floor(Math.random() * max); }
-    function secureShuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = secureRandomInt(i + 1);
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-      return array;
-    }
-
-    function startGame() {
-      const pool = [];
-      CATEGORIES.forEach(cat => { if (state.selectedCats.has(cat.id)) pool.push(...cat.chars); });
-      if (pool.length === 0) { showToast(TEXT.noCategoryError); return; }
-      const chosen = pool[secureRandomInt(pool.length)];
-      state.chosenChar = chosen;
-
-      const spiesCount = Math.max(1, Math.floor(state.playerCount / CONFIG.SPIES_PER_PLAYERS));
-      const roleIndices = secureShuffle([...Array(state.playerCount).keys()]);
-      state.spySet = new Set(roleIndices.slice(0, spiesCount));
-      state.currentPlayer = 0;
-      state.cardOpen = false;
-
-      document.getElementById('final-players').textContent = state.playerCount;
-      document.getElementById('final-spies').textContent = spiesCount;
-
-      showDealPrompt(true); switchScreen('screen-deal');
-    }
-
-    function showDealPrompt(isFirst) {
-      updateStaticTexts();
-      show('deal-prompt');
-      hide('flip-scene');
-      hide('deal-actions');
-      document.getElementById('flip-card').classList.remove('flipped');
-    }
-
-    function openCard() {
-      if (state.cardOpen) return;
-      state.cardOpen = true;
-      const isSpy = state.spySet.has(state.currentPlayer);
-      const back = document.getElementById('flip-back');
-      const t = TEXT;
-
-      if (isSpy) {
-        back.className = 'flip-face flip-back back-spy';
-        back.innerHTML = `<div class="spy-content"><div class="spy-emoji">🕵️‍♂️</div><div class="spy-title">${t.youAreSpy}</div><div class="spy-sub">${t.spyTask}</div></div>
-    <div class="spy-card-info"><div class="spy-badge"><div class="spy-dot"></div><div class="spy-badge-text">${t.spyBadge}</div></div></div>`;
-      } else {
-        back.className = 'flip-face flip-back back-char';
-        const charName = state.chosenChar.name;
-        back.innerHTML = `
-      <div class="card-img-wrap">
-        <div class="card-img-placeholder" id="card-ph">${state.chosenChar.emoji}</div>
-        <div class="img-loader" id="img-ldr"><div class="spinner"></div></div>
-        <img class="card-img loading" id="card-photo" alt="${charName}"/>
-        <div class="card-img-overlay"></div>
-      </div>
-      <div class="card-info">
-        <div class="info-trigger-btn" id="spy-info-btn">i</div>
-        <div class="card-top-label">${t.characterYour}</div>
-        <div class="card-name">${charName}</div>
-        <div class="card-bot-label">${t.characterWarn}</div>
-      </div>
-    `;
-
-        document.getElementById('spy-info-btn').onclick = (e) => {
-          e.stopPropagation();
-          openInfoModal(state.chosenChar, {}, e);
-        };
-
-        const imgEl = back.querySelector('#card-photo');
-        const ldr = back.querySelector('#img-ldr');
-        const ph = back.querySelector('#card-ph');
-
-        {
-          const url = getCharImage(state.chosenChar);
-          if (url) {
-            imgEl.onload = () => { imgEl.classList.remove('loading'); hide(ldr); hide(ph); };
-            imgEl.onerror = () => { hide(imgEl); hide(ldr); show(ph); };
-            imgEl.src = url;
-          } else {
-            hide(ldr); show(ph);
-          }
-        }
-      }
-
-      hide('deal-prompt');
-      show('flip-scene');
-
-      void document.getElementById('flip-scene').offsetWidth;
-      document.getElementById('flip-card').classList.add('flipped');
-
-      setTimeout(() => {
-        document.getElementById('btn-close-card').textContent = state.currentPlayer >= state.playerCount - 1 ? t.finishHandoutBtn : t.closeCardBtn;
-        show('deal-actions');
-      }, 600);
-    }
-
-    function closeCard() {
-      hide('deal-actions');
-      document.getElementById('flip-card').classList.remove('flipped');
-      state.cardOpen = false;
-
-      setTimeout(() => {
-        hide('flip-scene');
-        state.currentPlayer++;
-        if (state.currentPlayer >= state.playerCount) {
-          switchScreen('screen-final');
-        } else {
-          showDealPrompt(false);
-        }
-      }, 600);
-    }
-
-    // ════════════════════════════════════════════
-    //  INITIALIZATION & HELPERS
-    // ════════════════════════════════════════════
-    function confirmAbort() { openModal('confirmModal'); }
-    function executeRestart() { closeModal('confirmModal'); resetGame(); }
-    function resetGame() {
-      state.currentPlayer = 0; state.cardOpen = false;
-      hide('deal-actions');
-      hide('flip-scene');
-      switchScreen('screen-setup');
-    }
-
-    // ════════════════════════════════════════════
-    //  SECRET GAME LOGIC (ТАЄМНИЦЯ)
-    // ════════════════════════════════════════════
-    function chooseSecretHost() {
-      secretState.role = 'host';
-      buildSecretCatsUI();
-      show('host-setup-view');
-      hide('host-lobby-view');
-      switchScreen('screen-secret-lobby-host');
-    }
-
-    function chooseSecretGuest() {
-      secretState.role = 'guest';
-      document.getElementById('room-code-input').value = '';
-      document.getElementById('join-status').textContent = '';
-      const joinBtn = document.getElementById('btn-join-game');
-      if (joinBtn) joinBtn.disabled = false;
-      switchScreen('screen-secret-lobby-guest');
-    }
-
-    function toggleAllMysteryCats() {
-      secretState.selectedCats = secretState.selectedCats.size === CATEGORIES.length ? new Set() : new Set(CATEGORIES.map(c => c.id));
-      buildSecretCatsUI(); updateStaticTexts();
-    }
-
-    async function generateSecretRoomCode() {
-      const pool = [];
-      CATEGORIES.forEach(cat => { if (secretState.selectedCats.has(cat.id)) pool.push(...cat.chars); });
-      if (pool.length < CONFIG.SECRET_GRID_SIZE) { showToast(TEXT.noCategoryError); return; }
-      secretState.grid = secureShuffle(pool).slice(0, CONFIG.SECRET_GRID_SIZE);
-
-      let code;
-      try {
-        code = await generateUniqueRoomCode();
-      } catch (error) {
-        showToast('Не вдалося згенерувати код. Спробуйте ще раз.');
-        return;
-      }
-      secretState.roomCode = code;
-
-      try {
-        document.getElementById('btn-generate-room').disabled = true;
-
-        await Network.createRoom(code, secretState.grid.map(c => ({
-          name: c.name, emoji: c.emoji, imgUrl: c.imgUrl || '', desc: c.desc || ''
+      static async preload(charItems = []) {
+        return Promise.all(charItems.map(charObj => new Promise(resolve => {
+          if (!charObj || !charObj.imgUrl) return resolve();
+          const img = new Image();
+          img.onload = resolve;
+          img.onerror = resolve;
+          img.src = charObj.imgUrl;
         })));
-
-        document.getElementById('room-code-display').textContent = code;
-        hide('host-setup-view');
-        show('host-lobby-view');
-        document.getElementById('label-waiting-players').textContent = TEXT.secretWaitMsg;
-
-        Network.listenForGuest(() => {
-          hide('host-wait-group');
-          show('host-connected-group');
-          document.getElementById('host-connected-group').textContent = TEXT.secretConnectedMsg;
-          show('btn-start-secret-game');
-        });
-
-        prefetchImages(secretState.grid, 3).catch(() => { });
-      } catch (e) {
-        showToast('Помилка створення кімнати. Спробуйте ще раз.');
-        document.getElementById('btn-generate-room').disabled = false;
       }
-    }
+      static bind(imgEl, char, options = {}) {
+        const url = this.getCharImage(char);
+        const loader = imgEl.parentElement?.querySelector('.img-loader');
+        const placeholder = imgEl.parentElement?.querySelector('.card-img-placeholder') || imgEl.parentElement?.querySelector('.mystery-card-emoji');
 
-    async function joinGame() {
-      const code = document.getElementById('room-code-input').value.trim().replace(/\s/g, '');
-      if (code.length !== CONFIG.ROOM_CODE_LENGTH) { showToast(`Введіть ${CONFIG.ROOM_CODE_LENGTH} цифр`); return; }
-
-      // Ensure previous network listeners/state are fully cleared before joining
-      await Network.reset();
-
-      const joinBtn = document.getElementById('btn-join-game');
-      joinBtn.disabled = true;
-      document.getElementById('join-status').textContent = 'Підключення...';
-
-      try {
-        const roomData = await Network.joinRoom(code);
-        const grid = ensureArray(roomData.grid);
-        if (grid.length !== CONFIG.SECRET_GRID_SIZE) throw new Error('invalid-room-data');
-        secretState.roomCode = code;
-        secretState.grid = grid;
-        document.getElementById('join-status').textContent = TEXT.secretConnectedMsg;
-        initSecretGameState();
-        prefetchImages(secretState.grid, 3).catch(() => { });
-      } catch (e) {
-        const msg = e.message === 'room-not-found'
-          ? 'Кімнату не знайдено. Перевірте код 🔍'
-          : 'Помилка підключення. Спробуйте ще раз.';
-        showToast(msg);
-        document.getElementById('join-status').textContent = '';
-        joinBtn.disabled = false;
-      }
-    }
-
-    async function cancelSecretLobby() {
-      await Network.disconnect().catch(() => { });
-      await Network.reset();
-      show('host-setup-view');
-      hide('host-lobby-view');
-      show('host-wait-group');
-      hide('host-connected-group');
-      hide('btn-start-secret-game');
-      document.getElementById('btn-generate-room').disabled = false;
-    }
-
-    function startSecretGame() {
-      initSecretGameState();
-      Network.updateState('status', 'selection');
-    }
-
-    function ensureArray(value) {
-      if (Array.isArray(value)) return value;
-      if (value && typeof value === 'object') {
-        const keys = Object.keys(value).sort((a, b) => Number(a) - Number(b));
-        if (keys.every((key, index) => String(index) === key)) {
-          return keys.map(key => value[key]);
-        }
-      }
-      return [];
-    }
-
-    function syncGameState(roomData) {
-      if (!roomData) {
-        if (secretState.gameActive) {
-          showToast('Кімната закрита або втрачено з\'єднання.');
-          secretState.gameActive = false;
-          setTimeout(async () => { await backToMenu(); }, 2500);
-        }
-        return;
-      }
-
-      // Синхронізуємо grid (постійний) — тільки якщо локальна колода порожня або змінилась
-      let gridArray = [];
-      if (roomData.grid !== undefined && roomData.grid !== null) {
-        gridArray = ensureArray(roomData.grid);
-        const hasLocal = Array.isArray(secretState.grid) && secretState.grid.length > 0;
-        const gridChanged = !secretState.gridBuilt ||
-          secretState.grid.length !== gridArray.length ||
-          secretState.grid.some((item, idx) => {
-            const other = gridArray[idx] || {};
-            return item.name !== other.name || item.imgUrl !== other.imgUrl;
-          });
-
-        if (!hasLocal && gridArray.length > 0) {
-          secretState.grid = gridArray;
-        }
-
-        if (gridArray.length > 0 && gridChanged) {
-          secretState.grid = gridArray;
-          secretState.gridBuilt = false;
-        }
-      }
-
-      // Синхронізуємо дані поточної ролі (хоста або гостя)
-      const myRoleData = roomData[secretState.role] || {};
-      secretState.mySelected = myRoleData.selection !== null ? myRoleData.selection : null;
-      secretState.myReady = myRoleData.ready === true;
-      secretState.myEliminated = new Set(myRoleData.eliminated || []);
-
-      // Синхронізуємо дані супротивника
-      const oppRole = secretState.role === 'host' ? 'guest' : 'host';
-      const oppRoleData = roomData[oppRole] || {};
-      secretState.opponentReady = oppRoleData.ready === true;
-      secretState.opponentSelection = oppRoleData.selection !== null ? oppRoleData.selection : null;
-
-      // Синхронізуємо глобальний стан гри
-      secretState.status = roomData.status || 'lobby';
-      secretState.currentTurn = roomData.currentTurn || 'host';
-      secretState.isMyTurn = secretState.currentTurn === secretState.role;
-      secretState.winner = roomData.winner || null;
-
-      const shouldRenderGrid = roomData.status === 'selection' || roomData.status === 'playing';
-      if (shouldRenderGrid) {
-        if (!secretState.gridBuilt) {
-          initSecretGrid();
-          secretState.gridBuilt = true;
-        }
-
-        const gameScreen = document.getElementById('screen-secret-game');
-        if (gameScreen && !gameScreen.classList.contains('active')) {
-          try { hide(document.querySelector('header')); } catch (e) { }
-          hide('mystery-my-char-wrap');
-          switchScreen('screen-secret-game');
-          const tip = document.getElementById('orientation-tip');
-          if (tip) tip.classList.remove('dismissed');
-        }
-      }
-
-      // Логіка переходу між етапами
-      if (roomData.status === 'lobby') {
-        secretState.stage = 'lobby';
-      } else if (roomData.status === 'selection') {
-        secretState.stage = 'selection';
-        if (secretState.myReady && secretState.opponentReady) {
-          Network.updateState('status', 'playing');
-        }
-      } else if (roomData.status === 'playing') {
-        secretState.stage = 'playing';
-      } else if (roomData.status === 'ended' || roomData.winner !== null) {
-        secretState.stage = 'ended';
-        if (roomData.winner != null && roomData.resultReason != null && !secretState.resultShown) {
-          secretState.resultShown = true;
-          const iWon = roomData.winner === secretState.role;
-          const myCharIdx = myRoleData.selection;
-          const oppCharIdx = oppRoleData.selection;
-          const reason = roomData.resultReason;
-          showSecretResult(iWon, myCharIdx, oppCharIdx, reason);
-        }
-      }
-
-      // Оновлюємо UI
-      updateSecretGridUI();
-    }
-
-    function initSecretGameState() {
-      secretState.stage = 'lobby';
-      secretState.mySelected = null;
-      secretState.opponentSelection = null;
-      secretState.myEliminated = new Set();
-      secretState.myReady = false;
-      secretState.opponentReady = false;
-      secretState.accuseMode = false;
-      secretState.isMyTurn = false;
-      secretState.gameActive = true;
-      secretState.currentTurn = 'host';
-      secretState.winner = null;
-      secretState.resultShown = false;
-
-      Network.listenState(syncGameState);
-      Network.listenForDisconnect(() => {
-        showToast('З\'єднання з суперником перервано 💔');
-        secretState.gameActive = false;
-        setTimeout(async () => { await backToMenu(); }, 2500);
-      });
-
-      document.getElementById('orientation-tip').classList.remove('dismissed');
-
-      // Do not initialize grid or switch to game screen here.
-      // The grid and game screen will be initialized and shown
-      // by `syncGameState()` when the room status becomes
-      // 'selection' or 'playing'. This prevents guests from
-      // seeing the cards while still waiting in the lobby.
-      hide('mystery-my-char-wrap');
-    }
-
-    function dismissOrientationTip() {
-      document.getElementById('orientation-tip').classList.add('dismissed');
-    }
-
-    function initSecretGrid() {
-      const gridEl = document.getElementById('cards-grid');
-      gridEl.innerHTML = '';
-      const t = TEXT;
-
-      secretState.grid.forEach((char, idx) => {
-        const cell = document.createElement('div');
-        cell.id = `card-cell-${idx}`;
-        cell.className = 'card-cell';
-        cell.dataset.idx = idx;
-        const charName = char.name;
-
-        cell.innerHTML = `
-      <div class="card-img-wrap">
-        <div class="card-img-placeholder">${char.emoji}</div>
-        <div class="img-loader"><div class="spinner"></div></div>
-        <img class="card-img loading" alt="${charName}" />
-        <div class="card-img-overlay"></div>
-        <div class="info-trigger-btn" title="Info">i</div>
-      </div>
-      <div class="secret-card-info">
-        <div class="card-top-label">${charName}</div>
-        <div class="card-bot-label">${t.characterWarn}</div>
-      </div>
-    `;
-
-        const imgEl = cell.querySelector('.card-img');
-        const loader = cell.querySelector('.img-loader');
-        const placeholder = cell.querySelector('.card-img-placeholder');
-        const infoBtn = cell.querySelector('.info-trigger-btn');
-        infoBtn.onclick = (e) => { e.stopPropagation(); openInfoModal(char, { enlargeImage: true }, e); };
-
-        {
-          const url = getCharImage(char);
-          if (url) {
-            imgEl.src = url;
-            imgEl.onload = () => {
-              imgEl.classList.remove('loading');
-              hide(loader);
-              hide(placeholder);
-            };
-            imgEl.onerror = () => { hide(loader); };
-          } else {
-            hide(loader);
-          }
-        }
-
-        cell.onclick = () => handleCardClick(idx);
-        gridEl.appendChild(cell);
-      });
-    }
-
-    function updateSecretGridUI() {
-      const t = TEXT;
-
-      for (let idx = 0; idx < CONFIG.SECRET_GRID_SIZE; idx++) {
-        const cell = document.getElementById(`card-cell-${idx}`);
-        if (!cell) continue;
-
-        cell.classList.toggle('eliminated', secretState.myEliminated.has(idx));
-        cell.classList.toggle('selected', secretState.stage === 'selection' && secretState.mySelected === idx);
-        cell.classList.toggle('locked', secretState.stage === 'playing' && !secretState.isMyTurn);
-        cell.classList.toggle('accuse-target', secretState.accuseMode);
-      }
-
-      const readyBtn = document.getElementById('btn-myst-ready');
-      const endBtn = document.getElementById('btn-myst-end-turn');
-      const accBtn = document.getElementById('btn-myst-accuse');
-      const turnInd = document.getElementById('turn-indicator');
-
-      if (secretState.stage === 'lobby') {
-        hide(readyBtn);
-        hide(endBtn);
-        hide(accBtn);
-        turnInd.textContent = secretState.role === 'guest'
-          ? 'Очікування початку гри хостом...'
-          : 'Очікування підключення суперника...';
-        turnInd.className = 'turn-indicator blink';
-      } else if (secretState.stage === 'selection') {
-        show(readyBtn);
-        hide(endBtn);
-        hide(accBtn);
-        readyBtn.disabled = secretState.myReady;
-        turnInd.textContent = t.turnWait;
-        turnInd.className = 'turn-indicator blink';
-      } else if (secretState.stage === 'playing') {
-        hide(readyBtn);
-        if (secretState.isMyTurn) {
-          show(endBtn);
-          show(accBtn);
-        } else {
-          hide(endBtn);
-          hide(accBtn);
-        }
-        accBtn.textContent = secretState.accuseMode ? t.secretCancelAccuseBtn : t.secretAccuseBtn;
-        turnInd.textContent = secretState.isMyTurn ? t.turnMine : t.turnEnemy;
-        turnInd.className = 'turn-indicator ' + (secretState.isMyTurn ? '' : 'enemy');
-      }
-    }
-
-    async function handleCardClick(idx) {
-      if (secretState.stage === 'selection') {
-        if (!secretState.myReady) {
-          Network.updateState(`${secretState.role}/selection`, idx);
-        }
-      } else if (secretState.stage === 'playing' && secretState.isMyTurn) {
-        if (secretState.accuseMode) {
-          // Показываем модалку подтверждения обвинения вместо немедленной отправки
-          showAccuseConfirm(idx);
-        } else {
-          const newEliminated = [...secretState.myEliminated];
-          const idx_pos = newEliminated.indexOf(idx);
-          const isEliminating = idx_pos < 0;
-          const isOpponentSelectedCard = idx === secretState.opponentSelection;
-          if (isEliminating && isOpponentSelectedCard) {
-            const winner = secretState.role;
-            try {
-              await Network.updateStates({
-                status: 'ended',
-                winner,
-                resultReason: 'eliminate_opponent_char'
-              });
-            } catch (err) {
-              showToast('Помилка мережі. Спробуйте ще раз.');
-            }
-            return;
-          }
-
-          if (idx_pos >= 0) {
-            newEliminated.splice(idx_pos, 1);
-          } else {
-            newEliminated.push(idx);
-          }
-          Network.updateState(`${secretState.role}/eliminated`, newEliminated);
-        }
-      }
-    }
-
-    // pending accuse index хранит выбранную карточку до подтверждения
-    let pendingAccuseIndex = null;
-
-    function showAccuseConfirm(idx) {
-      pendingAccuseIndex = idx;
-      const char = Array.isArray(secretState.grid) && secretState.grid[idx] ? secretState.grid[idx] : null;
-      const name = char ? (char.name || char.nameRU || 'Персонаж') : 'Персонаж';
-      const titleEl = document.getElementById('accuse-title');
-      const descEl = document.getElementById('accuse-desc');
-      const confirmBtn = document.getElementById('btn-accuse-confirm');
-      if (titleEl) titleEl.textContent = `Звинуватити ${name}?`;
-      if (descEl) descEl.textContent = 'Це фінальна відповідь.';
-      if (confirmBtn) confirmBtn.disabled = false;
-      openModal('accuseModal');
-    }
-
-    async function performAccuse() {
-      if (pendingAccuseIndex === null) { closeModal('accuseModal'); return; }
-      const idx = pendingAccuseIndex; pendingAccuseIndex = null;
-      closeModal('accuseModal');
-      const oppRole = secretState.role === 'host' ? 'guest' : 'host';
-      const isCorrect = idx === secretState.opponentSelection;
-      const winner = isCorrect ? secretState.role : oppRole;
-      const confirmBtn = document.getElementById('btn-accuse-confirm');
-      if (confirmBtn) confirmBtn.disabled = true;
-      try {
-        await Network.updateStates({
-          status: 'ended',
-          winner,
-          resultReason: isCorrect ? 'accuse_correct' : 'accuse_missed'
-        });
-      } catch (err) {
-        showToast('Помилка мережі. Спробуйте ще раз.');
-      } finally {
-        if (confirmBtn) confirmBtn.disabled = false;
-      }
-    }
-
-    function sendMysteryReady() {
-      if (secretState.mySelected === null) { showToast('Оберіть персонажа!'); return; }
-      Network.updateState(`${secretState.role}/ready`, true);
-
-      const myChar = secretState.grid[secretState.mySelected];
-      const charName = myChar.name;
-
-      document.getElementById('mystery-my-char-emoji').textContent = myChar.emoji;
-      document.getElementById('mystery-my-char-name').textContent = charName;
-
-      const imgEl = document.getElementById('mystery-my-char-img');
-      imgEl.src = ''; hide(imgEl); show('mystery-my-char-emoji');
-
-      const infoBtn = document.getElementById('btn-myst-info');
-      infoBtn.onclick = (e) => { e.stopPropagation(); openInfoModal(myChar, { enlargeImage: true }, e); };
-
-      {
-        const url = getCharImage(myChar);
         if (url) {
           imgEl.src = url;
-          show(imgEl);
-          hide('mystery-my-char-emoji');
+          imgEl.onload = () => {
+            imgEl.classList.remove('loading');
+            if (loader) loader.style.display = 'none';
+            if (placeholder && options.hidePlaceholder) placeholder.style.display = 'none';
+          };
+          imgEl.onerror = () => {
+            if (loader) loader.style.display = 'none';
+            if (placeholder) placeholder.style.display = 'flex';
+          };
+        } else {
+          if (loader) loader.style.display = 'none';
+          if (placeholder) placeholder.style.display = 'flex';
         }
       }
-
-      show('mystery-my-char-wrap');
     }
 
-    function endSecretTurn() {
-      // Переміщуємо хід іншому гравцю
-      const nextTurn = secretState.role === 'host' ? 'guest' : 'host';
-      Network.updateState('currentTurn', nextTurn);
-    }
+    class NetworkManager {
+      constructor() {
+        this._roomRef = null;
+        this._stateListener = false;
+        this._listeners = new Map();
+      }
 
-    function toggleAccuseMode() {
-      secretState.accuseMode = !secretState.accuseMode;
-      updateSecretGridUI();
-    }
+      async createRoom(code, grid) {
+        if (!this._isValidRoomCode(code)) throw new Error('invalid-room-code');
+        const roomRef = firebase.database().ref('rooms/' + code);
+        const snap = await roomRef.once('value');
+        if (snap.exists()) throw new Error('roomcode-collision');
 
-    async function surrenderSecretGame() {
-      const oppRole = secretState.role === 'host' ? 'guest' : 'host';
-      try {
-        await Network.updateStates({
-          status: 'ended',
-          winner: oppRole,
-          resultReason: 'surrender'
+        const roomData = {
+          grid: grid,
+          host: { selection: null, eliminated: [], ready: false, guess: null },
+          guest: { selection: null, eliminated: [], ready: false, guess: null },
+          currentTurn: 'host', status: 'lobby', winner: null,
+          createdAt: firebase.database.ServerValue.TIMESTAMP,
+          hostOnline: true, guestOnline: false
+        };
+        this._roomRef = roomRef;
+        try {
+          await roomRef.onDisconnect().remove();
+          await roomRef.set(roomData);
+        } catch (err) {
+          await roomRef.onDisconnect().cancel().catch(() => { });
+          this._roomRef = null;
+          throw err;
+        }
+        return roomRef;
+      }
+
+      async joinRoom(code) {
+        if (!this._isValidRoomCode(code)) throw new Error('invalid-room-code');
+        const roomRef = firebase.database().ref('rooms/' + code);
+        const snap = await roomRef.once('value');
+        if (!snap.exists()) throw new Error('room-not-found');
+        const roomData = snap.val();
+        if (roomData.status !== 'lobby') throw new Error('game-already-started');
+        if (roomData.guestOnline === true) throw new Error('guest-already-joined');
+        if (roomData.hostOnline !== true) throw new Error('host-offline');
+
+        await roomRef.child('guestOnline').set(true);
+        await roomRef.child('guestOnline').onDisconnect().set(false);
+        this._roomRef = roomRef;
+        return roomData;
+      }
+
+      listenForGuest(onConnected) {
+        if (!this._roomRef) return;
+        const guestRef = this._roomRef.child('guestOnline');
+        guestRef.off('value');
+        guestRef.on('value', snap => { if (snap.val() === true) onConnected(); });
+        guestRef.once('value').then(snap => { if (snap.val() === true) onConnected(); }).catch(() => { });
+      }
+
+      listenForDisconnect(callback, role) {
+        if (!this._roomRef) return;
+        const field = role === 'host' ? 'guestOnline' : 'hostOnline';
+        const statusRef = this._roomRef.child(field);
+        statusRef.off('value');
+        let firstSnapshot = true;
+        statusRef.on('value', snap => {
+          if (firstSnapshot) { firstSnapshot = false; return; }
+          if (snap.val() === false) callback();
         });
-      } catch (e) { /* ignore */ }
-    }
-
-    async function showSecretResult(iWon, myCharIdx, oppCharIdx, reason) {
-      const t = TEXT;
-      const resultTitle = document.getElementById('result-title');
-      resultTitle.textContent = iWon ? t.resWinTitle : t.resLoseTitle;
-      resultTitle.classList.toggle('win', iWon);
-      resultTitle.classList.toggle('lose', !iWon);
-      document.getElementById('result-icon').textContent = iWon ? '🎉' : '💔';
-
-      let message;
-      const isHost = secretState.role === 'host';
-      if (reason === 'accuse_correct') {
-        message = iWon ? t.resWinByAccuseCorrect : t.resLoseByAccuseCorrect;
-      } else if (reason === 'accuse_missed') {
-        if (iWon) {
-          message = t.resWinByAccuseMissed;
-        } else {
-          message = isHost ? t.resLoseByAccuseMissedHost : t.resLoseByAccuseMissedGuest;
-        }
-      } else if (reason === 'surrender') {
-        message = iWon ? t.resWinBySurrender : t.resLoseBySurrender;
-      } else if (reason === 'eliminate_opponent_char') {
-        message = iWon ? t.resWinByEliminatedOpponentCard : t.resLoseByEliminatedOpponentCard;
-      } else {
-        message = iWon ? t.resWinMsg : t.resLoseMsg;
       }
 
-      document.getElementById('result-message').textContent = message;
-      resultTitle.style.background = '';
+      listenState(callback) {
+        if (!this._roomRef) return;
+        if (this._stateListener) this._roomRef.off('value');
+        this._roomRef.on('value', snap => { callback(snap.exists() ? snap.val() : null); });
+        this._stateListener = true;
+      }
 
-      const mChar = Number.isInteger(myCharIdx) && secretState.grid[myCharIdx] ? secretState.grid[myCharIdx] : null;
-      const oChar = Number.isInteger(oppCharIdx) && secretState.grid[oppCharIdx] ? secretState.grid[oppCharIdx] : null;
+      async updateState(path, value) {
+        if (!this._roomRef) return;
+        await this._roomRef.child(path).set(value);
+      }
 
-      const setupResultImage = (charObj, prefix) => {
-        const emojiEl = document.getElementById(`${prefix}-emoji`);
-        const imgEl = document.getElementById(`${prefix}-img`);
-        const nameEl = document.getElementById(`${prefix}-name`);
+      async updateStates(values) {
+        if (!this._roomRef) return;
+        await this._roomRef.update(values);
+      }
 
-        show(emojiEl);
-        hide(imgEl);
-        imgEl.src = '';
-
-        if (charObj) {
-          const charName = charObj.name;
-          emojiEl.textContent = charObj.emoji;
-          nameEl.textContent = charName;
-
-          const url = getCharImage(charObj);
-          if (url) {
-            imgEl.src = url;
-            show(imgEl);
-            hide(emojiEl);
-          }
+      async disconnect(role) {
+        if (!this._roomRef) return;
+        try { await this._roomRef.onDisconnect().cancel(); } catch (e) { }
+        if (role === 'host') {
+          await this._roomRef.remove();
         } else {
-          emojiEl.textContent = '❓';
-          nameEl.textContent = '-';
+          const snap = await this._roomRef.once('value');
+          if (snap.exists()) await this._roomRef.child('guestOnline').set(false);
         }
-      };
+        this._roomRef.child('guestOnline').off();
+        this._roomRef.child('hostOnline').off();
+        this._roomRef.off();
+        this._roomRef = null;
+        this._stateListener = false;
+      }
 
-      setupResultImage(mChar, 'res-my');
-      setupResultImage(oChar, 'res-opp');
-
-      secretState.gameActive = false;
-      await Network.disconnect().catch(() => { });
-      await Network.reset();
-
-      hide(document.querySelector('header'));
-      switchScreen('screen-secret-result');
+      _isValidRoomCode(code) {
+        return new RegExp(`^[0-9]{${AppConfig.ROOM_CODE_LENGTH}}$`).test(code);
+      }
     }
 
-    // ════════════════════════════════════════════
-    //  FULLSCREEN API LOGIC
-    // ════════════════════════════════════════════
-    function toggleFullScreen() {
-      const doc = window.document;
-      const docEl = doc.documentElement;
+    class PartyBoxApp {
+      constructor() {
+        firebase.initializeApp({
+          apiKey: "AIzaSyBXHJoDHeh55JhCmfJgYjWyN--BZVzlM5s",
+          authDomain: "partybox1303.firebaseapp.com",
+          databaseURL: "https://partybox1303-default-rtdb.europe-west1.firebasedatabase.app",
+          projectId: "partybox1303",
+          storageBucket: "partybox1303.firebasestorage.app",
+          messagingSenderId: "693748041380",
+          appId: "1:693748041380:web:2595063bb9a47621c20831",
+          measurementId: "G-F35L57EYZP"
+        });
 
-      const requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
-      const cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+        this.network = new NetworkManager();
+        this.state = {
+          playerCount: 5, selectedCats: new Set(), currentPlayer: 0,
+          spySet: new Set(), chosenChar: null, cardOpen: false
+        };
+        this.secretState = {
+          role: null, roomCode: null, grid: [], mySelected: null, opponentSelection: null,
+          myEliminated: new Set(), isMyTurn: false, gameActive: false, stage: 'lobby',
+          myReady: false, opponentReady: false, accuseMode: false, status: 'selection',
+          currentTurn: 'host', winner: null, resultShown: false, gridBuilt: false,
+          selectedCats: new Set()
+        };
+        this.currentGame = null;
+        this.toastTimer = null;
+        this.pendingAccuseIndex = null;
 
-      if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
-        if (requestFullScreen) {
-          try {
-            const res = requestFullScreen.call(docEl);
-            if (res && typeof res.catch === 'function') {
-              res.catch(err => {
-                showToast("Повноекранний режим заблоковано на цьому пристрої.");
-              });
+        this.init();
+      }
+
+      init() {
+        this.bindEvents();
+        this.renderCategories('cats-container', this.state.selectedCats, this.toggleCategory.bind(this));
+        this.updateStaticTexts();
+      }
+
+      secureRandomInt(max) {
+        if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+          const buf = new Uint32Array(1);
+          crypto.getRandomValues(buf);
+          return buf[0] % max;
+        }
+        return Math.floor(Math.random() * max);
+      }
+
+      secureShuffle(array) {
+        const arr = [...array];
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = this.secureRandomInt(i + 1);
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+
+      ensureArray(value) {
+        if (Array.isArray(value)) return value;
+        if (value && typeof value === 'object') {
+          const keys = Object.keys(value).sort((a, b) => Number(a) - Number(b));
+          if (keys.every((key, index) => String(index) === key)) return keys.map(key => value[key]);
+        }
+        return [];
+      }
+
+      switchScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        this.updateStaticTexts();
+      }
+
+      showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg; t.classList.add('show');
+        clearTimeout(this.toastTimer);
+        this.toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+      }
+
+      openModal(id) { document.getElementById(id).classList.add('active'); }
+      closeModal(id) { document.getElementById(id).classList.remove('active'); }
+      closeAllModals() {
+        document.querySelectorAll('.modal-overlay.active').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.orientation-tip-overlay:not(.dismissed)').forEach(el => el.classList.add('dismissed'));
+        this.dismissPortraitTip();
+      }
+
+      setVisible(target, visible) {
+        const el = typeof target === 'string' ? document.getElementById(target) : target;
+        if (!el) return;
+        visible ? el.classList.remove('hidden') : el.classList.add('hidden');
+      }
+      show = (t) => this.setVisible(t, true);
+      hide = (t) => this.setVisible(t, false);
+
+      dismissPortraitTip() {
+        const tip = document.getElementById('portrait-tip');
+        if (tip) tip.classList.remove('active');
+      }
+
+      updateStaticTexts() {
+        const t = AppText;
+        const el = id => document.getElementById(id);
+        if (el('btn-rules')) el('btn-rules').textContent = t.rulesBtn;
+        if (el('modal-rules-title')) el('modal-rules-title').textContent = t.rulesModalTitle;
+        if (el('modal-rules-body')) el('modal-rules-body').innerHTML = this.currentGame === 'secret' ? t.secretrulesContent : t.spyrulesContent;
+        if (el('menu-subtitle')) el('menu-subtitle').textContent = t.menuSubtitle;
+        if (el('menu-spy-title')) el('menu-spy-title').textContent = t.menuSpyTitle;
+        if (el('menu-spy-desc')) el('menu-spy-desc').textContent = t.menuSpyDesc;
+        if (el('menu-secret-title')) el('menu-secret-title').textContent = t.menuSecretTitle;
+        if (el('menu-secret-desc')) el('menu-secret-desc').textContent = t.menuSecretDesc;
+        if (el('role-title')) el('role-title').textContent = t.roleTitle;
+        if (el('role-subtitle')) el('role-subtitle').textContent = t.roleSubtitle;
+        if (el('role-host-title')) el('role-host-title').textContent = t.roleHost;
+        if (el('role-guest-title')) el('role-guest-title').textContent = t.roleGuest;
+        if (el('setup-label-players')) el('setup-label-players').textContent = t.setupPlayers;
+        if (el('setup-spy-hint')) el('setup-spy-hint').innerHTML = t.setupSpyHint.replace('{N}', Math.floor(this.state.playerCount / 3));
+        if (el('setup-label-categories')) el('setup-label-categories').textContent = t.setupCategories;
+        if (el('btn-select-all')) el('btn-select-all').textContent = this.state.selectedCats.size === AppCategories.length ? t.deselectAll : t.selectAll;
+        if (el('btn-start-deal')) el('btn-start-deal').textContent = t.startBtn;
+        if (document.getElementById('screen-deal').classList.contains('active')) {
+          if (el('deal-player-name')) el('deal-player-name').textContent = t.playerBadge.replace('{N}', this.state.currentPlayer + 1);
+          if (el('deal-prompt-text')) el('deal-prompt-text').textContent = this.state.currentPlayer === 0 ? t.promptTake : t.promptPass;
+          if (el('btn-open-card-init')) el('btn-open-card-init').textContent = t.openCardBtn;
+          if (el('text-tap-open')) el('text-tap-open').textContent = t.tapToOpen;
+          if (el('btn-restart-action')) el('btn-restart-action').textContent = t.restartBtn;
+        }
+        if (el('final-title')) el('final-title').innerHTML = t.finalTitle;
+        if (el('label-stat-players')) el('label-stat-players').textContent = t.finalPlayers;
+        if (el('label-stat-spies')) el('label-stat-spies').textContent = t.finalSpies;
+        if (el('final-description')) el('final-description').textContent = t.finalDesc;
+        if (el('btn-new-game-restart')) el('btn-new-game-restart').textContent = t.newGameBtn;
+        if (el('confirm-title')) el('confirm-title').textContent = t.abortConfirmTitle;
+        if (el('confirm-desc')) el('confirm-desc').textContent = t.abortConfirmDesc;
+        if (el('btn-cancel')) el('btn-cancel').textContent = t.cancelBtn;
+        if (el('btn-confirm')) el('btn-confirm').textContent = t.confirmBtn;
+        if (el('label-host-setup')) el('label-host-setup').textContent = t.secretHostSetup;
+        if (el('label-host-cats')) el('label-host-cats').textContent = t.secretHostCats;
+        if (el('btn-host-all')) el('btn-host-all').textContent = this.secretState.selectedCats?.size === AppCategories.length ? t.deselectAll : t.selectAll;
+        if (el('btn-generate-room')) el('btn-generate-room').textContent = t.secretGenerateBtn;
+        if (el('label-host-code')) el('label-host-code').textContent = t.secretHostCode;
+        if (el('text-host-share')) el('text-host-share').textContent = t.secretHostShare;
+        if (el('btn-start-secret-game')) el('btn-start-secret-game').textContent = t.secretStartBtn;
+        if (el('btn-host-cancel')) el('btn-host-cancel').textContent = t.cancelBtn;
+        if (el('label-guest-code')) el('label-guest-code').textContent = t.secretGuestCode;
+        if (el('btn-join-game')) el('btn-join-game').textContent = t.secretConnectBtn;
+        if (el('btn-myst-ready')) el('btn-myst-ready').textContent = t.secretReadyBtn;
+        if (el('btn-myst-end-turn')) el('btn-myst-end-turn').textContent = t.secretEndTurnBtn;
+        if (el('btn-myst-accuse')) el('btn-myst-accuse').textContent = this.secretState.accuseMode ? t.secretCancelAccuseBtn : t.secretAccuseBtn;
+        if (el('btn-myst-surrender')) el('btn-myst-surrender').textContent = t.secretSurrenderBtn;
+        if (el('btn-res-menu')) el('btn-res-menu').textContent = t.secretBackMenuBtn;
+        if (el('res-lbl-mine')) el('res-lbl-mine').textContent = t.resMyChoice;
+        if (el('res-lbl-opp')) el('res-lbl-opp').textContent = t.resOppChoice;
+      }
+
+      renderCategories(containerId, selectedSet, onToggle) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = '';
+        if (!selectedSet || typeof selectedSet.has !== 'function') selectedSet = new Set();
+        AppCategories.forEach(cat => {
+          const active = selectedSet.has(cat.id);
+          const el = document.createElement('div');
+          el.className = 'cat-toggle' + (active ? ' active' : '');
+          el.innerHTML = `<div class="ct-icon">${cat.icon}</div><div style="flex:1;"><div class="ct-name">${cat.name}</div><div class="ct-count">${cat.chars.length} персонажів</div></div><div class="ct-check">${active ? '✓' : ''}</div>`;
+          el.addEventListener('click', () => onToggle(cat.id));
+          container.appendChild(el);
+        });
+      }
+
+      toggleCategory(id) {
+        if (this.state.selectedCats.has(id)) {
+          if (this.state.selectedCats.size === 1) { this.showToast(AppText.noCategoryError); return; }
+          this.state.selectedCats.delete(id);
+        } else {
+          this.state.selectedCats.add(id);
+        }
+        this.renderCategories('cats-container', this.state.selectedCats, this.toggleCategory.bind(this));
+        this.updateStaticTexts();
+      }
+
+      toggleAll() {
+        this.state.selectedCats = this.state.selectedCats.size === AppCategories.length ? new Set() : new Set(AppCategories.map(c => c.id));
+        this.renderCategories('cats-container', this.state.selectedCats, this.toggleCategory.bind(this));
+        this.updateStaticTexts();
+      }
+
+      changeCount(delta) {
+        const next = this.state.playerCount + delta;
+        if (next < AppConfig.SPIES_PER_PLAYERS || next > AppConfig.MAX_PLAYERS_SPY) return;
+        this.state.playerCount = next;
+        document.getElementById('player-count').textContent = next;
+        this.updateStaticTexts();
+      }
+
+      selectGame(game) {
+        this.closeAllModals();
+        this.currentGame = game;
+        if (game === 'spy') {
+          document.body.classList.remove('is-secret-mode');
+          this.show('btn-rules'); this.show('btn-back-menu');
+          document.getElementById('header-title').textContent = '🕵️‍♂️ SPY';
+          this.renderCategories('cats-container', this.state.selectedCats, this.toggleCategory.bind(this));
+          this.switchScreen('screen-setup');
+        } else if (game === 'secret') {
+          document.body.classList.add('is-secret-mode');
+          this.show('btn-rules'); this.show('btn-back-menu');
+          document.getElementById('header-title').textContent = '🎭 MYST';
+          this.switchScreen('screen-secret-role-choice');
+        }
+      }
+
+      async backToMenu() {
+        const needsPortraitTip = document.getElementById('screen-secret-result').classList.contains('active') || document.getElementById('screen-secret-game').classList.contains('active');
+        this.closeAllModals();
+        this.currentGame = null;
+        document.body.classList.remove('is-secret-mode');
+        this.hide('btn-rules'); this.hide('btn-back-menu');
+        document.getElementById('header-title').textContent = '🕵️‍♂️ PartyBox';
+        this.show(document.querySelector('header'));
+        await this.cancelSecretLobby();
+        await this.network.disconnect(this.secretState.role);
+        this.resetSecretState();
+        const joinBtn = document.getElementById('btn-join-game');
+        if (joinBtn) joinBtn.disabled = false;
+        try {
+          this.state.currentPlayer = 0; this.state.cardOpen = false;
+          const flipCard = document.getElementById('flip-card');
+          if (flipCard) flipCard.classList.remove('flipped');
+          this.hide('flip-scene'); this.hide('deal-actions'); this.show('deal-prompt');
+        } catch (e) { }
+        this.switchScreen('screen-main-menu');
+        if (needsPortraitTip && window.innerWidth > window.innerHeight) {
+          const tip = document.getElementById('portrait-tip');
+          if (tip) tip.classList.add('active');
+        }
+      }
+
+      resetSecretState() {
+        this.secretState = {
+          role: null, roomCode: null, grid: [], gridBuilt: false, mySelected: null,
+          opponentSelection: null, opponentSelectedimgUrl: null, myEliminated: new Set(),
+          isMyTurn: false, gameActive: false, stage: 'lobby', myReady: false,
+          opponentReady: false, accuseMode: false, status: 'selection', currentTurn: 'host',
+          winner: null, resultShown: false, selectedCats: new Set()
+        };
+      }
+
+      startGame() {
+        const pool = [];
+        AppCategories.forEach(cat => { if (this.state.selectedCats.has(cat.id)) pool.push(...cat.chars); });
+        if (pool.length === 0) { this.showToast(AppText.noCategoryError); return; }
+        const chosen = pool[this.secureRandomInt(pool.length)];
+        this.state.chosenChar = chosen;
+        const spiesCount = Math.max(1, Math.floor(this.state.playerCount / AppConfig.SPIES_PER_PLAYERS));
+        const roleIndices = this.secureShuffle([...Array(this.state.playerCount).keys()]);
+        this.state.spySet = new Set(roleIndices.slice(0, spiesCount));
+        this.state.currentPlayer = 0; this.state.cardOpen = false;
+        document.getElementById('final-players').textContent = this.state.playerCount;
+        document.getElementById('final-spies').textContent = spiesCount;
+        this.showDealPrompt(true); this.switchScreen('screen-deal');
+      }
+
+      showDealPrompt(isFirst) {
+        this.updateStaticTexts();
+        this.show('deal-prompt'); this.hide('flip-scene'); this.hide('deal-actions');
+        document.getElementById('flip-card').classList.remove('flipped');
+      }
+
+      openCard() {
+        if (this.state.cardOpen) return;
+        this.state.cardOpen = true;
+        const isSpy = this.state.spySet.has(this.state.currentPlayer);
+        const back = document.getElementById('flip-back');
+        const t = AppText;
+        if (isSpy) {
+          back.className = 'flip-face flip-back back-spy';
+          back.innerHTML = `<div class="spy-content"><div class="spy-emoji">🕵️‍♂️</div><div class="spy-title">${t.youAreSpy}</div><div class="spy-sub">${t.spyTask}</div></div><div class="spy-card-info"><div class="spy-badge"><div class="spy-dot"></div><div class="spy-badge-text">${t.spyBadge}</div></div></div>`;
+        } else {
+          back.className = 'flip-face flip-back back-char';
+          const charName = this.state.chosenChar.name;
+          back.innerHTML = `
+        <div class="card-img-wrap">
+          <div class="card-img-placeholder" id="card-ph">${this.state.chosenChar.emoji}</div>
+          <div class="img-loader" id="img-ldr"><div class="spinner"></div></div>
+          <img class="card-img loading" id="card-photo" alt="${charName}"/>
+          <div class="card-img-overlay"></div>
+        </div>
+        <div class="card-info">
+          <div class="info-trigger-btn" id="spy-info-btn">i</div>
+          <div class="card-top-label">${t.characterYour}</div>
+          <div class="card-name">${charName}</div>
+          <div class="card-bot-label">${t.characterWarn}</div>
+        </div>`;
+          document.getElementById('spy-info-btn').onclick = (e) => { e.stopPropagation(); this.openInfoModal(this.state.chosenChar, {}, e); };
+          const imgEl = back.querySelector('#card-photo');
+          ImageLoader.bind(imgEl, this.state.chosenChar, { hidePlaceholder: true });
+        }
+        this.hide('deal-prompt'); this.show('flip-scene');
+        void document.getElementById('flip-scene').offsetWidth;
+        document.getElementById('flip-card').classList.add('flipped');
+        setTimeout(() => {
+          document.getElementById('btn-close-card').textContent = this.state.currentPlayer >= this.state.playerCount - 1 ? t.finishHandoutBtn : t.closeCardBtn;
+          this.show('deal-actions');
+        }, 600);
+      }
+
+      closeCard() {
+        this.hide('deal-actions');
+        document.getElementById('flip-card').classList.remove('flipped');
+        this.state.cardOpen = false;
+        setTimeout(() => {
+          this.hide('flip-scene');
+          this.state.currentPlayer++;
+          if (this.state.currentPlayer >= this.state.playerCount) {
+            this.switchScreen('screen-final');
+          } else {
+            this.showDealPrompt(false);
+          }
+        }, 600);
+      }
+
+      confirmAbort() { this.openModal('confirmModal'); }
+      executeRestart() { this.closeModal('confirmModal'); this.resetGame(); }
+      resetGame() {
+        this.state.currentPlayer = 0; this.state.cardOpen = false;
+        this.hide('deal-actions'); this.hide('flip-scene');
+        this.switchScreen('screen-setup');
+      }
+
+      openInfoModal(charData, options = {}, event) {
+        if (event) event.stopPropagation();
+        const name = charData.name || charData.nameRU || 'Персонаж';
+        const description = charData.desc || charData.descRU || 'Опис відсутній.';
+        const enlargeImage = options.enlargeImage === true;
+        document.getElementById('modal-info-title').textContent = name;
+        document.getElementById('modal-info-body').innerHTML = enlargeImage ? `
+      <div style="display:flex; justify-content:center; width:100%; margin-bottom: 18px;">
+        <img class="card-img loading" id="modal-char-photo" alt="${name}" style="width:auto; height:auto; max-width: calc(100vw - 56px); max-height: calc(100vh - 220px); border-radius: 20px; object-fit: contain; display:block;" />
+      </div>
+      <p style="font-size: 1rem; line-height: 1.6; color: var(--text);">${description}</p>
+    ` : `
+      <div style="font-size: 4.5rem; margin-bottom: 14px; text-shadow: 0 4px 12px rgba(0,0,0,0.45);">${charData.emoji || '🔍'}</div>
+      <p style="font-size: 1.05rem; line-height: 1.6; color: var(--text); font-weight: 500;">${description}</p>
+    `;
+        if (enlargeImage) {
+          const modalImg = document.getElementById('modal-char-photo');
+          if (modalImg) {
+            const url = ImageLoader.getCharImage(charData);
+            if (url) {
+              modalImg.src = url;
+              modalImg.onload = () => modalImg.classList.remove('loading');
+              modalImg.onerror = () => this.hide(modalImg);
+            } else {
+              this.hide(modalImg);
             }
-          } catch (e) {
-            showToast("Помилка активації повного екрану.");
           }
+        }
+        this.openModal('infoModal');
+      }
+
+      chooseSecretHost() {
+        this.secretState.role = 'host';
+        this.renderCategories('secret-cats-container', this.secretState.selectedCats, this.toggleSecretCategory.bind(this));
+        this.show('host-setup-view'); this.hide('host-lobby-view');
+        this.switchScreen('screen-secret-lobby-host');
+      }
+
+      chooseSecretGuest() {
+        this.secretState.role = 'guest';
+        document.getElementById('room-code-input').value = '';
+        document.getElementById('join-status').textContent = '';
+        const joinBtn = document.getElementById('btn-join-game');
+        if (joinBtn) joinBtn.disabled = false;
+        this.switchScreen('screen-secret-lobby-guest');
+      }
+
+      toggleSecretCategory(id) {
+        if (this.secretState.selectedCats.has(id)) {
+          if (this.secretState.selectedCats.size === 1) { this.showToast(AppText.noCategoryError); return; }
+          this.secretState.selectedCats.delete(id);
         } else {
-          showToast("iOS не підтримує це\nВикористайте налаштування сторінки");
+          this.secretState.selectedCats.add(id);
         }
-      } else {
-        if (cancelFullScreen) {
-          cancelFullScreen.call(doc);
+        this.renderCategories('secret-cats-container', this.secretState.selectedCats, this.toggleSecretCategory.bind(this));
+        this.updateStaticTexts();
+      }
+
+      toggleAllMysteryCats() {
+        this.secretState.selectedCats = this.secretState.selectedCats.size === AppCategories.length ? new Set() : new Set(AppCategories.map(c => c.id));
+        this.renderCategories('secret-cats-container', this.secretState.selectedCats, this.toggleSecretCategory.bind(this));
+        this.updateStaticTexts();
+      }
+
+      async generateUniqueRoomCode() {
+        const minCode = 10 ** (AppConfig.ROOM_CODE_LENGTH - 1);
+        const maxCode = 10 ** AppConfig.ROOM_CODE_LENGTH;
+        for (let attempt = 0; attempt < AppConfig.MAX_ROOM_CODE_ATTEMPTS; attempt++) {
+          const code = String(minCode + Math.floor(Math.random() * (maxCode - minCode)));
+          const snap = await firebase.database().ref('rooms/' + code).once('value');
+          if (!snap.exists()) return code;
         }
+        throw new Error('roomcode-collision');
+      }
+
+      async generateSecretRoomCode() {
+        const pool = [];
+        AppCategories.forEach(cat => { if (this.secretState.selectedCats.has(cat.id)) pool.push(...cat.chars); });
+        if (pool.length < AppConfig.SECRET_GRID_SIZE) { this.showToast(AppText.noCategoryError); return; }
+        this.secretState.grid = this.secureShuffle(pool).slice(0, AppConfig.SECRET_GRID_SIZE);
+        let code;
+        try { code = await this.generateUniqueRoomCode(); }
+        catch (error) { this.showToast('Не вдалося згенерувати код. Спробуйте ще раз.'); return; }
+
+        this.secretState.roomCode = code;
+        try {
+          document.getElementById('btn-generate-room').disabled = true;
+          await this.network.createRoom(code, this.secretState.grid.map(c => ({ name: c.name, emoji: c.emoji, imgUrl: c.imgUrl || '', desc: c.desc || '' })));
+          document.getElementById('room-code-display').textContent = code;
+          this.hide('host-setup-view'); this.show('host-lobby-view');
+          document.getElementById('label-waiting-players').textContent = AppText.secretWaitMsg;
+          this.network.listenForGuest(() => {
+            this.hide('host-wait-group'); this.show('host-connected-group');
+            document.getElementById('host-connected-group').textContent = AppText.secretConnectedMsg;
+            this.show('btn-start-secret-game');
+          });
+          ImageLoader.preload(this.secretState.grid).catch(() => { });
+        } catch (e) {
+          this.showToast('Помилка створення кімнати. Спробуйте ще раз.');
+          document.getElementById('btn-generate-room').disabled = false;
+        }
+      }
+
+      async joinGame() {
+        const code = document.getElementById('room-code-input').value.trim().replace(/\s/g, '');
+        if (code.length !== AppConfig.ROOM_CODE_LENGTH) { this.showToast(`Введіть ${AppConfig.ROOM_CODE_LENGTH} цифр`); return; }
+        await this.network.disconnect(this.secretState.role);
+        const joinBtn = document.getElementById('btn-join-game');
+        joinBtn.disabled = true;
+        document.getElementById('join-status').textContent = 'Підключення...';
+        try {
+          const roomData = await this.network.joinRoom(code);
+          const grid = this.ensureArray(roomData.grid);
+          if (grid.length !== AppConfig.SECRET_GRID_SIZE) throw new Error('invalid-room-data');
+          this.secretState.roomCode = code;
+          this.secretState.grid = grid;
+          document.getElementById('join-status').textContent = AppText.secretConnectedMsg;
+          this.initSecretGameState();
+          ImageLoader.preload(this.secretState.grid).catch(() => { });
+        } catch (e) {
+          const msg = e.message === 'room-not-found' ? 'Кімнату не знайдено. Перевірте код 🔍' : 'Помилка підключення. Спробуйте ще раз.';
+          this.showToast(msg);
+          document.getElementById('join-status').textContent = '';
+          joinBtn.disabled = false;
+        }
+      }
+
+      async cancelSecretLobby() {
+        await this.network.disconnect(this.secretState.role).catch(() => { });
+        this.show('host-setup-view'); this.hide('host-lobby-view');
+        this.show('host-wait-group'); this.hide('host-connected-group');
+        this.hide('btn-start-secret-game');
+        document.getElementById('btn-generate-room').disabled = false;
+      }
+
+      startSecretGame() {
+        this.initSecretGameState();
+        this.network.updateState('status', 'selection');
+      }
+
+      initSecretGameState() {
+        this.secretState.stage = 'lobby';
+        this.secretState.mySelected = null;
+        this.secretState.opponentSelection = null;
+        this.secretState.myEliminated = new Set();
+        this.secretState.myReady = false;
+        this.secretState.opponentReady = false;
+        this.secretState.accuseMode = false;
+        this.secretState.isMyTurn = false;
+        this.secretState.gameActive = true;
+        this.secretState.currentTurn = 'host';
+        this.secretState.winner = null;
+        this.secretState.resultShown = false;
+        this.network.listenState(this.syncGameState.bind(this));
+        this.network.listenForDisconnect(() => {
+          this.showToast('З\'єднання з суперником перервано 💔');
+          this.secretState.gameActive = false;
+          setTimeout(async () => { await this.backToMenu(); }, 2500);
+        }, this.secretState.role);
+        document.getElementById('orientation-tip').classList.remove('dismissed');
+        this.hide('mystery-my-char-wrap');
+      }
+
+      dismissOrientationTip() {
+        document.getElementById('orientation-tip').classList.add('dismissed');
+      }
+
+      syncGameState(roomData) {
+        if (!roomData) {
+          if (this.secretState.gameActive) {
+            this.showToast('Кімната закрита або втрачено з\'єднання.');
+            this.secretState.gameActive = false;
+            setTimeout(async () => { await this.backToMenu(); }, 2500);
+          }
+          return;
+        }
+        let gridArray = [];
+        if (roomData.grid !== undefined && roomData.grid !== null) {
+          gridArray = this.ensureArray(roomData.grid);
+          const hasLocal = Array.isArray(this.secretState.grid) && this.secretState.grid.length > 0;
+          const gridChanged = !this.secretState.gridBuilt || this.secretState.grid.length !== gridArray.length ||
+            this.secretState.grid.some((item, idx) => {
+              const other = gridArray[idx] || {};
+              return item.name !== other.name || item.imgUrl !== other.imgUrl;
+            });
+          if (!hasLocal && gridArray.length > 0) this.secretState.grid = gridArray;
+          if (gridArray.length > 0 && gridChanged) {
+            this.secretState.grid = gridArray;
+            this.secretState.gridBuilt = false;
+          }
+        }
+        const myRoleData = roomData[this.secretState.role] || {};
+        this.secretState.mySelected = myRoleData.selection !== null ? myRoleData.selection : null;
+        this.secretState.myReady = myRoleData.ready === true;
+        this.secretState.myEliminated = new Set(myRoleData.eliminated || []);
+        const oppRole = this.secretState.role === 'host' ? 'guest' : 'host';
+        const oppRoleData = roomData[oppRole] || {};
+        this.secretState.opponentReady = oppRoleData.ready === true;
+        this.secretState.opponentSelection = oppRoleData.selection !== null ? oppRoleData.selection : null;
+        this.secretState.status = roomData.status || 'lobby';
+        this.secretState.currentTurn = roomData.currentTurn || 'host';
+        this.secretState.isMyTurn = this.secretState.currentTurn === this.secretState.role;
+        this.secretState.winner = roomData.winner || null;
+        const shouldRenderGrid = roomData.status === 'selection' || roomData.status === 'playing';
+        if (shouldRenderGrid) {
+          if (!this.secretState.gridBuilt) { this.initSecretGrid(); this.secretState.gridBuilt = true; }
+          const gameScreen = document.getElementById('screen-secret-game');
+          if (gameScreen && !gameScreen.classList.contains('active')) {
+            try { this.hide(document.querySelector('header')); } catch (e) { }
+            this.hide('mystery-my-char-wrap');
+            this.switchScreen('screen-secret-game');
+            const tip = document.getElementById('orientation-tip');
+            if (tip) tip.classList.remove('dismissed');
+          }
+        }
+        if (roomData.status === 'lobby') this.secretState.stage = 'lobby';
+        else if (roomData.status === 'selection') {
+          this.secretState.stage = 'selection';
+          if (this.secretState.myReady && this.secretState.opponentReady) this.network.updateState('status', 'playing');
+        } else if (roomData.status === 'playing') this.secretState.stage = 'playing';
+        else if (roomData.status === 'ended' || roomData.winner !== null) {
+          this.secretState.stage = 'ended';
+          if (roomData.winner != null && roomData.resultReason != null && !this.secretState.resultShown) {
+            this.secretState.resultShown = true;
+            const iWon = roomData.winner === this.secretState.role;
+            const myCharIdx = myRoleData.selection;
+            const oppCharIdx = oppRoleData.selection;
+            this.showSecretResult(iWon, myCharIdx, oppCharIdx, roomData.resultReason);
+          }
+        }
+        this.updateSecretGridUI();
+      }
+
+      initSecretGrid() {
+        const gridEl = document.getElementById('cards-grid');
+        gridEl.innerHTML = '';
+        this.secretState.grid.forEach((char, idx) => {
+          const cell = document.createElement('div');
+          cell.id = `card-cell-${idx}`;
+          cell.className = 'card-cell';
+          cell.dataset.idx = idx;
+          const charName = char.name;
+          cell.innerHTML = `
+        <div class="card-img-wrap">
+          <div class="card-img-placeholder">${char.emoji}</div>
+          <div class="img-loader"><div class="spinner"></div></div>
+          <img class="card-img loading" alt="${charName}" />
+          <div class="card-img-overlay"></div>
+          <div class="info-trigger-btn" title="Info">i</div>
+        </div>
+        <div class="secret-card-info">
+          <div class="card-top-label">${charName}</div>
+          <div class="card-bot-label">${AppText.characterWarn}</div>
+        </div>`;
+          const imgEl = cell.querySelector('.card-img');
+          ImageLoader.bind(imgEl, char, { hidePlaceholder: true });
+          cell.querySelector('.info-trigger-btn').onclick = (e) => { e.stopPropagation(); this.openInfoModal(char, { enlargeImage: true }, e); };
+          cell.onclick = () => this.handleCardClick(idx);
+          gridEl.appendChild(cell);
+        });
+      }
+
+      updateSecretGridUI() {
+        const t = AppText;
+        for (let idx = 0; idx < AppConfig.SECRET_GRID_SIZE; idx++) {
+          const cell = document.getElementById(`card-cell-${idx}`);
+          if (!cell) continue;
+          cell.classList.toggle('eliminated', this.secretState.myEliminated.has(idx));
+          cell.classList.toggle('selected', this.secretState.stage === 'selection' && this.secretState.mySelected === idx);
+          cell.classList.toggle('locked', this.secretState.stage === 'playing' && !this.secretState.isMyTurn);
+          cell.classList.toggle('accuse-target', this.secretState.accuseMode);
+        }
+        const readyBtn = document.getElementById('btn-myst-ready');
+        const endBtn = document.getElementById('btn-myst-end-turn');
+        const accBtn = document.getElementById('btn-myst-accuse');
+        const turnInd = document.getElementById('turn-indicator');
+        if (this.secretState.stage === 'lobby') {
+          this.hide(readyBtn); this.hide(endBtn); this.hide(accBtn);
+          turnInd.textContent = this.secretState.role === 'guest' ? 'Очікування початку гри хостом...' : 'Очікування підключення суперника...';
+          turnInd.className = 'turn-indicator blink';
+        } else if (this.secretState.stage === 'selection') {
+          this.show(readyBtn); this.hide(endBtn); this.hide(accBtn);
+          readyBtn.disabled = this.secretState.myReady;
+          turnInd.textContent = t.turnWait; turnInd.className = 'turn-indicator blink';
+        } else if (this.secretState.stage === 'playing') {
+          this.hide(readyBtn);
+          if (this.secretState.isMyTurn) { this.show(endBtn); this.show(accBtn); }
+          else { this.hide(endBtn); this.hide(accBtn); }
+          accBtn.textContent = this.secretState.accuseMode ? t.secretCancelAccuseBtn : t.secretAccuseBtn;
+          turnInd.textContent = this.secretState.isMyTurn ? t.turnMine : t.turnEnemy;
+          turnInd.className = 'turn-indicator ' + (this.secretState.isMyTurn ? '' : 'enemy');
+        }
+      }
+
+      async handleCardClick(idx) {
+        if (this.secretState.stage === 'selection') {
+          if (!this.secretState.myReady) this.network.updateState(`${this.secretState.role}/selection`, idx);
+        } else if (this.secretState.stage === 'playing' && this.secretState.isMyTurn) {
+          if (this.secretState.accuseMode) {
+            this.showAccuseConfirm(idx);
+          } else {
+            const newEliminated = [...this.secretState.myEliminated];
+            const idx_pos = newEliminated.indexOf(idx);
+            const isEliminating = idx_pos < 0;
+            const isOpponentSelectedCard = idx === this.secretState.opponentSelection;
+            if (isEliminating && isOpponentSelectedCard) {
+              try {
+                await this.network.updateStates({ status: 'ended', winner: this.secretState.role, resultReason: 'eliminate_opponent_char' });
+              } catch (err) { this.showToast('Помилка мережі. Спробуйте ще раз.'); }
+              return;
+            }
+            if (idx_pos >= 0) newEliminated.splice(idx_pos, 1);
+            else newEliminated.push(idx);
+            this.network.updateState(`${this.secretState.role}/eliminated`, newEliminated);
+          }
+        }
+      }
+
+      showAccuseConfirm(idx) {
+        this.pendingAccuseIndex = idx;
+        const char = Array.isArray(this.secretState.grid) && this.secretState.grid[idx] ? this.secretState.grid[idx] : null;
+        const name = char ? (char.name || char.nameRU || 'Персонаж') : 'Персонаж';
+        const titleEl = document.getElementById('accuse-title');
+        const descEl = document.getElementById('accuse-desc');
+        const confirmBtn = document.getElementById('btn-accuse-confirm');
+        if (titleEl) titleEl.textContent = `Звинуватити ${name}?`;
+        if (descEl) descEl.textContent = 'Це фінальна відповідь.';
+        if (confirmBtn) confirmBtn.disabled = false;
+        this.openModal('accuseModal');
+      }
+
+      async performAccuse() {
+        if (this.pendingAccuseIndex === null) { this.closeModal('accuseModal'); return; }
+        const idx = this.pendingAccuseIndex; this.pendingAccuseIndex = null;
+        this.closeModal('accuseModal');
+        const oppRole = this.secretState.role === 'host' ? 'guest' : 'host';
+        const isCorrect = idx === this.secretState.opponentSelection;
+        const winner = isCorrect ? this.secretState.role : oppRole;
+        const confirmBtn = document.getElementById('btn-accuse-confirm');
+        if (confirmBtn) confirmBtn.disabled = true;
+        try {
+          await this.network.updateStates({
+            status: 'ended', winner, resultReason: isCorrect ? 'accuse_correct' : 'accuse_missed'
+          });
+        } catch (err) { this.showToast('Помилка мережі. Спробуйте ще раз.'); }
+        finally { if (confirmBtn) confirmBtn.disabled = false; }
+      }
+
+      sendMysteryReady() {
+        if (this.secretState.mySelected === null) { this.showToast('Оберіть персонажа!'); return; }
+        this.network.updateState(`${this.secretState.role}/ready`, true);
+        const myChar = this.secretState.grid[this.secretState.mySelected];
+        document.getElementById('mystery-my-char-emoji').textContent = myChar.emoji;
+        document.getElementById('mystery-my-char-name').textContent = myChar.name;
+        const imgEl = document.getElementById('mystery-my-char-img');
+        imgEl.src = ''; this.hide(imgEl); this.show('mystery-my-char-emoji');
+        const infoBtn = document.getElementById('btn-myst-info');
+        infoBtn.onclick = (e) => { e.stopPropagation(); this.openInfoModal(myChar, { enlargeImage: true }, e); };
+        const url = ImageLoader.getCharImage(myChar);
+        if (url) { imgEl.src = url; this.show(imgEl); this.hide('mystery-my-char-emoji'); }
+        this.show('mystery-my-char-wrap');
+      }
+
+      endSecretTurn() {
+        const nextTurn = this.secretState.role === 'host' ? 'guest' : 'host';
+        this.network.updateState('currentTurn', nextTurn);
+      }
+
+      toggleAccuseMode() {
+        this.secretState.accuseMode = !this.secretState.accuseMode;
+        this.updateSecretGridUI();
+      }
+
+      async surrenderSecretGame() {
+        const oppRole = this.secretState.role === 'host' ? 'guest' : 'host';
+        try { await this.network.updateStates({ status: 'ended', winner: oppRole, resultReason: 'surrender' }); } catch (e) { }
+      }
+
+      async showSecretResult(iWon, myCharIdx, oppCharIdx, reason) {
+        const t = AppText;
+        const resultTitle = document.getElementById('result-title');
+        resultTitle.textContent = iWon ? t.resWinTitle : t.resLoseTitle;
+        resultTitle.classList.toggle('win', iWon); resultTitle.classList.toggle('lose', !iWon);
+        document.getElementById('result-icon').textContent = iWon ? '🎉' : '💔';
+        let message;
+        const isHost = this.secretState.role === 'host';
+        if (reason === 'accuse_correct') message = iWon ? t.resWinByAccuseCorrect : t.resLoseByAccuseCorrect;
+        else if (reason === 'accuse_missed') message = iWon ? t.resWinByAccuseMissed : (isHost ? t.resLoseByAccuseMissedHost : t.resLoseByAccuseMissedGuest);
+        else if (reason === 'surrender') message = iWon ? t.resWinBySurrender : t.resLoseBySurrender;
+        else if (reason === 'eliminate_opponent_char') message = iWon ? t.resWinByEliminatedOpponentCard : t.resLoseByEliminatedOpponentCard;
+        else message = iWon ? t.resWinMsg : t.resLoseMsg;
+        document.getElementById('result-message').textContent = message;
+        resultTitle.style.background = '';
+        const mChar = Number.isInteger(myCharIdx) && this.secretState.grid[myCharIdx] ? this.secretState.grid[myCharIdx] : null;
+        const oChar = Number.isInteger(oppCharIdx) && this.secretState.grid[oppCharIdx] ? this.secretState.grid[oppCharIdx] : null;
+        const setupResultImage = (charObj, prefix) => {
+          const emojiEl = document.getElementById(`${prefix}-emoji`);
+          const imgEl = document.getElementById(`${prefix}-img`);
+          const nameEl = document.getElementById(`${prefix}-name`);
+          this.show(emojiEl); this.hide(imgEl); imgEl.src = '';
+          if (charObj) {
+            emojiEl.textContent = charObj.emoji; nameEl.textContent = charObj.name;
+            const url = ImageLoader.getCharImage(charObj);
+            if (url) { imgEl.src = url; this.show(imgEl); this.hide(emojiEl); }
+          } else { emojiEl.textContent = '❓'; nameEl.textContent = '-'; }
+        };
+        setupResultImage(mChar, 'res-my'); setupResultImage(oChar, 'res-opp');
+        this.secretState.gameActive = false;
+        await this.network.disconnect(this.secretState.role).catch(() => { });
+        this.hide(document.querySelector('header'));
+        this.switchScreen('screen-secret-result');
+      }
+
+      toggleFullScreen() {
+        const doc = document; const docEl = doc.documentElement;
+        const requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+        const cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+        if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+          if (requestFullScreen) {
+            try {
+              const res = requestFullScreen.call(docEl);
+              if (res && typeof res.catch === 'function') res.catch(() => this.showToast("Повноекранний режим заблоковано на цьому пристрої."));
+            } catch (e) { this.showToast("Помилка активації повного екрану."); }
+          } else { this.showToast("iOS не підтримує це. Використайте налаштування сторінки"); }
+        } else {
+          if (cancelFullScreen) cancelFullScreen.call(doc);
+        }
+      }
+
+      updateFullscreenIcon() {
+        const isFullscreen = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+        const iconEnter = document.getElementById('icon-fs-enter');
+        const iconExit = document.getElementById('icon-fs-exit');
+        if (iconEnter && iconExit) {
+          isFullscreen ? this.hide(iconEnter) : this.show(iconEnter);
+          isFullscreen ? this.show(iconExit) : this.hide(iconExit);
+        }
+      }
+
+      bindEvents() {
+        const $ = id => document.getElementById(id);
+        const on = (id, fn) => { const el = $(id); if (el) el.addEventListener('click', fn); };
+        on('menu-spy-card', () => this.selectGame('spy'));
+        on('menu-secret-card', () => this.selectGame('secret'));
+        on('secret-host-card', () => this.chooseSecretHost());
+        on('secret-guest-card', () => this.chooseSecretGuest());
+        on('btn-back-menu', () => this.backToMenu());
+        on('btn-rules', () => this.openModal('rulesModal'));
+        on('btn-fullscreen', () => this.toggleFullScreen());
+        on('btn-count-decrease', () => this.changeCount(-1));
+        on('btn-count-increase', () => this.changeCount(1));
+        on('btn-select-all', () => this.toggleAll());
+        on('btn-start-deal', () => this.startGame());
+        on('btn-open-card-init', () => this.openCard());
+        on('flip-front-cover', () => this.openCard());
+        on('btn-close-card', () => this.closeCard());
+        on('btn-restart-action', () => this.confirmAbort());
+        on('btn-new-game-restart', () => this.resetGame());
+        on('btn-cancel', () => this.closeModal('confirmModal'));
+        on('btn-confirm', () => this.executeRestart());
+        on('btn-close-rules', () => this.closeModal('rulesModal'));
+        on('btn-close-info', () => this.closeModal('infoModal'));
+        on('btn-secret-back-host', () => this.switchScreen('screen-secret-role-choice'));
+        on('btn-secret-back-guest', () => this.switchScreen('screen-secret-role-choice'));
+        on('btn-host-all', () => this.toggleAllMysteryCats());
+        on('btn-generate-room', () => this.generateSecretRoomCode());
+        on('btn-start-secret-game', () => this.startSecretGame());
+        on('btn-host-cancel', () => this.cancelSecretLobby());
+        on('btn-join-game', () => this.joinGame());
+        on('btn-dismiss-orientation', () => this.dismissOrientationTip());
+        on('btn-myst-ready', () => this.sendMysteryReady());
+        on('btn-myst-end-turn', () => this.endSecretTurn());
+        on('btn-myst-accuse', () => this.toggleAccuseMode());
+        on('btn-myst-surrender', () => this.surrenderSecretGame());
+        on('btn-accuse-cancel', () => this.closeModal('accuseModal'));
+        on('btn-accuse-confirm', () => this.performAccuse());
+        on('btn-res-menu', () => this.backToMenu());
+        on('btn-dismiss-portrait', () => this.dismissPortraitTip());
+        document.addEventListener('fullscreenchange', () => this.updateFullscreenIcon());
+        document.addEventListener('webkitfullscreenchange', () => this.updateFullscreenIcon());
+        document.addEventListener('mozfullscreenchange', () => this.updateFullscreenIcon());
+        document.addEventListener('MSFullscreenChange', () => this.updateFullscreenIcon());
+        window.addEventListener('resize', () => { if (window.innerHeight > window.innerWidth) this.dismissPortraitTip(); });
+        window.addEventListener('beforeunload', () => {
+          if (this.network._roomRef && this.secretState.role === 'host') {
+            try { this.network._roomRef.onDisconnect().remove(); } catch (e) { }
+          }
+        });
       }
     }
 
-    function updateFullscreenIcon() {
-      const isFullscreen = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
-      const iconEnter = document.getElementById('icon-fs-enter');
-      const iconExit = document.getElementById('icon-fs-exit');
-
-      if (iconEnter && iconExit) {
-        isFullscreen ? hide(iconEnter) : show(iconEnter);
-        isFullscreen ? show(iconExit) : hide(iconExit);
-      }
-    }
-
-    document.addEventListener('fullscreenchange', updateFullscreenIcon);
-    document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
-    document.addEventListener('mozfullscreenchange', updateFullscreenIcon);
-    document.addEventListener('MSFullscreenChange', updateFullscreenIcon);
-
-    function bindUIActions() {
-      const $ = id => document.getElementById(id);
-      const on = (id, fn) => { const el = $(id); if (el) el.addEventListener('click', fn); };
-
-      on('menu-spy-card', () => selectGame('spy'));
-      on('menu-secret-card', () => selectGame('secret'));
-      on('secret-host-card', chooseSecretHost);
-      on('secret-guest-card', chooseSecretGuest);
-      on('btn-back-menu', backToMenu);
-      on('btn-rules', () => openModal('rulesModal'));
-      on('btn-fullscreen', toggleFullScreen);
-      on('btn-count-decrease', () => changeCount(-1));
-      on('btn-count-increase', () => changeCount(1));
-      on('btn-select-all', toggleAll);
-      on('btn-start-deal', startGame);
-      on('btn-open-card-init', openCard);
-      on('flip-front-cover', openCard);
-      on('btn-close-card', closeCard);
-      on('btn-restart-action', confirmAbort);
-      on('btn-new-game-restart', resetGame);
-      on('btn-cancel', () => closeModal('confirmModal'));
-      on('btn-confirm', executeRestart);
-      on('btn-close-rules', () => closeModal('rulesModal'));
-      on('btn-close-info', () => closeModal('infoModal'));
-      on('btn-secret-back-host', () => switchScreen('screen-secret-role-choice'));
-      on('btn-secret-back-guest', () => switchScreen('screen-secret-role-choice'));
-      on('btn-host-all', toggleAllMysteryCats);
-      on('btn-generate-room', generateSecretRoomCode);
-      on('btn-start-secret-game', startSecretGame);
-      on('btn-host-cancel', cancelSecretLobby);
-      on('btn-join-game', joinGame);
-      on('btn-dismiss-orientation', dismissOrientationTip);
-      on('btn-myst-ready', sendMysteryReady);
-      on('btn-myst-end-turn', endSecretTurn);
-      on('btn-myst-accuse', toggleAccuseMode);
-      on('btn-myst-surrender', surrenderSecretGame);
-      on('btn-accuse-cancel', () => closeModal('accuseModal'));
-      on('btn-accuse-confirm', performAccuse);
-      on('btn-res-menu', backToMenu);
-      on('btn-dismiss-portrait', dismissPortraitTip);
-    }
-
-    // ════════════════════════════════════════════
-    //  INITIALIZATION
-    // ════════════════════════════════════════════
-    bindUIActions();
-    buildCatsUI();
-    updateStaticTexts();
+    document.addEventListener('DOMContentLoaded', () => { window.app = new PartyBoxApp(); });
   </script>
 </body>
 
