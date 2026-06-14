@@ -1437,6 +1437,30 @@
       margin-top: auto;
     }
 
+    .mystery-ready-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+    }
+
+    .hint-note {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      line-height: 1.4;
+      background: rgba(0, 245, 212, 0.08);
+      border: 1px solid rgba(0, 245, 212, 0.12);
+      border-radius: 14px;
+      padding: 10px 12px;
+      text-align: center;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      opacity: 0.9;
+    }
+
+    .hint-note.hidden {
+      display: none !important;
+    }
+
     .mystery-actions .btn-primary,
     .mystery-actions .btn-ghost,
     .mystery-actions .btn-danger {
@@ -2249,7 +2273,10 @@
           </div>
         </div>
         <div class="mystery-actions">
+          <div class="mystery-ready-wrap">
           <button class="btn-primary" id="btn-myst-ready">Я ГОТОВИЙ</button>
+          <div class="hint-note hidden" id="myst-ready-hint">Спочатку оберіть карту, щоб розпочати гру.</div>
+        </div>
           <button class="btn-ghost hidden" id="btn-myst-end-turn">Завершити хід</button>
           <button class="btn-danger btn-primary hidden" id="btn-myst-accuse">ЗВИНУВАТИ</button>
           <button class="btn-ghost"
@@ -3811,7 +3838,22 @@
           turnInd.className = 'turn-indicator blink';
         } else if (this.secretState.stage === 'selection') {
           this.show(readyBtn); this.hide(endBtn); this.hide(accBtn);
-          readyBtn.disabled = this.secretState.myReady;
+          // Disabled when already marked ready OR when no card selected yet
+          const noSelection = !Number.isInteger(this.secretState.mySelected);
+          readyBtn.disabled = this.secretState.myReady || noSelection;
+          const hintEl = document.getElementById('myst-ready-hint');
+          if (hintEl) {
+            const showHint = this.secretState.stage === 'selection' && noSelection && !this.secretState.myReady;
+            hintEl.classList.toggle('hidden', !showHint);
+          }
+          // provide tooltip guidance when disabled
+          if (readyBtn.disabled) {
+            readyBtn.title = noSelection ? 'Спочатку оберіть карту, потім натисніть «Я ГОТОВИЙ»' : '';
+            readyBtn.setAttribute('aria-disabled', 'true');
+          } else {
+            readyBtn.title = '';
+            readyBtn.setAttribute('aria-disabled', 'false');
+          }
           turnInd.textContent = t.turnWait; turnInd.className = 'turn-indicator blink';
         } else if (this.secretState.stage === 'playing') {
           this.hide(readyBtn);
@@ -3825,7 +3867,23 @@
 
       async handleCardClick(idx) {
         if (this.secretState.stage === 'selection') {
-          if (!this.secretState.myReady) this.network.updateState(`${this.secretState.role}/selection`, idx);
+          if (!this.secretState.myReady) {
+            // Apply selection locally for immediate UX feedback, then update server
+            this.secretState.mySelected = idx;
+            try {
+              await this.network.updateState(`${this.secretState.role}/selection`, idx);
+            } catch (e) {
+              // network errors will be reconciled by syncGameState
+            }
+            this.updateSecretGridUI();
+            // ensure the ready button updates immediately for UX
+            const readyBtnImmediate = document.getElementById('btn-myst-ready');
+            if (readyBtnImmediate) {
+              readyBtnImmediate.disabled = false;
+              readyBtnImmediate.title = '';
+              readyBtnImmediate.setAttribute('aria-disabled', 'false');
+            }
+          }
         } else if (this.secretState.stage === 'playing' && this.secretState.isMyTurn) {
           if (this.secretState.accuseMode) {
             this.showAccuseConfirm(idx);
@@ -3886,7 +3944,8 @@
       }
 
       sendMysteryReady() {
-        if (this.secretState.mySelected === null) { this.showToast('Оберіть персонажа!'); return; }
+        // Require a valid integer selection before sending ready
+        if (!Number.isInteger(this.secretState.mySelected)) { this.showToast('Оберіть персонажа!'); return; }
         this.network.updateState(`${this.secretState.role}/ready`, true);
         const myChar = this.secretState.grid[this.secretState.mySelected];
         document.getElementById('mystery-my-char-emoji').textContent = myChar.emoji;
