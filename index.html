@@ -345,6 +345,22 @@
       flex-shrink: 0;
     }
 
+    #screen-secret-result .result-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      max-width: 440px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+    }
+
+    #screen-secret-result .result-actions button {
+      flex: 1 1 180px;
+      min-height: 48px;
+    }
+
     .glass {
       background: rgba(20, 20, 30, 0.65);
       border: 1px solid rgba(255, 255, 255, 0.08);
@@ -1456,6 +1472,12 @@
       box-shadow: 0 0 10px rgba(0, 245, 212, 0.2), inset 0 0 6px rgba(0, 245, 212, 0.08);
     }
 
+    .card-cell.pending-elimination {
+      border-color: var(--red);
+      background: rgba(255, 59, 48, 0.12);
+      box-shadow: 0 0 10px rgba(255, 59, 48, 0.2), inset 0 0 6px rgba(255, 59, 48, 0.08);
+    }
+
     .card-cell.eliminated {
       display: none;
       opacity: 0;
@@ -2263,7 +2285,21 @@
           <div id="res-opp-name" class="result-panel-name">-</div>
         </div>
       </div>
-      <button class="btn-primary result-button" id="btn-res-menu">В головне меню</button>
+      <div class="result-actions">
+        <button class="btn-primary" id="btn-res-replay">Нова роздача</button>
+        <button class="btn-ghost" id="btn-res-menu">В головне меню</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="replayRequestModal">
+    <div class="modal-content glass" style="text-align: center;">
+      <div class="modal-title" id="replay-request-title">Суперник хоче зіграти ще раз</div>
+      <div style="color: var(--text-muted); margin-bottom: 28px; font-size: 0.95rem;" id="replay-request-desc">Почати нову роздачу в цій кімнаті?</div>
+      <div style="display: flex; gap: 12px; justify-content: center;">
+        <button class="btn-ghost" id="btn-replay-decline">Відхилити</button>
+        <button class="btn-primary btn-danger" id="btn-replay-accept">Прийняти</button>
+      </div>
     </div>
   </div>
 
@@ -2314,7 +2350,13 @@
       resLoseByAccuseMissedHost: "Невірно. Гра завершена.", resLoseByAccuseMissedGuest: "Ви дали не вірну відповідь. Гра завершена.",
       resWinBySurrender: "Суперник здався.", resLoseBySurrender: "Ви здалися. Гра завершена.",
       resWinByEliminatedOpponentCard: "Суперник виключив свого персонажа. Перемога!", resLoseByEliminatedOpponentCard: "Ви дали не вірну відповідь. Гра завершена.",
-      resMyChoice: "Ваш вибір", resOppChoice: "Вибір ворога",
+      resMyChoice: "Ваш вибір", resOppChoice: "Вибір ворога", resReplayBtn: "Нова роздача",
+      replayRequestTitle: "Суперник хоче зіграти ще раз",
+      replayRequestDesc: "",
+      replayConfirmTitle: "Почати нову гру?",
+      replayConfirmDesc: "",
+      replayAcceptBtn: "Прийняти",
+      replayDeclineBtn: "Відхилити",
       spyrulesContent: `<h4>🎯 Мета</h4><ul><li><b>Мирним:</b> вирахувати шпигуна.</li><li><b>Шпигуну:</b> не виказати себе та вгадати персонажа.</li></ul><h4>🔄 Хід гри</h4><ul><li>Гравці по черзі називають <b>один факт</b> про персонажа, не розкриваючи імені.</li><li><b>Мирні:</b> формулюйте думки розмито, щоб шпигун не здогадався, хто це.</li><li><b>Шпигун:</b> вдавайте 'свого', підлаштовуючись під відповіді інших.</li></ul><h4>🏁 Фінал</h4><ul><li><b>Голосування:</b> будь-який гравець може почати обговорення. Якщо більшість проголосує за вигнання шпигуна — мирні перемогли.</li><li><b>Здогадка:</b> шпигун може в будь-який момент зупинити гру та назвати персонажа. Вгадав — переміг, помилився — програв. Від 6-ти учасників, тільки голосування</li></ul>`,
       secretrulesContent: `<h4>🎯 Мета</h4><p>Відгадайте персонажа суперника раніше, ніж він відгадає вашого.</p><h4>🔄 Хід гри</h4><ul><li>Оберіть одного персонажа з 16 карток.</li><li>По черзі ставте питання, на які можна відповісти лише «Так» або «Ні».</li><li>Виключайте персонажів, які не підходять під отримані відповіді.</li></ul><h4>🏁 Фінал</h4><ul><li>У свій хід назвіть персонажа суперника.</li><li><b>Вгадав</b> — переміг.</li><li><b>Помилився</b> — програв.</li></ul>`
     };
@@ -2851,8 +2893,8 @@
 
         const roomData = {
           grid: grid,
-          host: { selection: null, eliminated: [], ready: false, guess: null },
-          guest: { selection: null, eliminated: [], ready: false, guess: null },
+          host: { selection: null, eliminated: [], pendingEliminated: [], ready: false, guess: null, requestReplay: false },
+          guest: { selection: null, eliminated: [], pendingEliminated: [], ready: false, guess: null, requestReplay: false },
           currentTurn: startingRole, status: 'lobby', winner: null,
           createdAt: firebase.database.ServerValue.TIMESTAMP,
           hostOnline: true, guestOnline: false
@@ -3030,7 +3072,7 @@
         };
         this.secretState = {
           role: null, roomCode: null, grid: [], mySelected: null, opponentSelection: null,
-          myEliminated: new Set(), isMyTurn: false, gameActive: false, stage: 'lobby',
+          myEliminated: new Set(), pendingEliminated: new Set(), isMyTurn: false, gameActive: false, stage: 'lobby',
           myReady: false, opponentReady: false, accuseMode: false, status: 'selection',
           currentTurn: 'host', winner: null, resultShown: false, gridBuilt: false,
           selectedCats: new Set()
@@ -3152,6 +3194,11 @@
         if (el('btn-myst-accuse')) el('btn-myst-accuse').textContent = this.secretState.accuseMode ? t.secretCancelAccuseBtn : t.secretAccuseBtn;
         if (el('btn-myst-surrender')) el('btn-myst-surrender').textContent = t.secretSurrenderBtn;
         if (el('btn-res-menu')) el('btn-res-menu').textContent = t.secretBackMenuBtn;
+        if (el('btn-res-replay')) el('btn-res-replay').textContent = t.resReplayBtn;
+        if (el('replay-request-title')) el('replay-request-title').textContent = t.replayRequestTitle;
+        if (el('replay-request-desc')) el('replay-request-desc').textContent = t.replayRequestDesc;
+        if (el('btn-replay-accept')) el('btn-replay-accept').textContent = t.replayAcceptBtn;
+        if (el('btn-replay-decline')) el('btn-replay-decline').textContent = t.replayDeclineBtn;
         if (el('res-lbl-mine')) el('res-lbl-mine').textContent = t.resMyChoice;
         if (el('res-lbl-opp')) el('res-lbl-opp').textContent = t.resOppChoice;
       }
@@ -3291,10 +3338,12 @@
         this.secretState = {
           role: null, roomCode: null, grid: [], gridBuilt: false, mySelected: null,
           opponentSelection: null, opponentSelectedimgUrl: null, myEliminated: new Set(),
-          isMyTurn: false, gameActive: false, stage: 'lobby', myReady: false,
-          opponentReady: false, accuseMode: false, status: 'selection', currentTurn: 'host',
-          winner: null, resultShown: false, selectedCats: new Set(), gracefulEnding: false
+          pendingEliminated: new Set(), isMyTurn: false, gameActive: false, stage: 'lobby',
+          myReady: false, opponentReady: false, accuseMode: false, status: 'selection', currentTurn: 'host',
+          winner: null, resultShown: false, selectedCats: new Set(), gracefulEnding: false,
+          replayModalOpen: false, replayModalIncoming: false
         };
+        this.pendingAccuseIndex = null;
       }
 
       buildCharacterPool(excludeRecent = true) {
@@ -3601,15 +3650,21 @@
         this.secretState.mySelected = null;
         this.secretState.opponentSelection = null;
         this.secretState.myEliminated = new Set();
+        this.secretState.pendingEliminated = new Set();
         this.secretState.myReady = false;
         this.secretState.opponentReady = false;
         this.secretState.accuseMode = false;
+        this.secretState.gridBuilt = false;
         this.secretState.isMyTurn = false;
         this.secretState.gameActive = true;
         this.secretState.currentTurn = 'host';
+        this.secretState.status = 'lobby';
         this.secretState.winner = null;
         this.secretState.resultShown = false;
         this.secretState.gracefulEnding = false;
+        this.secretState.replayModalOpen = false;
+        this.secretState.replayModalIncoming = false;
+        this.pendingAccuseIndex = null;
         this.network.listenState(this.syncGameState.bind(this));
         this.network.listenForDisconnect(() => {
           if (this.secretState.gracefulEnding) return;
@@ -3653,6 +3708,7 @@
         this.secretState.mySelected = myRoleData.selection !== null ? myRoleData.selection : null;
         this.secretState.myReady = myRoleData.ready === true;
         this.secretState.myEliminated = new Set(myRoleData.eliminated || []);
+        this.secretState.pendingEliminated = new Set(myRoleData.pendingEliminated || []);
         const oppRole = this.secretState.role === 'host' ? 'guest' : 'host';
         const oppRoleData = roomData[oppRole] || {};
         this.secretState.opponentReady = oppRoleData.ready === true;
@@ -3661,6 +3717,20 @@
         this.secretState.currentTurn = roomData.currentTurn || 'host';
         this.secretState.isMyTurn = this.secretState.currentTurn === this.secretState.role;
         this.secretState.winner = roomData.winner || null;
+        this.secretState.gameActive = roomData.status === 'selection' || roomData.status === 'playing';
+        if (roomData.status !== 'playing' && this.secretState.accuseMode) {
+          this.secretState.accuseMode = false;
+          this.pendingAccuseIndex = null;
+          this.closeModal('accuseModal');
+        }
+        if (roomData.status !== 'ended' && this.secretState.resultShown) {
+          this.secretState.resultShown = false;
+        }
+        if (roomData.status === 'ended' && oppRoleData.requestReplay === true && this.secretState.role === 'host') {
+          if (!this.secretState.replayModalOpen) {
+            this.openReplayModal({ title: AppText.replayRequestTitle, incoming: true });
+          }
+        }
         const shouldRenderGrid = roomData.status === 'selection' || roomData.status === 'playing';
         if (shouldRenderGrid) {
           if (!this.secretState.gridBuilt) { this.initSecretGrid(); this.secretState.gridBuilt = true; }
@@ -3727,6 +3797,7 @@
           if (!cell) continue;
           cell.classList.toggle('eliminated', this.secretState.myEliminated.has(idx));
           cell.classList.toggle('selected', this.secretState.stage === 'selection' && this.secretState.mySelected === idx);
+          cell.classList.toggle('pending-elimination', this.secretState.stage === 'playing' && this.secretState.pendingEliminated.has(idx));
           cell.classList.toggle('locked', this.secretState.stage === 'playing' && !this.secretState.isMyTurn);
           cell.classList.toggle('accuse-target', this.secretState.accuseMode);
         }
@@ -3759,19 +3830,12 @@
           if (this.secretState.accuseMode) {
             this.showAccuseConfirm(idx);
           } else {
-            const newEliminated = [...this.secretState.myEliminated];
-            const idx_pos = newEliminated.indexOf(idx);
-            const isEliminating = idx_pos < 0;
-            const isOpponentSelectedCard = idx === this.secretState.opponentSelection;
-            if (isEliminating && isOpponentSelectedCard) {
-              try {
-                await this.network.updateStates({ status: 'ended', winner: this.secretState.role, resultReason: 'eliminate_opponent_char' });
-              } catch (err) { this.showToast('Помилка мережі. Спробуйте ще раз.'); }
-              return;
-            }
-            if (idx_pos >= 0) newEliminated.splice(idx_pos, 1);
-            else newEliminated.push(idx);
-            this.network.updateState(`${this.secretState.role}/eliminated`, newEliminated);
+            const nextPending = new Set(this.secretState.pendingEliminated);
+            if (nextPending.has(idx)) nextPending.delete(idx);
+            else nextPending.add(idx);
+            this.secretState.pendingEliminated = nextPending;
+            await this.network.updateState(`${this.secretState.role}/pendingEliminated`, Array.from(nextPending));
+            this.updateSecretGridUI();
           }
         }
       }
@@ -3789,9 +3853,24 @@
         this.openModal('accuseModal');
       }
 
+      toggleAccuseMode() {
+        if (this.secretState.stage !== 'playing' || !this.secretState.isMyTurn) return;
+        this.secretState.accuseMode = !this.secretState.accuseMode;
+        if (!this.secretState.accuseMode) this.pendingAccuseIndex = null;
+        this.updateSecretGridUI();
+      }
+
+      cancelAccuse() {
+        this.secretState.accuseMode = false;
+        this.pendingAccuseIndex = null;
+        this.closeModal('accuseModal');
+        this.updateSecretGridUI();
+      }
+
       async performAccuse() {
-        if (this.pendingAccuseIndex === null) { this.closeModal('accuseModal'); return; }
+        if (this.pendingAccuseIndex === null) { this.cancelAccuse(); return; }
         const idx = this.pendingAccuseIndex; this.pendingAccuseIndex = null;
+        this.secretState.accuseMode = false;
         this.closeModal('accuseModal');
         const oppRole = this.secretState.role === 'host' ? 'guest' : 'host';
         const isCorrect = idx === this.secretState.opponentSelection;
@@ -3821,19 +3900,138 @@
         this.show('mystery-my-char-wrap');
       }
 
-      endSecretTurn() {
+      async endSecretTurn() {
         const nextTurn = this.secretState.role === 'host' ? 'guest' : 'host';
-        this.network.updateState('currentTurn', nextTurn);
-      }
+        const pendingEliminated = Array.from(this.secretState.pendingEliminated);
+        const opponentSelected = this.secretState.opponentSelection;
+        const committingEliminated = new Set(this.secretState.myEliminated);
+        pendingEliminated.forEach(idx => committingEliminated.add(idx));
 
-      toggleAccuseMode() {
-        this.secretState.accuseMode = !this.secretState.accuseMode;
+        if (opponentSelected !== null && this.secretState.pendingEliminated.has(opponentSelected)) {
+          try {
+            await this.network.updateStates({ status: 'ended', winner: this.secretState.role, resultReason: 'eliminate_opponent_char' });
+          } catch (err) { this.showToast('Помилка мережі. Спробуйте ще раз.'); }
+          return;
+        }
+
+        try {
+          await this.network.updateStates({
+            currentTurn: nextTurn,
+            [`${this.secretState.role}/eliminated`]: Array.from(committingEliminated),
+            [`${this.secretState.role}/pendingEliminated`]: []
+          });
+        } catch (err) {
+          this.showToast('Помилка мережі. Спробуйте ще раз.');
+          return;
+        }
+
+        this.secretState.myEliminated = committingEliminated;
+        this.secretState.pendingEliminated.clear();
         this.updateSecretGridUI();
       }
 
       async surrenderSecretGame() {
         const oppRole = this.secretState.role === 'host' ? 'guest' : 'host';
-        try { await this.network.updateStates({ status: 'ended', winner: oppRole, resultReason: 'surrender' }); } catch (e) { }
+        try { await this.network.updateStates({ status: 'ended', winner: oppRole, resultReason: 'surrender' }); } catch (e) { this.showToast('Не вдалося здатися. Спробуйте ще раз.'); }
+      }
+
+      async handleReplayRequest() {
+        if (this.secretState.role === 'host') {
+          this.openReplayModal({ title: AppText.replayConfirmTitle, incoming: false });
+          return;
+        }
+        try {
+          await this.network.updateState(`${this.secretState.role}/requestReplay`, true);
+          this.showToast('Запит на нову роздачу надіслано. Очікуйте рішення хоста.');
+        } catch (err) {
+          this.showToast('Не вдалося надіслати запит. Спробуйте ще раз.');
+        }
+      }
+
+      openReplayModal(options = {}) {
+        const title = options.title || AppText.replayRequestTitle;
+        const desc = options.desc !== undefined ? options.desc : '';
+        const titleEl = document.getElementById('replay-request-title');
+        const descEl = document.getElementById('replay-request-desc');
+        if (titleEl) titleEl.textContent = title;
+        if (descEl) {
+          descEl.textContent = desc;
+          descEl.style.display = desc ? '' : 'none';
+        }
+        this.openModal('replayRequestModal');
+        this.secretState.replayModalOpen = true;
+        this.secretState.replayModalIncoming = Boolean(options.incoming);
+      }
+
+      closeReplayModal() {
+        this.closeModal('replayRequestModal');
+        this.secretState.replayModalOpen = false;
+        this.secretState.replayModalIncoming = false;
+      }
+
+      async confirmReplayAction() {
+        this.closeReplayModal();
+        if (this.secretState.role !== 'host') {
+          this.showToast('Тільки хост може запустити нову роздачу. Очікуйте рішення.');
+          return;
+        }
+        await this.executeReplayReset();
+      }
+
+      async declineReplayRequest() {
+        const role = this.secretState.role;
+        const incoming = this.secretState.replayModalIncoming;
+        this.closeReplayModal();
+        if (!role) return;
+        try {
+          if (incoming && role === 'host') {
+            await this.network.updateState('guest/requestReplay', false);
+          }
+          await this.network.updateState(`${role}/requestReplay`, false);
+        } catch (err) {
+          console.warn('Не вдалося скасувати replay request', err);
+        }
+      }
+
+      async executeReplayReset() {
+        if (this.secretState.role !== 'host') return;
+        const grid = this.buildDiverseSecretGrid();
+        const nextTurn = CryptoRandomizer.secureRandomInt(2) === 0 ? 'host' : 'guest';
+        const resetState = {
+          grid: grid.map(c => ({ name: c.name, emoji: c.emoji, imgUrl: c.imgUrl || '', desc: c.desc || '' })),
+          host: { selection: null, eliminated: [], pendingEliminated: [], ready: false, guess: null, requestReplay: false },
+          guest: { selection: null, eliminated: [], pendingEliminated: [], ready: false, guess: null, requestReplay: false },
+          currentTurn: nextTurn,
+          status: 'selection',
+          winner: null,
+          resultReason: null
+        };
+
+        this.secretState.grid = grid;
+        this.secretState.gridBuilt = false;
+        this.secretState.mySelected = null;
+        this.secretState.opponentSelection = null;
+        this.secretState.myEliminated = new Set();
+        this.secretState.pendingEliminated = new Set();
+        this.secretState.myReady = false;
+        this.secretState.opponentReady = false;
+        this.secretState.accuseMode = false;
+        this.secretState.gameActive = true;
+        this.secretState.currentTurn = nextTurn;
+        this.secretState.isMyTurn = nextTurn === this.secretState.role;
+        this.secretState.resultShown = false;
+        this.secretState.gracefulEnding = false;
+        this.pendingAccuseIndex = null;
+        this.secretState.stage = 'selection';
+        this.secretState.status = 'selection';
+        try {
+          await this.network.updateStates(resetState);
+          this.initSecretGrid();
+          this.switchScreen('screen-secret-game');
+          this.updateSecretGridUI();
+        } catch (err) {
+          this.showToast('Не вдалося перезапустити гру. Спробуйте ще раз.');
+        }
       }
 
       async showSecretResult(iWon, myCharIdx, oppCharIdx, reason) {
@@ -3867,7 +4065,6 @@
         };
         setupResultImage(mChar, 'res-my'); setupResultImage(oChar, 'res-opp');
         this.secretState.gameActive = false;
-        await this.network.disconnect(this.secretState.role).catch(() => { });
         this.hide(document.querySelector('header'));
         this.switchScreen('screen-secret-result');
       }
@@ -3939,8 +4136,11 @@
         on('btn-myst-end-turn', () => this.endSecretTurn());
         on('btn-myst-accuse', () => this.toggleAccuseMode());
         on('btn-myst-surrender', () => this.surrenderSecretGame());
-        on('btn-accuse-cancel', () => this.closeModal('accuseModal'));
+        on('btn-accuse-cancel', () => this.cancelAccuse());
         on('btn-accuse-confirm', () => this.performAccuse());
+        on('btn-res-replay', () => this.handleReplayRequest());
+        on('btn-replay-accept', () => this.confirmReplayAction());
+        on('btn-replay-decline', () => this.declineReplayRequest());
         on('btn-res-menu', () => this.backToMenu());
         on('btn-dismiss-portrait', () => this.dismissPortraitTip());
         document.addEventListener('fullscreenchange', () => this.updateFullscreenIcon());
